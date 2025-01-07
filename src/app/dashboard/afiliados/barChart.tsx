@@ -23,39 +23,6 @@ ChartJS.register(
   Legend,
   ChartDataLabels
 );
-export const options: ChartOptions<'bar'> = {
-  indexAxis: 'y' as const,
-  elements: {
-    bar: {
-      borderRadius: 10,
-    },
-  },
-  responsive: true,
-  plugins: {
-    legend: {
-      display: false,
-    },
-    title: {
-      display: false,
-    },
-    datalabels: {
-      color: 'white',
-      anchor: 'start',
-      align: 'end',
-      offset: 5,
-      formatter: (context: { dataIndex: number }) => {
-        return labels[context.dataIndex];
-      },
-    },
-  },
-  scales: {
-    y: {
-      ticks: {
-        display: false,
-      },
-    },
-  },
-};
 
 const labels = [
   'Adherente',
@@ -77,6 +44,39 @@ export const data = {
       backgroundColor: 'rgba(5, 96, 234, 1)',
     },
   ],
+};
+export const options: ChartOptions<'bar'> = {
+  indexAxis: 'y' as const,
+  elements: {
+    bar: {
+      borderRadius: 10,
+    },
+  },
+  responsive: true,
+  plugins: {
+    legend: {
+      display: false,
+    },
+    title: {
+      display: false,
+    },
+    datalabels: {
+      color: 'white',
+      anchor: 'start',
+      align: 'end',
+      offset: 5,
+      formatter: (value, context) => {
+        return labels[context.dataIndex]; // Use dataIndex to get the corresponding label
+      },
+    },
+  },
+  scales: {
+    y: {
+      ticks: {
+        display: false,
+      },
+    },
+  },
 };
 
 export function HorizontalChart() {
