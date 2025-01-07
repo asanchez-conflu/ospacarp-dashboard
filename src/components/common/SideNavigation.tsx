@@ -25,28 +25,28 @@ const Sidebar = () => {
 
       <div className='flex-grow flex flex-col items-center'>
         <Link
-          href='/'
+          href='/dashboard'
           className='flex items-center w-[190px] px-5 py-2 mb-2 rounded-full bg-blue-600'
         >
           <MdHome className='mr-2' />
           Inicio
         </Link>
         <Link
-          href='/ingresos'
+          href='/dashboard/ingresos'
           className='flex items-center w-[190px] px-5 py-2 mb-2 rounded-full'
         >
           <MdTrendingUp className='mr-2' />
           Ingresos
         </Link>
         <Link
-          href='/egresos'
+          href='/dashboard/egresos'
           className='flex items-center w-[190px] px-5 py-2 mb-2 rounded-full'
         >
           <MdArrowDownward className='mr-2' />
           Egresos
         </Link>
         <Link
-          href='/afiliados'
+          href='/dashboard/afiliados'
           className='flex items-center w-[190px] px-5 py-2 mb-2 rounded-full'
         >
           <MdPeople className='mr-2' />
@@ -56,10 +56,7 @@ const Sidebar = () => {
 
       <hr className='my-4 border-gray-200' />
 
-      <Link
-        href='/login'
-        className='flex items-center w-[190px] px-5 py-2 mb-2'
-      >
+      <Link href='/' className='flex items-center w-[190px] px-5 py-2 mb-2'>
         <MdOutlineLogout className='mr-2' />
         Cerrar sesión
       </Link>
