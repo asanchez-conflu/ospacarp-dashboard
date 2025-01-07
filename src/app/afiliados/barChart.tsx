@@ -8,6 +8,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  ChartOptions,
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Bar } from 'react-chartjs-2';
@@ -22,8 +23,7 @@ ChartJS.register(
   Legend,
   ChartDataLabels
 );
-
-export const options = {
+export const options: ChartOptions<'bar'> = {
   indexAxis: 'y' as const,
   elements: {
     bar: {
@@ -43,8 +43,8 @@ export const options = {
       anchor: 'start',
       align: 'end',
       offset: 5,
-      formatter: (value, context) => {
-        return labels[context.dataIndex]; // Use dataIndex to get the corresponding label
+      formatter: (context: { dataIndex: number }) => {
+        return labels[context.dataIndex];
       },
     },
   },

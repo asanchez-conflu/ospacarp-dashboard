@@ -5,11 +5,12 @@ import {
   MdTrendingUp,
   MdArrowDownward,
   MdPeople,
+  MdOutlineLogout,
 } from 'react-icons/md';
 
 const Sidebar = () => {
   return (
-    <aside className='p-4 bg-white w-[250px] 2xl:w-[300px]'>
+    <aside className='fixed top-0 left-0 p-4 bg-white h-screen w-[250px] 2xl:w-[300px] flex flex-col '>
       <div className='flex flex-col items-center mb-4'>
         <div className='w-16 h-16 rounded-full flex items-center justify-center bg-blue-500'>
           <span className='text-2xl font-semibold'>MO</span>
@@ -22,7 +23,7 @@ const Sidebar = () => {
 
       <hr className='my-4 border-gray-200' />
 
-      <div className='flex flex-col items-center'>
+      <div className='flex-grow flex flex-col items-center'>
         <Link
           href='/'
           className='flex items-center w-[190px] px-5 py-2 mb-2 rounded-full bg-blue-600'
@@ -52,6 +53,16 @@ const Sidebar = () => {
           Afiliados
         </Link>
       </div>
+
+      <hr className='my-4 border-gray-200' />
+
+      <Link
+        href='/login'
+        className='flex items-center w-[190px] px-5 py-2 mb-2'
+      >
+        <MdOutlineLogout className='mr-2' />
+        Cerrar sesión
+      </Link>
     </aside>
   );
 };

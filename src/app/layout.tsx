@@ -16,11 +16,13 @@ export default function RootLayout({
         <meta name='viewport' content='width=device-width, initial-scale=1' />
       </head>
       <body className={`${inter.className} min-h-screen text-black`}>
-        <div className='flex flex-row min-h-screen'>
-          <SideNavigation />
-          <main className='flex-grow p-4 overflow-y-auto bg-gray-100	'>
-            {children}
-          </main>
+        <div className='max-w-screen-2xl mx-auto'>
+          <div className='flex flex-row min-h-screen'>
+            <SideNavigation />
+            <main className='ml-[250px] 2xl:ml-[300px] flex-grow p-4 overflow-y-auto bg-gray-100  '>
+              {children}
+            </main>
+          </div>
         </div>
       </body>
     </html>
