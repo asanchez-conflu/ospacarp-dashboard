@@ -1,8 +1,6 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
 
-import SideNavigation from '@/components/common/SideNavigation';
-
 const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({
@@ -16,12 +14,7 @@ export default function RootLayout({
         <meta name='viewport' content='width=device-width, initial-scale=1' />
       </head>
       <body className={`${inter.className} min-h-screen text-black`}>
-        <div className='flex flex-row min-h-screen'>
-          <SideNavigation />
-          <main className='flex-grow p-4 overflow-y-auto bg-gray-100	'>
-            {children}
-          </main>
-        </div>
+        {children}
       </body>
     </html>
   );

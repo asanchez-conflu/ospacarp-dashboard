@@ -8,6 +8,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  ChartOptions,
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Bar } from 'react-chartjs-2';
@@ -23,7 +24,28 @@ ChartJS.register(
   ChartDataLabels
 );
 
-export const options = {
+const labels = [
+  'Adherente',
+  'Bravo',
+  'Desregulado',
+  'Genuino',
+  'Jubilado',
+  'Municipal',
+  'Nova',
+  'Personal',
+];
+
+export const data = {
+  labels,
+  datasets: [
+    {
+      label: 'Dataset 1',
+      data: labels.map(() => faker.number.int({ min: 0, max: 1000 })),
+      backgroundColor: 'rgba(5, 96, 234, 1)',
+    },
+  ],
+};
+export const options: ChartOptions<'bar'> = {
   indexAxis: 'y' as const,
   elements: {
     bar: {
@@ -55,28 +77,6 @@ export const options = {
       },
     },
   },
-};
-
-const labels = [
-  'Adherente',
-  'Bravo',
-  'Desregulado',
-  'Genuino',
-  'Jubilado',
-  'Municipal',
-  'Nova',
-  'Personal',
-];
-
-export const data = {
-  labels,
-  datasets: [
-    {
-      label: 'Dataset 1',
-      data: labels.map(() => faker.number.int({ min: 0, max: 1000 })),
-      backgroundColor: 'rgba(5, 96, 234, 1)',
-    },
-  ],
 };
 
 export function HorizontalChart() {
