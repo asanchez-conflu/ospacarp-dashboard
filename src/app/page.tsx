@@ -11,7 +11,7 @@ const HomePage: React.FC = () => {
   const style = {
     height: '100vh',
     width: '100vw',
-    backgroundImage: `url(background.jpeg)`,
+    backgroundImage: `url(http://localhost:3000/background.jpeg)`,
     backgroundSize: 'cover',
     backgroundPosition: 'center center',
   };
@@ -42,7 +42,8 @@ const HomePage: React.FC = () => {
 
       if (response.status === 200) {
         // Store JWT in local storage (or use a secure cookie library)
-        localStorage.setItem('jwt', response.data.token);
+        console.log('LOGIN: ', response);
+        localStorage.setItem('jwt', response.data.access_token);
 
         // Redirect to protected page
         navigation.push('/dashboard/afiliados');
