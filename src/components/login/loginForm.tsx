@@ -2,16 +2,16 @@
 import React, { useState } from 'react';
 
 interface LoginProps {
-  onSubmit: (email: string, password: string) => void;
+  onSubmit: (username: string, password: string) => void;
 }
 
 const LoginForm: React.FC<LoginProps> = ({ onSubmit }) => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    onSubmit(email, password);
+    onSubmit(username, password);
   };
 
   return (
@@ -21,16 +21,16 @@ const LoginForm: React.FC<LoginProps> = ({ onSubmit }) => {
 
         <div className='mb-4'>
           <label
-            htmlFor='email'
+            htmlFor='username'
             className='block text-sm font-medium text-gray-700'
           >
-            Email Empresarial
+            username Empresarial
           </label>
           <input
-            type='email'
-            id='email'
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type='text'
+            id='username'
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             className='mt-1 p-2 border border-gray-300 rounded-md w-full focus:ring-blue-500 focus:border-blue-500'
           />
         </div>
