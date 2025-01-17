@@ -45,7 +45,7 @@ const HomePage: React.FC = () => {
         localStorage.setItem('jwt', response.data.token);
 
         // Redirect to protected page
-        navigation.push('/dashboard');
+        navigation.push('/dashboard/afiliados');
       } else {
         console.log('Error');
         // setError('Login failed');
@@ -57,11 +57,10 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <main
-      style={style}
-      className='flex flex-col items-center justify-center h-screen'
-    >
-      <LoginForm onSubmit={handleSubmit} />
+    <main style={style} className='flex flex-col items-center justify-center'>
+      <div className='max-w-7xl w-full h-screen flex flex-col items-center justify-center'>
+        <LoginForm onSubmit={handleSubmit} />
+      </div>
     </main>
   );
 };
