@@ -51,7 +51,7 @@ export default function AfiliadosPage() {
       </div>
       Gráfico
       <div className='flex m-10 gap-5'>
-        <HorizontalBar leftLabel='Adherente' barWidth={30}></HorizontalBar>
+        <HorizontalBar leftLabel='Adherente' barWidth={50}></HorizontalBar>
       </div>
       <div className='flex m-10 gap-5'>
         <CardAfiliados affiliates={affiliatesCount} />
