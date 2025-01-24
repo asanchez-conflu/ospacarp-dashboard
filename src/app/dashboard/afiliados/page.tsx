@@ -1,6 +1,5 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { HorizontalChart } from './barChart';
 import CardAfiliados from './cardAfiliados';
 import CardOtros from './cardOtros';
 import axios from 'axios';
@@ -17,6 +16,12 @@ export default function AfiliadosPage() {
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/totals?Clientappid=21&Period=202408';
 
   const [affiliatesCount, setAffiliatesCount] = useState('0');
+
+  const data = [
+    { leftLabel: 'Adherente', barWidth: 50 },
+    { leftLabel: 'No Adherente', barWidth: 20 },
+    { leftLabel: 'Pendiente', barWidth: 30 },
+  ];
 
   useEffect(() => {
     const fetchAffiliates = async () => {
@@ -49,10 +54,7 @@ export default function AfiliadosPage() {
           Gráficos de distribución de padrón de Afiliados.
         </p>
       </div>
-      Gráfico
-      <div className='flex m-10 gap-5'>
-        <HorizontalBar leftLabel='Adherente' barWidth={50}></HorizontalBar>
-      </div>
+
       <div className='flex m-10 gap-5'>
         <CardAfiliados affiliates={affiliatesCount} />
         <CardOtros />
@@ -62,7 +64,15 @@ export default function AfiliadosPage() {
           Distribución de padrón por origen de Afiliado
         </h3>
         <p className='pl-4 text-sm'>Valores acumulados</p>
-        <HorizontalChart />
+        <div className='flex flex-col m-10 gap-5'>
+          {data.map((item, index) => (
+            <HorizontalBar
+              key={index}
+              leftLabel={item.leftLabel}
+              barWidth={item.barWidth}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
