@@ -21,7 +21,7 @@ const LoginForm: React.FC<LoginProps> = ({ onSubmit }) => {
         onSubmit={handleSubmit}
         className='h-full flex flex-col items-center'
       >
-        <div>
+        <div className='pb-2'>
           <MdFavorite size={30} color='#56CFE1' />
         </div>
         <h2 className='text-l font-bold mb-4'>Inicio de Sesión</h2>

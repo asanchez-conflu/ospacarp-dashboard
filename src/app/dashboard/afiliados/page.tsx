@@ -4,6 +4,7 @@ import { HorizontalChart } from './barChart';
 import CardAfiliados from './cardAfiliados';
 import CardOtros from './cardOtros';
 import axios from 'axios';
+import HorizontalBar from './horizontalBar';
 
 interface Affiliates {
   total: string;
@@ -48,12 +49,14 @@ export default function AfiliadosPage() {
           Gráficos de distribución de padrón de Afiliados.
         </p>
       </div>
-
+      Gráfico
+      <div className='flex m-10 gap-5'>
+        <HorizontalBar leftLabel='Adherente' barWidth={30}></HorizontalBar>
+      </div>
       <div className='flex m-10 gap-5'>
         <CardAfiliados affiliates={affiliatesCount} />
         <CardOtros />
       </div>
-
       <div className='m-10 py-5 px-4 bg-white rounded'>
         <h3 className='pl-4 font-bold'>
           Distribución de padrón por origen de Afiliado
