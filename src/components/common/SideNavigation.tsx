@@ -26,7 +26,7 @@ const Sidebar = () => {
       <div className='flex-grow flex flex-col items-center'>
         <Link
           href='/dashboard'
-          className='flex items-center w-[190px] px-5 py-2 mb-2 rounded-full bg-blue-600'
+          className='flex items-center w-[190px] px-5 py-2 mb-2 rounded-full'
         >
           <MdHome className='mr-2' />
           Inicio
@@ -47,7 +47,7 @@ const Sidebar = () => {
         </Link>
         <Link
           href='/dashboard/afiliados'
-          className='flex items-center w-[190px] px-5 py-2 mb-2 rounded-full'
+          className='flex items-center w-[190px] px-5 py-2 mb-2 rounded-full bg-blue-600 text-white'
         >
           <MdPeople className='mr-2' />
           Afiliados
