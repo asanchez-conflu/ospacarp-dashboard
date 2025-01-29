@@ -18,29 +18,59 @@ interface Delegation {
   percentage: number;
 }
 
+interface Origin {
+  count: string;
+  origin: number;
+  originDesc: string;
+  percentage: number;
+}
+
+interface DataItem {
+  label: string;
+  percentage: number;
+  id: number;
+}
+
 export default function AfiliadosPage() {
   const endpointTotals =
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/totals?Clientappid=21&Excludeorigins=3,7,17&Period=202501';
-
   const endpointDelegations =
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202501&Origin=1';
+  const endpointOriginsAll =
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=202405';
+  const endpointDelegationsAll =
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202405';
 
   const [affiliatesCount, setAffiliatesCount] = useState('0');
   const [othersCount, setOthersCount] = useState('0');
 
   const [delegations, setDelegations] = useState<Delegation[] | null>(null); // Optional type for delegations
 
+  const [filterType, setFilterType] = useState<'origin' | 'delegations'>(
+    'origin'
+  );
+  const [selectedDelegation, setSelectedDelegation] = useState<string | null>(
+    null
+  );
+  const [selectedOrigin, setSelectedOrigin] = useState<string | null>(null);
+  const [graphData, setGraphData] = useState<DataItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  /*
+    const [error, setError] = useState<string | null>(null);
+  */
+
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('jwt');
 
-      const [affiliatesResponse, delegationsResponse] = await Promise.all([
+      const [affiliatesResponse, dataResponse] = await Promise.all([
         axios.get<Affiliates>(endpointTotals, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }),
-        axios.get(endpointDelegations, {
+        axios.get(endpointOriginsAll, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -49,29 +79,56 @@ export default function AfiliadosPage() {
 
       // Afiliados = totalExcludes
       // Otros = totalMembers
-
       setAffiliatesCount(affiliatesResponse.data.totalExcludes);
       setOthersCount(affiliatesResponse.data.totalMembers);
 
-      // Process delegations data
-      const delegations = delegationsResponse.data.delegations;
-      if (!delegations) {
+      console.log('delegationsResponse: ', dataResponse.data);
+
+      // segun filtro delegations o origins
+      // el label tambien segun filtro
+
+      const data = dataResponse.data;
+      let processedData: DataItem[] = [];
+
+      if (!data) {
         console.warn('No delegations data received');
         return; // Exit early if no delegations data
       }
 
-      const totalCount = delegations.reduce(
-        (acc: number, delegation: Delegation) =>
-          acc + parseInt(delegation.count),
-        0
-      );
+      if (filterType === 'origin') {
+        const totalCount = data.origins.reduce(
+          (acc: number, origin: Origin) => acc + parseInt(origin.count),
+          0
+        );
 
-      const processedDelegations = delegations.map((delegation: Delegation) => {
-        const percentage = (parseFloat(delegation.count) / totalCount) * 100;
-        return { ...delegation, percentage: percentage.toFixed(2) }; // Add percentage property
-      });
+        processedData = data.origins.map((origin: Origin) => {
+          const percentage = (parseFloat(origin.count) / totalCount) * 100;
 
-      setDelegations(processedDelegations);
+          // Type conversion and creation of DataItem object
+          const dataItem: DataItem = {
+            label: origin.originDesc,
+            percentage: parseFloat(percentage.toFixed(2)), // Parse to number
+            id: origin.origin,
+          };
+          return dataItem;
+        });
+      } else {
+        // process delegations
+        const totalCount = data.delegations.reduce(
+          (acc: number, delegation: Delegation) =>
+            acc + parseInt(delegation.count),
+          0
+        );
+
+        processedData = data.delegations.map((delegation: Delegation) => {
+          const percentage = (parseFloat(delegation.count) / totalCount) * 100;
+          return { ...delegation, percentage: percentage.toFixed(2) }; // Add percentage property
+        });
+      }
+
+      setGraphData(processedData);
+      setLoading(false);
+      console.log('processedData', processedData);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -98,31 +155,40 @@ export default function AfiliadosPage() {
       <div className='m-10 py-5 bg-white rounded'>
         <div className='px-7 pt-4 pb-2'>
           <h3 className='font-bold'>
-            Distribución de padrón por origen de Afiliado
+            Distribución de padrón por{' '}
+            {filterType === 'origin' ? 'orígenes' : 'delegaciones'} de Afiliado
           </h3>
           <p className='text-sm'>Valores acumulados</p>
         </div>
 
         <div className='flex flex-col p-5 gap-3 relative'>
-          {delegations === null && <p>Cargando delegaciones...</p>}
+          {loading === true && (
+            <p className='px-2'>
+              Cargando {filterType === 'origin' ? 'orígenes' : 'delegaciones'}
+              ...
+            </p>
+          )}
 
-          {delegations && delegations?.length > 0 && (
+          {!loading && graphData?.length > 0 && (
             <>
               <span className='absolute top-0 right-5 text-xs text-gray-500'>
                 Porcentaje
               </span>
-              {delegations?.map((item, index) => (
+              {graphData?.map((item, index) => (
                 <HorizontalBar
                   key={index}
-                  leftLabel={item.delegationDesc}
+                  leftLabel={item.label}
                   barWidth={item.percentage}
                 />
               ))}
             </>
           )}
 
-          {delegations?.length === 0 && (
-            <p>No se encontraron datos de delegaciones.</p>
+          {!loading && graphData?.length === 0 && (
+            <p className='px-2'>
+              No se encontraron datos de{' '}
+              {filterType === 'origin' ? 'orígenes' : 'delegaciones'}.
+            </p>
           )}
         </div>
       </div>
