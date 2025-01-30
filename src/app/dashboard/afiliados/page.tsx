@@ -58,7 +58,8 @@ export default function AfiliadosPage() {
       'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/totals?Clientappid=21&Excludeorigins=3,7,17&Period=202501',
     origin: {
       all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=202405',
-      specific: '/api/data/origin/:originId',
+      specific:
+        'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=202501&Delegation=:originId',
     },
     delegations: {
       all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202405',
@@ -76,10 +77,12 @@ export default function AfiliadosPage() {
   const handleBarClick = (id: number) => {
     // Function now takes an ID
     console.log(`Bar with ID ${id} clicked!`);
+    fetchData();
   };
 
   // Error handling with try catch finally (loading) poner loading true aca
   const fetchData = async (id = null) => {
+    setLoading(true);
     try {
       const token = localStorage.getItem('jwt');
 
@@ -95,6 +98,8 @@ export default function AfiliadosPage() {
           ? endpoints.delegations.specific.replace(':delegationId', id)
           : endpoints.delegations.all;
       }
+
+      console.log('Final Endpoint: ', endpoint);
 
       const [affiliatesResponse, dataResponse] = await Promise.all([
         axios.get<Affiliates>(endpoints.totals, {
@@ -174,10 +179,11 @@ export default function AfiliadosPage() {
       }
 
       setGraphData(processedData);
-      setLoading(false);
       console.log('processedData', processedData);
     } catch (error) {
       console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -186,7 +192,6 @@ export default function AfiliadosPage() {
   }, []);
 
   useEffect(() => {
-    setLoading(true);
     fetchData();
   }, [filterType]);
 
