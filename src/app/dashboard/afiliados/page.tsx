@@ -180,23 +180,22 @@ export default function AfiliadosPage() {
           <p className='text-sm'>Valores acumulados</p>
 
           <Popover>
-            <PopoverButton className='absolute top-4 right-7 p-2 bg-white rounded-md shadow-sm hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all duration-75'>
+            <PopoverButton className='absolute top-4 right-7 p-2 bg-white rounded-md shadow-md hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all duration-75'>
               <MdTune size={20} color='black' />
             </PopoverButton>
             <PopoverPanel className='absolute right-7 top-12 w-48 bg-white rounded-md shadow-lg z-10'>
-              {/* Backdrop OUTSIDE the panel */}
               <div className='p-2'>
                 <PopoverGroup>
                   <PopoverButton
-                    as='button' // Recommended: Use 'button' for interactive elements
-                    className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                    as='button'
+                    className='block px-4 py-2 w-full text-left text-sm text-gray-700 hover:bg-gray-200 rounded-md'
                     onClick={() => handleFilterSelect('origin')}
                   >
                     Origen
                   </PopoverButton>
                   <PopoverButton
-                    as='button' // Recommended: Use 'button' for interactive elements
-                    className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                    as='button'
+                    className='block px-4 py-2 w-full text-left text-sm text-gray-700 hover:bg-gray-200 rounded-md'
                     onClick={() => handleFilterSelect('delegations')}
                   >
                     Delegación
@@ -205,9 +204,6 @@ export default function AfiliadosPage() {
               </div>
             </PopoverPanel>
           </Popover>
-
-          {/* Display the selected filter (for demonstration) */}
-          <p>Selected Filter: {filterType}</p>
         </div>
         <div className='flex flex-col p-5 gap-3 relative'>
           {loading === true && (
