@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 import React, { useEffect, useState } from 'react';
 import CardAfiliados from './cardAfiliados';
@@ -78,6 +79,8 @@ export default function AfiliadosPage() {
     try {
       const token = localStorage.getItem('jwt');
 
+      // segun filter type consulto
+
       const [affiliatesResponse, dataResponse] = await Promise.all([
         axios.get<Affiliates>(endpointTotals, {
           headers: {
@@ -110,6 +113,7 @@ export default function AfiliadosPage() {
       }
 
       if (filterType === 'origin') {
+        console.log('origines', data.origins);
         const totalCount = data.origins.reduce(
           (acc: number, origin: Origin) => acc + parseInt(origin.count),
           0
@@ -128,6 +132,8 @@ export default function AfiliadosPage() {
         });
       } else {
         // process delegations
+        console.log('delegaciones', data.delegations);
+
         const totalCount = data.delegations.reduce(
           (acc: number, delegation: Delegation) =>
             acc + parseInt(delegation.count),
@@ -151,6 +157,11 @@ export default function AfiliadosPage() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchData();
+  }, [filterType]);
 
   return (
     <div>
