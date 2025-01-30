@@ -5,7 +5,7 @@ import CardOtros from './cardOtros';
 import axios from 'axios';
 import HorizontalBar from './horizontalBar';
 import { MdFavorite } from 'react-icons/md';
-
+import { MdTune } from 'react-icons/md';
 interface Affiliates {
   total: string;
   totalExcludes: string;
@@ -60,6 +60,11 @@ export default function AfiliadosPage() {
   /*
     const [error, setError] = useState<string | null>(null);
   */
+
+  const handleFilterButtonClick = () => {
+    console.log('Filter button clicked!'); // Placeholder - Replace with your logic.
+    // setIsFilterMenuOpen(true);
+  };
 
   const fetchData = async () => {
     try {
@@ -159,14 +164,19 @@ export default function AfiliadosPage() {
       </div>
 
       <div className='m-10 py-5 bg-white rounded'>
-        <div className='px-7 pt-4 pb-2'>
+        <div className='px-7 pt-4 pb-2 relative'>
           <h3 className='font-bold'>
             Distribución de padrón por{' '}
             {filterType === 'origin' ? 'orígenes' : 'delegaciones'} de Afiliado
           </h3>
           <p className='text-sm'>Valores acumulados</p>
+          <button
+            onClick={handleFilterButtonClick}
+            className='absolute top-4 right-7 p-2 bg-white rounded-md shadow-sm hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all duration-75'
+          >
+            <MdTune size={20} color='black' />
+          </button>
         </div>
-
         <div className='flex flex-col p-5 gap-3 relative'>
           {loading === true && (
             <p className='px-2'>
