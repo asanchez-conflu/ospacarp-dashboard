@@ -42,27 +42,12 @@ interface DataItem {
 }
 
 export default function AfiliadosPage() {
-  const endpointTotals =
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/totals?Clientappid=21&Excludeorigins=3,7,17&Period=202501';
-  const endpointDelegations =
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202501&Origin=1';
-  const endpointOriginsAll =
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=202405';
-  const endpointDelegationsAll =
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202405';
-
   const [affiliatesCount, setAffiliatesCount] = useState('0');
   const [othersCount, setOthersCount] = useState('0');
-
-  const [delegations, setDelegations] = useState<Delegation[] | null>(null); // Optional type for delegations
-
   const [filterType, setFilterType] = useState<'origin' | 'delegations'>(
     'origin'
   );
-  const [selectedDelegation, setSelectedDelegation] = useState<string | null>(
-    null
-  );
-  const [selectedOrigin, setSelectedOrigin] = useState<string | null>(null);
+
   const [graphData, setGraphData] = useState<DataItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -79,16 +64,19 @@ export default function AfiliadosPage() {
     },
     delegations: {
       all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202405',
-      specific: '/api/data/delegations/:delegationId',
+      specific:
+        'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202501&Origin=:delegationId',
     },
   };
 
+  // Deshabilitar boton cuando esta cargando
   const handleFilterSelect = (type: 'origin' | 'delegations') => {
     setFilterType(type);
     console.log('Filtered by ', type);
   };
 
-  const fetchData = async () => {
+  // Error handling with try catch finally (loading) poner loading true aca
+  const fetchData = async (id = null) => {
     try {
       const token = localStorage.getItem('jwt');
 
@@ -96,20 +84,17 @@ export default function AfiliadosPage() {
       let endpoint = '';
 
       if (filterType === 'origin') {
-        endpoint = selectedOrigin
-          ? endpoints.origin.specific.replace(':originId', selectedOrigin)
+        endpoint = id
+          ? endpoints.origin.specific.replace(':originId', id)
           : endpoints.origin.all;
       } else if (filterType === 'delegations') {
-        endpoint = selectedDelegation
-          ? endpoints.delegations.specific.replace(
-              ':delegationId',
-              selectedDelegation
-            )
+        endpoint = id
+          ? endpoints.delegations.specific.replace(':delegationId', id)
           : endpoints.delegations.all;
       }
 
       const [affiliatesResponse, dataResponse] = await Promise.all([
-        axios.get<Affiliates>(endpointTotals, {
+        axios.get<Affiliates>(endpoints.totals, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -170,6 +155,18 @@ export default function AfiliadosPage() {
         processedData = data.delegations.map((delegation: Delegation) => {
           const percentage = (parseFloat(delegation.count) / totalCount) * 100;
           return { ...delegation, percentage: percentage.toFixed(2) }; // Add percentage property
+        });
+
+        processedData = data.delegations.map((delegation: Delegation) => {
+          const percentage = (parseFloat(delegation.count) / totalCount) * 100;
+
+          // Type conversion and creation of DataItem object
+          const dataItem: DataItem = {
+            label: delegation.delegationDesc,
+            percentage: parseFloat(percentage.toFixed(2)), // Parse to number
+            id: delegation.delegation,
+          };
+          return dataItem;
         });
       }
 
