@@ -6,6 +6,14 @@ import axios from 'axios';
 import HorizontalBar from './horizontalBar';
 import { MdFavorite } from 'react-icons/md';
 import { MdTune } from 'react-icons/md';
+import {
+  Popover,
+  PopoverBackdrop,
+  PopoverButton,
+  PopoverGroup,
+  PopoverOverlay,
+  PopoverPanel,
+} from '@headlessui/react';
 interface Affiliates {
   total: string;
   totalExcludes: string;
@@ -61,9 +69,9 @@ export default function AfiliadosPage() {
     const [error, setError] = useState<string | null>(null);
   */
 
-  const handleFilterButtonClick = () => {
-    console.log('Filter button clicked!'); // Placeholder - Replace with your logic.
-    // setIsFilterMenuOpen(true);
+  const handleFilterSelect = (type: 'origin' | 'delegations') => {
+    setFilterType(type);
+    console.log('Filtered by ', type);
   };
 
   const fetchData = async () => {
@@ -170,12 +178,36 @@ export default function AfiliadosPage() {
             {filterType === 'origin' ? 'orígenes' : 'delegaciones'} de Afiliado
           </h3>
           <p className='text-sm'>Valores acumulados</p>
-          <button
-            onClick={handleFilterButtonClick}
-            className='absolute top-4 right-7 p-2 bg-white rounded-md shadow-sm hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all duration-75'
-          >
-            <MdTune size={20} color='black' />
-          </button>
+
+          <Popover>
+            <PopoverButton className='absolute top-4 right-7 p-2 bg-white rounded-md shadow-sm hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all duration-75'>
+              <MdTune size={20} color='black' />
+            </PopoverButton>
+            <PopoverPanel className='absolute right-7 top-12 w-48 bg-white rounded-md shadow-lg z-10'>
+              {/* Backdrop OUTSIDE the panel */}
+              <div className='p-2'>
+                <PopoverGroup>
+                  <PopoverButton
+                    as='button' // Recommended: Use 'button' for interactive elements
+                    className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                    onClick={() => handleFilterSelect('origin')}
+                  >
+                    Origen
+                  </PopoverButton>
+                  <PopoverButton
+                    as='button' // Recommended: Use 'button' for interactive elements
+                    className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                    onClick={() => handleFilterSelect('delegations')}
+                  >
+                    Delegación
+                  </PopoverButton>
+                </PopoverGroup>
+              </div>
+            </PopoverPanel>
+          </Popover>
+
+          {/* Display the selected filter (for demonstration) */}
+          <p>Selected Filter: {filterType}</p>
         </div>
         <div className='flex flex-col p-5 gap-3 relative'>
           {loading === true && (
