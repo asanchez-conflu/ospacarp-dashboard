@@ -70,6 +70,19 @@ export default function AfiliadosPage() {
     const [error, setError] = useState<string | null>(null);
   */
 
+  const endpoints = {
+    totals:
+      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/totals?Clientappid=21&Excludeorigins=3,7,17&Period=202501',
+    origin: {
+      all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=202405',
+      specific: '/api/data/origin/:originId',
+    },
+    delegations: {
+      all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202405',
+      specific: '/api/data/delegations/:delegationId',
+    },
+  };
+
   const handleFilterSelect = (type: 'origin' | 'delegations') => {
     setFilterType(type);
     console.log('Filtered by ', type);
@@ -80,6 +93,20 @@ export default function AfiliadosPage() {
       const token = localStorage.getItem('jwt');
 
       // segun filter type consulto
+      let endpoint = '';
+
+      if (filterType === 'origin') {
+        endpoint = selectedOrigin
+          ? endpoints.origin.specific.replace(':originId', selectedOrigin)
+          : endpoints.origin.all;
+      } else if (filterType === 'delegations') {
+        endpoint = selectedDelegation
+          ? endpoints.delegations.specific.replace(
+              ':delegationId',
+              selectedDelegation
+            )
+          : endpoints.delegations.all;
+      }
 
       const [affiliatesResponse, dataResponse] = await Promise.all([
         axios.get<Affiliates>(endpointTotals, {
@@ -87,7 +114,7 @@ export default function AfiliadosPage() {
             Authorization: `Bearer ${token}`,
           },
         }),
-        axios.get(endpointOriginsAll, {
+        axios.get(endpoint, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
