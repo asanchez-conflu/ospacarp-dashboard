@@ -3,11 +3,16 @@ import React from 'react';
 interface Props {
   leftLabel: string;
   barWidth: number;
+  onClick: () => void;
 }
 
-const HorizontalBar: React.FC<Props> = ({ leftLabel, barWidth }) => {
+const HorizontalBar: React.FC<Props> = ({
+  leftLabel,
+  barWidth,
+  onClick,
+}: Props) => {
   return (
-    <div className='relative w-full h-8'>
+    <div className='relative w-full h-8 cursor-pointer' onClick={onClick}>
       <div className='bg-gradient-to-l from-[#0560EA] to-[#56CFE1] w-full h-full rounded-lg absolute top-0 right-px' />
       <div
         className='bg-gray-300 w-full h-full rounded-r-lg absolute top-0 right-0 max-w-[99%]'

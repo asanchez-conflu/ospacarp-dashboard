@@ -9,10 +9,8 @@ import { MdFavorite } from 'react-icons/md';
 import { MdTune } from 'react-icons/md';
 import {
   Popover,
-  PopoverBackdrop,
   PopoverButton,
   PopoverGroup,
-  PopoverOverlay,
   PopoverPanel,
 } from '@headlessui/react';
 interface Affiliates {
@@ -73,6 +71,11 @@ export default function AfiliadosPage() {
   const handleFilterSelect = (type: 'origin' | 'delegations') => {
     setFilterType(type);
     console.log('Filtered by ', type);
+  };
+
+  const handleBarClick = (id: number) => {
+    // Function now takes an ID
+    console.log(`Bar with ID ${id} clicked!`);
   };
 
   // Error handling with try catch finally (loading) poner loading true aca
@@ -258,6 +261,7 @@ export default function AfiliadosPage() {
                   key={index}
                   leftLabel={item.label}
                   barWidth={item.percentage}
+                  onClick={() => handleBarClick(item.id)}
                 />
               ))}
             </>
