@@ -4,6 +4,7 @@ import CardAfiliados from './cardAfiliados';
 import CardOtros from './cardOtros';
 import axios from 'axios';
 import HorizontalBar from './horizontalBar';
+import { MdFavorite } from 'react-icons/md';
 
 interface Affiliates {
   total: string;
@@ -140,6 +141,11 @@ export default function AfiliadosPage() {
 
   return (
     <div>
+      <div className='my-6 flex flex-col items-center'>
+        <MdFavorite size={30} color='#56CFE1' />
+      </div>
+      <hr className='border-gray-200 mx-10' />
+
       <div className='m-10'>
         <h2 className='font-bold text-4xl'>Panel gráfico de Afiliados</h2>
         <p className='font-bold text-xl'>
