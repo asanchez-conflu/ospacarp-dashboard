@@ -77,7 +77,7 @@ export default function AfiliadosPage() {
   const handleBarClick = (id: number) => {
     // Function now takes an ID
     console.log(`Bar with ID ${id} clicked!`);
-    fetchData();
+    fetchData(id);
   };
 
   // Error handling with try catch finally (loading) poner loading true aca
@@ -89,17 +89,20 @@ export default function AfiliadosPage() {
       // segun filter type consulto
       let endpoint = '';
 
+      console.log('ID: ', id);
+      console.log('filter: ', filterType);
+
       if (filterType === 'origin') {
         endpoint = id
-          ? endpoints.origin.specific.replace(':originId', id)
+          ? endpoints.delegations.specific.replace(':delegationId', id)
           : endpoints.origin.all;
       } else if (filterType === 'delegations') {
         endpoint = id
-          ? endpoints.delegations.specific.replace(':delegationId', id)
+          ? endpoints.origin.specific.replace(':originId', id)
           : endpoints.delegations.all;
       }
 
-      console.log('Final Endpoint: ', endpoint);
+      console.log(endpoint);
 
       const [affiliatesResponse, dataResponse] = await Promise.all([
         axios.get<Affiliates>(endpoints.totals, {
@@ -132,8 +135,27 @@ export default function AfiliadosPage() {
         return; // Exit early if no delegations data
       }
 
-      if (filterType === 'origin') {
+      let type = '';
+
+      if (filterType === 'origin' && id === null) {
+        type = 'origin';
+      } else if (filterType === 'delegations' && id) {
+        type = 'origin';
+      } else {
+        type = 'delegations';
+      }
+
+      console.log('TYPE: ', type);
+
+      if (type === 'origin') {
         console.log('origines', data.origins);
+
+        if (!data.origins) {
+          console.log('no data');
+          setGraphData([]);
+          return;
+        }
+
         const totalCount = data.origins.reduce(
           (acc: number, origin: Origin) => acc + parseInt(origin.count),
           0
@@ -153,6 +175,12 @@ export default function AfiliadosPage() {
       } else {
         // process delegations
         console.log('delegaciones', data.delegations);
+
+        if (!data.delegations) {
+          console.log('no data');
+          setGraphData([]);
+          return;
+        }
 
         const totalCount = data.delegations.reduce(
           (acc: number, delegation: Delegation) =>
