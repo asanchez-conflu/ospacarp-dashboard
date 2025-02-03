@@ -36,7 +36,7 @@ interface Origin {
 interface DataItem {
   label: string;
   percentage: number;
-  id: number;
+  id: string;
 }
 
 export default function AfiliadosPage() {
@@ -74,14 +74,14 @@ export default function AfiliadosPage() {
     console.log('Filtered by ', type);
   };
 
-  const handleBarClick = (id: number) => {
+  const handleBarClick = (id: string) => {
     // Function now takes an ID
     console.log(`Bar with ID ${id} clicked!`);
     fetchData(id);
   };
 
   // Error handling with try catch finally (loading) poner loading true aca
-  const fetchData = async (id = null) => {
+  const fetchData = async (id: string | null = null) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('jwt');
@@ -168,7 +168,7 @@ export default function AfiliadosPage() {
           const dataItem: DataItem = {
             label: origin.originDesc,
             percentage: parseFloat(percentage.toFixed(2)), // Parse to number
-            id: origin.origin,
+            id: String(origin.origin),
           };
           return dataItem;
         });
@@ -200,7 +200,7 @@ export default function AfiliadosPage() {
           const dataItem: DataItem = {
             label: delegation.delegationDesc,
             percentage: parseFloat(percentage.toFixed(2)), // Parse to number
-            id: delegation.delegation,
+            id: String(delegation.delegation),
           };
           return dataItem;
         });
