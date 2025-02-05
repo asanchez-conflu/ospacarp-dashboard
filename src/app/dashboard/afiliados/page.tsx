@@ -79,7 +79,7 @@ export default function AfiliadosPage() {
     if (selectedId === id) {
       return;
     }
-    console.log(`Bar with ID ${id} clicked!`);
+    console.log(`Selecciona Id ${id}`);
     setSelectedId(id);
     fetchData(id);
   };
