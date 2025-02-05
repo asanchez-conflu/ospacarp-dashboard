@@ -56,7 +56,7 @@ export default function AfiliadosPage() {
 
   const endpoints = {
     totals:
-      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/totals?Clientappid=21&Excludeorigins=3,7,17&Period=202501',
+      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/totals?Clientappid=21&Excludeorigins=3,7,13&Period=202501',
     origin: {
       all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=202405',
       specific:
@@ -158,10 +158,10 @@ export default function AfiliadosPage() {
         }),
       ]);
 
-      // Afiliados = totalExcludes
-      // Otros = totalMembers
-      setAffiliatesCount(affiliatesResponse.data.totalExcludes);
-      setOthersCount(affiliatesResponse.data.totalMembers);
+      // Afiliados = totalMembers
+      // Otros = totalExcludes
+      setAffiliatesCount(affiliatesResponse.data.totalMembers);
+      setOthersCount(affiliatesResponse.data.totalExcludes);
 
       console.log('delegationsResponse: ', dataResponse.data);
 
