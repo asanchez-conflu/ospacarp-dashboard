@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import CardAfiliados from './cardAfiliados';
 import CardOtros from './cardOtros';
 import axios from 'axios';
@@ -45,9 +45,10 @@ export default function AfiliadosPage() {
   const [filterType, setFilterType] = useState<'origin' | 'delegations'>(
     'origin'
   );
-
   const [graphData, setGraphData] = useState<DataItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [listData, setListData] = useState<DataItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   /*
     const [error, setError] = useState<string | null>(null);
@@ -77,6 +78,7 @@ export default function AfiliadosPage() {
   const handleBarClick = (id: string) => {
     // Function now takes an ID
     console.log(`Bar with ID ${id} clicked!`);
+    setSelectedId(id);
     fetchData(id);
   };
 
@@ -207,6 +209,14 @@ export default function AfiliadosPage() {
       }
 
       setGraphData(processedData);
+      console.log('selectedId: ', selectedId);
+      console.log('id: ', id);
+
+      if (id === null) {
+        console.log('List data saved');
+        setListData(processedData);
+      }
+
       console.log('processedData', processedData);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -220,6 +230,7 @@ export default function AfiliadosPage() {
   }, []);
 
   useEffect(() => {
+    setSelectedId(null);
     fetchData();
   }, [filterType]);
 
@@ -276,19 +287,39 @@ export default function AfiliadosPage() {
             </PopoverPanel>
           </Popover>
         </div>
-        <div className='flex flex-col p-5 gap-3 relative'>
+        <div className='flex p-5 relative'>
           {loading === true && (
             <p className='px-2'>
               Cargando {filterType === 'origin' ? 'orígenes' : 'delegaciones'}
               ...
             </p>
           )}
-
           {!loading && graphData?.length > 0 && (
-            <>
-              <span className='absolute top-0 right-5 text-xs text-gray-500'>
-                Porcentaje
-              </span>
+            <span className='absolute top-0 right-5 text-xs text-gray-500'>
+              Porcentaje
+            </span>
+          )}
+          {!loading && selectedId && (
+            <ul className='w-64 border-r-2 pr-2 space-y-3 border-[#0560EA]'>
+              {listData.map((item) => (
+                <li
+                  key={item.id}
+                  className={`
+                  px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm flex items-center relative
+                  ${
+                    selectedId === item.id
+                      ? 'rounded-[10px] text-white bg-gradient-to-r from-[#56CFE1] to-[#0560EA]' // Conditional styles
+                      : ''
+                  }
+                `}
+                >
+                  {item.label}
+                </li>
+              ))}
+            </ul>
+          )}
+          {!loading && graphData?.length > 0 && (
+            <div className='flex flex-col w-full gap-3 pl-6'>
               {graphData?.map((item, index) => (
                 <HorizontalBar
                   key={index}
@@ -297,7 +328,7 @@ export default function AfiliadosPage() {
                   onClick={() => handleBarClick(item.id)}
                 />
               ))}
-            </>
+            </div>
           )}
 
           {!loading && graphData?.length === 0 && (
