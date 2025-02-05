@@ -69,6 +69,35 @@ export default function AfiliadosPage() {
     },
   };
 
+  const generateFakeData = (count: number): DataItem[] => {
+    const labels = [
+      'Adherente',
+      'Bravo',
+      'Desregulado',
+      'Genuino',
+      'Jubilado',
+      'Municipal',
+      'Nova',
+      'Personal',
+      'Otro', // Added a few more labels to reach 10
+      'Familiar',
+    ];
+
+    const data: DataItem[] = [];
+
+    for (let i = 0; i < count; i++) {
+      const label = labels[i % labels.length]; // Cycle through labels if count > labels.length
+      const percentage = Math.floor(Math.random() * 100); // Percentage between 0 and 99
+      const id = (i + 1).toString(); // Simple ID (you might need a more robust one)
+
+      data.push({ label, percentage, id });
+    }
+
+    return data;
+  };
+
+  const fakeData: DataItem[] = generateFakeData(20);
+
   // Deshabilitar boton cuando esta cargando
   const handleFilterSelect = (type: 'origin' | 'delegations') => {
     setFilterType(type);
@@ -76,15 +105,23 @@ export default function AfiliadosPage() {
   };
 
   const handleBarClick = (id: string) => {
-    if (selectedId === id) {
+    if (selectedId) {
       return;
     }
-    console.log(`Selecciona Id ${id}`);
+    console.log(`Selecciona barra Id ${id}`);
     setSelectedId(id);
     fetchData(id);
   };
 
-  // Error handling with try catch finally (loading) poner loading true aca
+  const handleListClick = (id: string) => {
+    if (selectedId === id) {
+      return;
+    }
+    console.log(`Selecciona lista Id ${id}`);
+    setSelectedId(id);
+    fetchData(id);
+  };
+
   const fetchData = async (id: string | null = null) => {
     setLoading(true);
     try {
@@ -128,15 +165,12 @@ export default function AfiliadosPage() {
 
       console.log('delegationsResponse: ', dataResponse.data);
 
-      // segun filtro delegations o origins
-      // el label tambien segun filtro
-
       const data = dataResponse.data;
       let processedData: DataItem[] = [];
 
       if (!data) {
         console.warn('No delegations data received');
-        return; // Exit early if no delegations data
+        return;
       }
 
       let type = '';
@@ -289,7 +323,8 @@ export default function AfiliadosPage() {
             </PopoverPanel>
           </Popover>
         </div>
-        <div className='flex p-5 relative'>
+        {/* BLOQUE DE CONTENIDO */}
+        <div className='flex h-[450px] overflow-y-auto p-5 relative'>
           {loading === true && (
             <p className='px-2'>
               Cargando {filterType === 'origin' ? 'orígenes' : 'delegaciones'}
@@ -306,7 +341,7 @@ export default function AfiliadosPage() {
               {listData.map((item) => (
                 <li
                   key={item.id}
-                  onClick={() => handleBarClick(item.id)}
+                  onClick={() => handleListClick(item.id)}
                   className={`
                   px-4 py-2 hover:bg-gray-100 hover:rounded-[10px] cursor-pointer text-sm flex items-center relative
                   ${
@@ -333,7 +368,6 @@ export default function AfiliadosPage() {
               ))}
             </div>
           )}
-
           {!loading && graphData?.length === 0 && (
             <p className='px-2'>
               No se encontraron datos de{' '}
