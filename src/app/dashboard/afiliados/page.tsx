@@ -76,7 +76,9 @@ export default function AfiliadosPage() {
   };
 
   const handleBarClick = (id: string) => {
-    // Function now takes an ID
+    if (selectedId === id) {
+      return;
+    }
     console.log(`Bar with ID ${id} clicked!`);
     setSelectedId(id);
     fetchData(id);
@@ -304,6 +306,7 @@ export default function AfiliadosPage() {
               {listData.map((item) => (
                 <li
                   key={item.id}
+                  onClick={() => handleBarClick(item.id)}
                   className={`
                   px-4 py-2 hover:bg-gray-100 hover:rounded-[10px] cursor-pointer text-sm flex items-center relative
                   ${
