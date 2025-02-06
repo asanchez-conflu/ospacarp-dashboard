@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CardAfiliados from './cardAfiliados';
 import CardOtros from './cardOtros';
 import axios from 'axios';
@@ -68,35 +68,6 @@ export default function AfiliadosPage() {
         'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202501&Origin=:delegationId',
     },
   };
-
-  const generateFakeData = (count: number): DataItem[] => {
-    const labels = [
-      'Adherente',
-      'Bravo',
-      'Desregulado',
-      'Genuino',
-      'Jubilado',
-      'Municipal',
-      'Nova',
-      'Personal',
-      'Otro', // Added a few more labels to reach 10
-      'Familiar',
-    ];
-
-    const data: DataItem[] = [];
-
-    for (let i = 0; i < count; i++) {
-      const label = labels[i % labels.length]; // Cycle through labels if count > labels.length
-      const percentage = Math.floor(Math.random() * 100); // Percentage between 0 and 99
-      const id = (i + 1).toString(); // Simple ID (you might need a more robust one)
-
-      data.push({ label, percentage, id });
-    }
-
-    return data;
-  };
-
-  const fakeData: DataItem[] = generateFakeData(20);
 
   // Deshabilitar boton cuando esta cargando
   const handleFilterSelect = (type: 'origin' | 'delegations') => {
