@@ -4,7 +4,6 @@ import 'chart.js/auto';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ChartData } from 'chart.js';
-import { LineData } from 'react-chartjs-2'; // Import LineData
 
 const endpoints = {
   trendsOrigin:
@@ -26,7 +25,7 @@ interface TrendItem {
 }
 
 const Ingresos = () => {
-  const [graphData, setGraphData] = useState<LineData | null>(null); // Type the state
+  const [graphData, setGraphData] = useState<ChartData<'line'> | null>(null); // Type the state
   const [loading, setLoading] = useState<boolean>(true);
 
   const convertTrendDataTyped = (trendData: TrendItem[]) => {

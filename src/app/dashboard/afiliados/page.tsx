@@ -15,6 +15,14 @@ import {
 } from '@headlessui/react';
 import BackButton from '@/components/common/backButton';
 import HistoricButton from '@/components/common/historicButton';
+import { ChartData } from 'chart.js';
+import 'chart.js/auto';
+import dynamic from 'next/dynamic';
+
+const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
+  ssr: false,
+});
+
 interface Affiliates {
   total: string;
   totalExcludes: string;
@@ -41,6 +49,13 @@ interface DataItem {
   id: string;
 }
 
+interface TrendItem {
+  count: string;
+  month: string;
+  monthName: string;
+  percentage: string;
+}
+
 export default function AfiliadosPage() {
   const [affiliatesCount, setAffiliatesCount] = useState('0');
   const [othersCount, setOthersCount] = useState('0');
@@ -51,10 +66,19 @@ export default function AfiliadosPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [listData, setListData] = useState<DataItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [trendData, setTrendData] = useState<ChartData<'line'> | null>(null);
 
   /*
     const [error, setError] = useState<string | null>(null);
   */
+
+  const options = {
+    plugins: {
+      legend: {
+        display: false, // Hide the entire legend
+      },
+    },
+  };
 
   const endpoints = {
     totals:
@@ -69,6 +93,10 @@ export default function AfiliadosPage() {
       specific:
         'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202501&Origin=:delegationId',
     },
+    trendsOrigin:
+      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/origin?Clientappid=21&Startperiod=202402&Endperiod=202501&Delegation=:id',
+    trendsDelegation:
+      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/delegation?Clientappid=21&Startperiod=202402&Endperiod=202501&Origin=:id',
   };
 
   // Deshabilitar boton cuando esta cargando
@@ -90,8 +118,17 @@ export default function AfiliadosPage() {
     if (selectedId === id) {
       return;
     }
+
     console.log(`Selecciona lista Id ${id}`);
     setSelectedId(id);
+
+    // Si es seccion historica/tendencias
+    if (trendData) {
+      fetchTrends(id);
+      return;
+    }
+
+    // Sino busca datos para nuevo id
     fetchData(id);
   };
 
@@ -236,7 +273,86 @@ export default function AfiliadosPage() {
 
   const goBack = () => {
     setSelectedId(null);
+    setTrendData(null);
     fetchData();
+  };
+
+  const goTrend = () => {
+    console.log(`Buscar trend `, selectedId);
+    console.log(`Buscar trend `, filterType);
+    if (selectedId) {
+      fetchTrends(selectedId);
+    }
+  };
+
+  const convertTrendDataTyped = (trendData: TrendItem[]) => {
+    // Now with a proper type
+    const labels = trendData.map((item) => item.monthName);
+    const data = trendData.map((item) => parseInt(item.count, 10)); // Parse count to number
+
+    return {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Count',
+          data: data,
+          fill: false,
+          borderColor: 'rgb(75, 192, 192)',
+          legend: {
+            display: false, // Hide the label in the legend
+          },
+          tension: 0.5, // Adjust this value for curve smoothness (0 = straight lines, 1 = maximum curve)
+          pointRadius: 0, // Set point radius to 0 to hide the dots
+        },
+      ],
+    };
+  };
+
+  const fetchTrends = async (id: string) => {
+    console.log('fetch trend id: ', id);
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('jwt');
+      if (!token) {
+        throw new Error('No token found');
+      }
+
+      let endpoint = '';
+
+      if (filterType === 'origin') {
+        endpoint = endpoints.trendsOrigin.replace(':id', id);
+      } else if (filterType === 'delegations') {
+        endpoint = endpoints.trendsDelegation.replace(':id', id);
+      } else {
+        throw new Error('Invalid type provided');
+      }
+
+      console.log('Trend endpoint: ', endpoint);
+
+      const dataResponse = await axios.get(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = dataResponse.data;
+      console.log(`Trend data: `, data);
+
+      if (!data || !data.trend) {
+        console.warn('No data received for this type.');
+        setTrendData(null);
+        return;
+      } else {
+        const trend = convertTrendDataTyped(data.trend);
+        console.log('Trend: ', trend);
+        setTrendData(trend);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setTrendData(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -314,11 +430,13 @@ export default function AfiliadosPage() {
               ...
             </p>
           )}
-          {!loading && graphData?.length > 0 && (
+          {!loading && !trendData && graphData?.length > 0 && (
             <span className='absolute top-0 right-5 text-xs text-gray-500'>
               Porcentaje
             </span>
           )}
+
+          {/* Lista lateral de origenes/delegaciones */}
           {!loading && selectedId && (
             <ul className='w-64 border-r-2 pr-2 space-y-3 border-[#0560EA]'>
               {listData.map((item) => (
@@ -339,7 +457,8 @@ export default function AfiliadosPage() {
               ))}
             </ul>
           )}
-          {!loading && graphData?.length > 0 && (
+          {/* Grafico de barras */}
+          {!loading && !trendData && graphData?.length > 0 && (
             <div className='flex flex-col w-full gap-3 pl-6'>
               {graphData?.map((item, index) => (
                 <HorizontalBar
@@ -351,11 +470,22 @@ export default function AfiliadosPage() {
               ))}
             </div>
           )}
-          {!loading && graphData?.length === 0 && (
+          {!loading && !trendData && graphData?.length === 0 && (
             <p className='px-2'>
               No se encontraron datos de{' '}
               {filterType === 'origin' ? 'orígenes' : 'delegaciones'}.
             </p>
+          )}
+
+          {/* Bloque histórico */}
+          {!loading && trendData && (
+            <div className='pl-6 w-full h-full'>
+              {trendData.labels &&
+                trendData.datasets &&
+                trendData.datasets.length > 0 && (
+                  <Line data={trendData} options={options} />
+                )}
+            </div>
           )}
         </div>
       </div>
@@ -364,7 +494,7 @@ export default function AfiliadosPage() {
       <div className='m-10 flex justify-between'>
         {selectedId && <BackButton onClick={goBack} />}
         <div></div>
-        {selectedId && <HistoricButton />}
+        {selectedId && !trendData && <HistoricButton onClick={goTrend} />}
       </div>
     </div>
   );
