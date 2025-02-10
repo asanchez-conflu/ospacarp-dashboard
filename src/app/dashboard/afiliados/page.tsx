@@ -13,6 +13,8 @@ import {
   PopoverGroup,
   PopoverPanel,
 } from '@headlessui/react';
+import BackButton from '@/components/common/backButton';
+import HistoricButton from '@/components/common/historicButton';
 interface Affiliates {
   total: string;
   totalExcludes: string;
@@ -232,6 +234,11 @@ export default function AfiliadosPage() {
     }
   };
 
+  const goBack = () => {
+    setSelectedId(null);
+    fetchData();
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -260,6 +267,7 @@ export default function AfiliadosPage() {
         <CardOtros affiliates={othersCount} />
       </div>
 
+      {/* Bloque principal */}
       <div className='m-10 py-5 bg-white rounded'>
         <div className='px-7 pt-4 pb-2 relative'>
           <h3 className='font-bold'>
@@ -268,32 +276,36 @@ export default function AfiliadosPage() {
           </h3>
           <p className='text-sm'>Valores acumulados</p>
 
-          <Popover>
-            <PopoverButton className='absolute top-4 right-7 p-2 bg-white rounded-md shadow-md hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all duration-75'>
-              <MdTune size={20} color='black' />
-            </PopoverButton>
-            <PopoverPanel className='absolute right-7 top-12 w-48 bg-white rounded-md shadow-lg z-10'>
-              <div className='p-2'>
-                <PopoverGroup>
-                  <PopoverButton
-                    as='button'
-                    className='block px-4 py-2 w-full text-left text-sm text-gray-700 hover:bg-gray-200 rounded-md'
-                    onClick={() => handleFilterSelect('origin')}
-                  >
-                    Origen
-                  </PopoverButton>
-                  <PopoverButton
-                    as='button'
-                    className='block px-4 py-2 w-full text-left text-sm text-gray-700 hover:bg-gray-200 rounded-md'
-                    onClick={() => handleFilterSelect('delegations')}
-                  >
-                    Delegación
-                  </PopoverButton>
-                </PopoverGroup>
-              </div>
-            </PopoverPanel>
-          </Popover>
+          {/* FILTRO - ocultar fuera de pantalla 1 */}
+          {!selectedId && (
+            <Popover>
+              <PopoverButton className='absolute top-4 right-7 p-2 bg-white rounded-md shadow-md hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all duration-75'>
+                <MdTune size={20} color='black' />
+              </PopoverButton>
+              <PopoverPanel className='absolute right-7 top-12 w-48 bg-white rounded-md shadow-lg z-10'>
+                <div className='p-2'>
+                  <PopoverGroup>
+                    <PopoverButton
+                      as='button'
+                      className='block px-4 py-2 w-full text-left text-sm text-gray-700 hover:bg-gray-200 rounded-md'
+                      onClick={() => handleFilterSelect('origin')}
+                    >
+                      Origen
+                    </PopoverButton>
+                    <PopoverButton
+                      as='button'
+                      className='block px-4 py-2 w-full text-left text-sm text-gray-700 hover:bg-gray-200 rounded-md'
+                      onClick={() => handleFilterSelect('delegations')}
+                    >
+                      Delegación
+                    </PopoverButton>
+                  </PopoverGroup>
+                </div>
+              </PopoverPanel>
+            </Popover>
+          )}
         </div>
+
         {/* BLOQUE DE CONTENIDO */}
         <div className='flex h-[450px] overflow-y-auto p-5 relative'>
           {loading === true && (
@@ -346,6 +358,13 @@ export default function AfiliadosPage() {
             </p>
           )}
         </div>
+      </div>
+
+      {/* BOTONES */}
+      <div className='m-10 flex justify-between'>
+        {selectedId && <BackButton onClick={goBack} />}
+        <div></div>
+        {selectedId && <HistoricButton />}
       </div>
     </div>
   );
