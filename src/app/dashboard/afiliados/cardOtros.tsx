@@ -9,7 +9,7 @@ const CardOtros: React.FC<AffiliatesProps> = ({ affiliates }) => {
     <div className='w-1/2 bg-white rounded-lg p-4 flex justify-between items-center'>
       <div>
         <h2 className='text-lg font-semibold'>Otros</h2>
-        <p className='text-sm'>Osde Genuino - Visitar - Tercererizado</p>
+        <p className='text-sm'>Osde Genuino - Visitar - Tercerizado</p>
       </div>
       <div className='text-2xl font-bold'>{affiliates}</div>
     </div>

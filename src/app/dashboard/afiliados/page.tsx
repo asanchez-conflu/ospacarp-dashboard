@@ -13,11 +13,16 @@ import {
   PopoverGroup,
   PopoverPanel,
 } from '@headlessui/react';
-interface Affiliates {
-  total: string;
-  totalExcludes: string;
-  totalMembers: string;
-}
+import BackButton from '@/components/common/backButton';
+import HistoricButton from '@/components/common/historicButton';
+import { ChartData } from 'chart.js';
+import 'chart.js/auto';
+import dynamic from 'next/dynamic';
+import { fetchAffiliates, getTotals } from '@/components/api-client';
+
+const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
+  ssr: false,
+});
 
 interface Delegation {
   count: string;
@@ -39,6 +44,13 @@ interface DataItem {
   id: string;
 }
 
+interface TrendItem {
+  count: string;
+  month: string;
+  monthName: string;
+  percentage: string;
+}
+
 export default function AfiliadosPage() {
   const [affiliatesCount, setAffiliatesCount] = useState('0');
   const [othersCount, setOthersCount] = useState('0');
@@ -49,10 +61,16 @@ export default function AfiliadosPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [listData, setListData] = useState<DataItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [trendData, setTrendData] = useState<ChartData<'line'> | null>(null);
 
-  /*
-    const [error, setError] = useState<string | null>(null);
-  */
+  // Opciones de chart.js
+  const options = {
+    plugins: {
+      legend: {
+        display: false, // Hide the entire legend
+      },
+    },
+  };
 
   const endpoints = {
     totals:
@@ -67,14 +85,22 @@ export default function AfiliadosPage() {
       specific:
         'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202501&Origin=:delegationId',
     },
+    trendsOrigin:
+      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/origin?Clientappid=21&Startperiod=202402&Endperiod=202501&Delegation=:id',
+    trendsDelegation:
+      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/delegation?Clientappid=21&Startperiod=202402&Endperiod=202501&Origin=:id',
   };
 
-  // Deshabilitar boton cuando esta cargando
+  // Filtro de tipo origen/delegación
   const handleFilterSelect = (type: 'origin' | 'delegations') => {
+    if (loading) {
+      return;
+    }
     setFilterType(type);
     console.log('Filtered by ', type);
   };
 
+  // Cuando se cliquea una barra
   const handleBarClick = (id: string) => {
     if (selectedId) {
       return;
@@ -88,55 +114,37 @@ export default function AfiliadosPage() {
     if (selectedId === id) {
       return;
     }
+
     console.log(`Selecciona lista Id ${id}`);
     setSelectedId(id);
+
+    // Si es seccion historica/tendencias
+    if (trendData) {
+      fetchTrends(id);
+      return;
+    }
+
+    // Sino busca datos para nuevo id
     fetchData(id);
   };
 
+  // Obtiene datos de origen o delegación
   const fetchData = async (id: string | null = null) => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('jwt');
-
-      // segun filter type consulto
-      let endpoint = '';
-
-      console.log('ID: ', id);
-      console.log('filter: ', filterType);
-
-      if (filterType === 'origin') {
-        endpoint = id
-          ? endpoints.delegations.specific.replace(':delegationId', id)
-          : endpoints.origin.all;
-      } else if (filterType === 'delegations') {
-        endpoint = id
-          ? endpoints.origin.specific.replace(':originId', id)
-          : endpoints.delegations.all;
+      if (affiliatesCount === '0') {
+        const totalsData = await getTotals();
+        setAffiliatesCount(String(totalsData.totalMembers));
+        setOthersCount(String(totalsData.totalExcludes));
       }
 
-      console.log(endpoint);
-
-      const [affiliatesResponse, dataResponse] = await Promise.all([
-        axios.get<Affiliates>(endpoints.totals, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }),
-        axios.get(endpoint, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }),
-      ]);
-
-      // Afiliados = totalMembers
-      // Otros = totalExcludes
-      setAffiliatesCount(affiliatesResponse.data.totalMembers);
-      setOthersCount(affiliatesResponse.data.totalExcludes);
+      const dataResponse = await fetchAffiliates(filterType, id);
 
       console.log('delegationsResponse: ', dataResponse.data);
 
-      const data = dataResponse.data;
+      // const data = dataResponse.data;
+      const data = dataResponse;
+
       let processedData: DataItem[] = [];
 
       if (!data) {
@@ -232,6 +240,90 @@ export default function AfiliadosPage() {
     }
   };
 
+  // Regresa al gráfico general
+  const goBack = () => {
+    setSelectedId(null);
+    setTrendData(null);
+    fetchData();
+  };
+
+  // Va a sección histórica
+  const goTrend = () => {
+    console.log(`Buscar trend `, selectedId, filterType);
+    if (selectedId) {
+      fetchTrends(selectedId);
+    }
+  };
+
+  // Formatea Trend Data para los gráficos
+  const convertTrendDataTyped = (trendData: TrendItem[]) => {
+    const labels = trendData.map((item) => item.monthName);
+    const data = trendData.map((item) => parseInt(item.count, 10)); // Parse count to number
+
+    return {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Count',
+          data: data,
+          fill: false,
+          borderColor: 'rgb(75, 192, 192)',
+          legend: {
+            display: false, // Hide the label in the legend
+          },
+          tension: 0.5, // Adjust this value for curve smoothness (0 = straight lines, 1 = maximum curve)
+          pointRadius: 0, // Set point radius to 0 to hide the dots
+        },
+      ],
+    };
+  };
+
+  // Obtiene histórico/tendencia
+  const fetchTrends = async (id: string) => {
+    console.log('Fetch trend id: ', id);
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('jwt');
+      if (!token) {
+        throw new Error('No token found');
+      }
+
+      let endpoint = '';
+
+      if (filterType === 'origin') {
+        endpoint = endpoints.trendsOrigin.replace(':id', id);
+      } else if (filterType === 'delegations') {
+        endpoint = endpoints.trendsDelegation.replace(':id', id);
+      } else {
+        throw new Error('Invalid type provided');
+      }
+
+      const dataResponse = await axios.get(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = dataResponse.data;
+      console.log(`Trend data: `, data);
+
+      if (!data || !data.trend) {
+        console.warn('No data received for this type.');
+        setTrendData(null);
+        return;
+      } else {
+        const trend = convertTrendDataTyped(data.trend);
+        console.log('Trend: ', trend);
+        setTrendData(trend);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setTrendData(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -260,6 +352,7 @@ export default function AfiliadosPage() {
         <CardOtros affiliates={othersCount} />
       </div>
 
+      {/* Bloque principal */}
       <div className='m-10 py-5 bg-white rounded'>
         <div className='px-7 pt-4 pb-2 relative'>
           <h3 className='font-bold'>
@@ -268,32 +361,36 @@ export default function AfiliadosPage() {
           </h3>
           <p className='text-sm'>Valores acumulados</p>
 
-          <Popover>
-            <PopoverButton className='absolute top-4 right-7 p-2 bg-white rounded-md shadow-md hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all duration-75'>
-              <MdTune size={20} color='black' />
-            </PopoverButton>
-            <PopoverPanel className='absolute right-7 top-12 w-48 bg-white rounded-md shadow-lg z-10'>
-              <div className='p-2'>
-                <PopoverGroup>
-                  <PopoverButton
-                    as='button'
-                    className='block px-4 py-2 w-full text-left text-sm text-gray-700 hover:bg-gray-200 rounded-md'
-                    onClick={() => handleFilterSelect('origin')}
-                  >
-                    Origen
-                  </PopoverButton>
-                  <PopoverButton
-                    as='button'
-                    className='block px-4 py-2 w-full text-left text-sm text-gray-700 hover:bg-gray-200 rounded-md'
-                    onClick={() => handleFilterSelect('delegations')}
-                  >
-                    Delegación
-                  </PopoverButton>
-                </PopoverGroup>
-              </div>
-            </PopoverPanel>
-          </Popover>
+          {/* FILTRO - ocultar fuera de pantalla 1 */}
+          {!selectedId && (
+            <Popover>
+              <PopoverButton className='absolute top-4 right-7 p-2 bg-white rounded-md shadow-md hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all duration-75'>
+                <MdTune size={20} color='black' />
+              </PopoverButton>
+              <PopoverPanel className='absolute right-7 top-12 w-48 bg-white rounded-md shadow-lg z-10'>
+                <div className='p-2'>
+                  <PopoverGroup>
+                    <PopoverButton
+                      as='button'
+                      className='block px-4 py-2 w-full text-left text-sm text-gray-700 hover:bg-gray-200 rounded-md'
+                      onClick={() => handleFilterSelect('origin')}
+                    >
+                      Origen
+                    </PopoverButton>
+                    <PopoverButton
+                      as='button'
+                      className='block px-4 py-2 w-full text-left text-sm text-gray-700 hover:bg-gray-200 rounded-md'
+                      onClick={() => handleFilterSelect('delegations')}
+                    >
+                      Delegación
+                    </PopoverButton>
+                  </PopoverGroup>
+                </div>
+              </PopoverPanel>
+            </Popover>
+          )}
         </div>
+
         {/* BLOQUE DE CONTENIDO */}
         <div className='flex h-[450px] overflow-y-auto p-5 relative'>
           {loading === true && (
@@ -302,11 +399,13 @@ export default function AfiliadosPage() {
               ...
             </p>
           )}
-          {!loading && graphData?.length > 0 && (
+          {!loading && !trendData && graphData?.length > 0 && (
             <span className='absolute top-0 right-5 text-xs text-gray-500'>
               Porcentaje
             </span>
           )}
+
+          {/* Lista lateral de origenes/delegaciones */}
           {!loading && selectedId && (
             <ul className='w-64 border-r-2 pr-2 space-y-3 border-[#0560EA]'>
               {listData.map((item) => (
@@ -327,7 +426,8 @@ export default function AfiliadosPage() {
               ))}
             </ul>
           )}
-          {!loading && graphData?.length > 0 && (
+          {/* Grafico de barras */}
+          {!loading && !trendData && graphData?.length > 0 && (
             <div className='flex flex-col w-full gap-3 pl-6'>
               {graphData?.map((item, index) => (
                 <HorizontalBar
@@ -339,13 +439,31 @@ export default function AfiliadosPage() {
               ))}
             </div>
           )}
-          {!loading && graphData?.length === 0 && (
+          {!loading && !trendData && graphData?.length === 0 && (
             <p className='px-2'>
               No se encontraron datos de{' '}
               {filterType === 'origin' ? 'orígenes' : 'delegaciones'}.
             </p>
           )}
+
+          {/* Bloque histórico */}
+          {!loading && trendData && (
+            <div className='pl-6 w-full h-full'>
+              {trendData.labels &&
+                trendData.datasets &&
+                trendData.datasets.length > 0 && (
+                  <Line data={trendData} options={options} />
+                )}
+            </div>
+          )}
         </div>
+      </div>
+
+      {/* BOTONES */}
+      <div className='m-10 flex justify-between'>
+        {selectedId && <BackButton onClick={goBack} />}
+        <div></div>
+        {selectedId && !trendData && <HistoricButton onClick={goTrend} />}
       </div>
     </div>
   );
