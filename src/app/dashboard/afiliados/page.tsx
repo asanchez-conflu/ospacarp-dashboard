@@ -68,7 +68,7 @@ export default function AfiliadosPage() {
         type: 'linear', // For linear scale on y-axis (numbers)
         position: 'right', // Y-axis on the right
         grid: {
-          display: false,
+          display: true,
         },
       },
     },
@@ -250,7 +250,6 @@ export default function AfiliadosPage() {
           data: data,
           fill: false,
           borderColor: '#0560EA',
-          backgroundColor: 'rgba(53, 162, 235, 0.5)',
           legend: {
             display: false, // Hide the label in the legend
           },
