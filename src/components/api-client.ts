@@ -14,9 +14,9 @@ const endpoints = {
       'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202501&Origin=:delegationId',
   },
   trendsOrigin:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/origin?Clientappid=21&Startperiod=202402&Endperiod=202501&Delegation=:id',
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/origin?Clientappid=21&Startperiod=202402&Endperiod=202501&Origin=:id',
   trendsDelegation:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/delegation?Clientappid=21&Startperiod=202402&Endperiod=202501&Origin=:id',
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/delegation?Clientappid=21&Startperiod=202402&Endperiod=202501&Delegation=:id',
 };
 
 const handleApiError = (error: unknown) => {
@@ -72,6 +72,38 @@ export const fetchAffiliates = async (
       endpoint = id
         ? endpoints.origin.specific.replace(':originId', id)
         : endpoints.delegations.all;
+    }
+
+    console.log('> Endpoint: ');
+    console.log(endpoint);
+
+    const response = await axios.get(endpoint, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+// Fetch Affiliates Trends
+export const fetchTrendsData = async (
+  filterType: 'origin' | 'delegations',
+  id: string
+) => {
+  try {
+    console.log('> Fetching Trends ID: ', id);
+    console.log('> Fetching Trends type: ', filterType);
+
+    const token = localStorage.getItem('jwt');
+    let endpoint = '';
+
+    if (filterType === 'origin') {
+      endpoint = endpoints.trendsOrigin.replace(':id', id);
+    } else if (filterType === 'delegations') {
+      endpoint = endpoints.trendsDelegation.replace(':id', id);
+    } else {
+      throw new Error('Invalid type provided');
     }
 
     console.log('> Endpoint: ');

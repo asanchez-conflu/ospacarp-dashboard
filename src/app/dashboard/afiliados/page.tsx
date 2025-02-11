@@ -1,55 +1,40 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
+
 import React, { useEffect, useState } from 'react';
-import CardAfiliados from './cardAfiliados';
-import CardOtros from './cardOtros';
-import axios from 'axios';
-import HorizontalBar from './horizontalBar';
-import { MdFavorite } from 'react-icons/md';
-import { MdTune } from 'react-icons/md';
+import dynamic from 'next/dynamic';
 import {
   Popover,
   PopoverButton,
   PopoverGroup,
   PopoverPanel,
 } from '@headlessui/react';
+import { ChartData, ChartOptions } from 'chart.js';
+import 'chart.js/auto';
+import { MdFavorite, MdTune } from 'react-icons/md';
+
+import {
+  fetchAffiliates,
+  fetchTrendsData,
+  getTotals,
+} from '@/components/api-client';
+
+import type {
+  Delegation,
+  Origin,
+  DataItem,
+  TrendItem,
+} from '@/app/types/affiliates';
+
 import BackButton from '@/components/common/backButton';
 import HistoricButton from '@/components/common/historicButton';
-import { ChartData } from 'chart.js';
-import 'chart.js/auto';
-import dynamic from 'next/dynamic';
-import { fetchAffiliates, getTotals } from '@/components/api-client';
+import CardAfiliados from './cardAfiliados';
+import CardOtros from './cardOtros';
+import HorizontalBar from './horizontalBar';
 
 const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
   ssr: false,
 });
-
-interface Delegation {
-  count: string;
-  delegation: number;
-  delegationDesc: string;
-  percentage: number;
-}
-
-interface Origin {
-  count: string;
-  origin: number;
-  originDesc: string;
-  percentage: number;
-}
-
-interface DataItem {
-  label: string;
-  percentage: number;
-  id: string;
-}
-
-interface TrendItem {
-  count: string;
-  month: string;
-  monthName: string;
-  percentage: string;
-}
 
 export default function AfiliadosPage() {
   const [affiliatesCount, setAffiliatesCount] = useState('0');
@@ -64,31 +49,29 @@ export default function AfiliadosPage() {
   const [trendData, setTrendData] = useState<ChartData<'line'> | null>(null);
 
   // Opciones de chart.js
-  const options = {
+  const options: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false, // Hide the entire legend
+        display: false,
       },
     },
-  };
-
-  const endpoints = {
-    totals:
-      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/totals?Clientappid=21&Excludeorigins=3,7,13&Period=202501',
-    origin: {
-      all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=202405',
-      specific:
-        'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=202501&Delegation=:originId',
+    scales: {
+      x: {
+        type: 'category', // For category scale on x-axis (labels)
+        grid: {
+          display: false,
+        },
+      },
+      y: {
+        type: 'linear', // For linear scale on y-axis (numbers)
+        position: 'right', // Y-axis on the right
+        grid: {
+          display: false,
+        },
+      },
     },
-    delegations: {
-      all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202405',
-      specific:
-        'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202501&Origin=:delegationId',
-    },
-    trendsOrigin:
-      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/origin?Clientappid=21&Startperiod=202402&Endperiod=202501&Delegation=:id',
-    trendsDelegation:
-      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/delegation?Clientappid=21&Startperiod=202402&Endperiod=202501&Origin=:id',
   };
 
   // Filtro de tipo origen/delegación
@@ -140,14 +123,9 @@ export default function AfiliadosPage() {
 
       const dataResponse = await fetchAffiliates(filterType, id);
 
-      console.log('delegationsResponse: ', dataResponse.data);
-
-      // const data = dataResponse.data;
-      const data = dataResponse;
-
       let processedData: DataItem[] = [];
 
-      if (!data) {
+      if (!dataResponse) {
         console.warn('No delegations data received');
         return;
       }
@@ -165,20 +143,20 @@ export default function AfiliadosPage() {
       console.log('TYPE: ', type);
 
       if (type === 'origin') {
-        console.log('origines', data.origins);
+        console.log('origines', dataResponse.origins);
 
-        if (!data.origins) {
+        if (!dataResponse.origins) {
           console.log('no data');
           setGraphData([]);
           return;
         }
 
-        const totalCount = data.origins.reduce(
+        const totalCount = dataResponse.origins.reduce(
           (acc: number, origin: Origin) => acc + parseInt(origin.count),
           0
         );
 
-        processedData = data.origins.map((origin: Origin) => {
+        processedData = dataResponse.origins.map((origin: Origin) => {
           const percentage = (parseFloat(origin.count) / totalCount) * 100;
 
           // Type conversion and creation of DataItem object
@@ -191,41 +169,45 @@ export default function AfiliadosPage() {
         });
       } else {
         // process delegations
-        console.log('delegaciones', data.delegations);
+        console.log('delegaciones', dataResponse.delegations);
 
-        if (!data.delegations) {
+        if (!dataResponse.delegations) {
           console.log('no data');
           setGraphData([]);
           return;
         }
 
-        const totalCount = data.delegations.reduce(
+        const totalCount = dataResponse.delegations.reduce(
           (acc: number, delegation: Delegation) =>
             acc + parseInt(delegation.count),
           0
         );
 
-        processedData = data.delegations.map((delegation: Delegation) => {
-          const percentage = (parseFloat(delegation.count) / totalCount) * 100;
-          return { ...delegation, percentage: percentage.toFixed(2) }; // Add percentage property
-        });
+        processedData = dataResponse.delegations.map(
+          (delegation: Delegation) => {
+            const percentage =
+              (parseFloat(delegation.count) / totalCount) * 100;
+            return { ...delegation, percentage: percentage.toFixed(2) }; // Add percentage property
+          }
+        );
 
-        processedData = data.delegations.map((delegation: Delegation) => {
-          const percentage = (parseFloat(delegation.count) / totalCount) * 100;
+        processedData = dataResponse.delegations.map(
+          (delegation: Delegation) => {
+            const percentage =
+              (parseFloat(delegation.count) / totalCount) * 100;
 
-          // Type conversion and creation of DataItem object
-          const dataItem: DataItem = {
-            label: delegation.delegationDesc,
-            percentage: parseFloat(percentage.toFixed(2)), // Parse to number
-            id: String(delegation.delegation),
-          };
-          return dataItem;
-        });
+            // Type conversion and creation of DataItem object
+            const dataItem: DataItem = {
+              label: delegation.delegationDesc,
+              percentage: parseFloat(percentage.toFixed(2)), // Parse to number
+              id: String(delegation.delegation),
+            };
+            return dataItem;
+          }
+        );
       }
 
       setGraphData(processedData);
-      console.log('selectedId: ', selectedId);
-      console.log('id: ', id);
 
       if (id === null) {
         console.log('List data saved');
@@ -267,7 +249,8 @@ export default function AfiliadosPage() {
           label: 'Count',
           data: data,
           fill: false,
-          borderColor: 'rgb(75, 192, 192)',
+          borderColor: '#0560EA',
+          backgroundColor: 'rgba(53, 162, 235, 0.5)',
           legend: {
             display: false, // Hide the label in the legend
           },
@@ -280,39 +263,18 @@ export default function AfiliadosPage() {
 
   // Obtiene histórico/tendencia
   const fetchTrends = async (id: string) => {
-    console.log('Fetch trend id: ', id);
     try {
       setLoading(true);
-      const token = localStorage.getItem('jwt');
-      if (!token) {
-        throw new Error('No token found');
-      }
+      const dataResponse = await fetchTrendsData(filterType, id);
 
-      let endpoint = '';
+      console.log(`Trend data: `, dataResponse);
 
-      if (filterType === 'origin') {
-        endpoint = endpoints.trendsOrigin.replace(':id', id);
-      } else if (filterType === 'delegations') {
-        endpoint = endpoints.trendsDelegation.replace(':id', id);
-      } else {
-        throw new Error('Invalid type provided');
-      }
-
-      const dataResponse = await axios.get(endpoint, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = dataResponse.data;
-      console.log(`Trend data: `, data);
-
-      if (!data || !data.trend) {
+      if (!dataResponse || !dataResponse.trend) {
         console.warn('No data received for this type.');
         setTrendData(null);
         return;
       } else {
-        const trend = convertTrendDataTyped(data.trend);
+        const trend = convertTrendDataTyped(dataResponse.trend);
         console.log('Trend: ', trend);
         setTrendData(trend);
       }
@@ -393,12 +355,7 @@ export default function AfiliadosPage() {
 
         {/* BLOQUE DE CONTENIDO */}
         <div className='flex h-[450px] overflow-y-auto p-5 relative'>
-          {loading === true && (
-            <p className='px-2'>
-              Cargando {filterType === 'origin' ? 'orígenes' : 'delegaciones'}
-              ...
-            </p>
-          )}
+          {loading === true && <p className='px-2'>Cargando...</p>}
           {!loading && !trendData && graphData?.length > 0 && (
             <span className='absolute top-0 right-5 text-xs text-gray-500'>
               Porcentaje
