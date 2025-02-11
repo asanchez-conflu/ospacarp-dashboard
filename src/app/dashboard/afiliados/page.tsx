@@ -1,58 +1,40 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
+
 import React, { useEffect, useState } from 'react';
-import CardAfiliados from './cardAfiliados';
-import CardOtros from './cardOtros';
-import HorizontalBar from './horizontalBar';
-import { MdFavorite } from 'react-icons/md';
-import { MdTune } from 'react-icons/md';
+import dynamic from 'next/dynamic';
 import {
   Popover,
   PopoverButton,
   PopoverGroup,
   PopoverPanel,
 } from '@headlessui/react';
-import BackButton from '@/components/common/backButton';
-import HistoricButton from '@/components/common/historicButton';
 import { ChartData } from 'chart.js';
 import 'chart.js/auto';
-import dynamic from 'next/dynamic';
+import { MdFavorite, MdTune } from 'react-icons/md';
+
 import {
   fetchAffiliates,
   fetchTrendsData,
   getTotals,
 } from '@/components/api-client';
 
+import type {
+  Delegation,
+  Origin,
+  DataItem,
+  TrendItem,
+} from '@/app/types/affiliates';
+
+import BackButton from '@/components/common/backButton';
+import HistoricButton from '@/components/common/historicButton';
+import CardAfiliados from './cardAfiliados';
+import CardOtros from './cardOtros';
+import HorizontalBar from './horizontalBar';
+
 const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
   ssr: false,
 });
-
-interface Delegation {
-  count: string;
-  delegation: number;
-  delegationDesc: string;
-  percentage: number;
-}
-
-interface Origin {
-  count: string;
-  origin: number;
-  originDesc: string;
-  percentage: number;
-}
-
-interface DataItem {
-  label: string;
-  percentage: number;
-  id: string;
-}
-
-interface TrendItem {
-  count: string;
-  month: string;
-  monthName: string;
-  percentage: string;
-}
 
 export default function AfiliadosPage() {
   const [affiliatesCount, setAffiliatesCount] = useState('0');
