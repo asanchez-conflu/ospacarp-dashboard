@@ -18,16 +18,11 @@ import HistoricButton from '@/components/common/historicButton';
 import { ChartData } from 'chart.js';
 import 'chart.js/auto';
 import dynamic from 'next/dynamic';
+import { fetchAffiliates, getTotals } from '@/components/api-client';
 
 const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
   ssr: false,
 });
-
-interface Affiliates {
-  total: string;
-  totalExcludes: string;
-  totalMembers: string;
-}
 
 interface Delegation {
   count: string;
@@ -137,47 +132,19 @@ export default function AfiliadosPage() {
   const fetchData = async (id: string | null = null) => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('jwt');
-
-      // segun filter type consulto
-      let endpoint = '';
-
-      console.log('ID: ', id);
-      console.log('filter: ', filterType);
-
-      if (filterType === 'origin') {
-        endpoint = id
-          ? endpoints.delegations.specific.replace(':delegationId', id)
-          : endpoints.origin.all;
-      } else if (filterType === 'delegations') {
-        endpoint = id
-          ? endpoints.origin.specific.replace(':originId', id)
-          : endpoints.delegations.all;
+      if (affiliatesCount === '0') {
+        const totalsData = await getTotals();
+        setAffiliatesCount(String(totalsData.totalMembers));
+        setOthersCount(String(totalsData.totalExcludes));
       }
 
-      console.log(endpoint);
-
-      const [affiliatesResponse, dataResponse] = await Promise.all([
-        axios.get<Affiliates>(endpoints.totals, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }),
-        axios.get(endpoint, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }),
-      ]);
-
-      // Afiliados = totalMembers
-      // Otros = totalExcludes
-      setAffiliatesCount(affiliatesResponse.data.totalMembers);
-      setOthersCount(affiliatesResponse.data.totalExcludes);
+      const dataResponse = await fetchAffiliates(filterType, id);
 
       console.log('delegationsResponse: ', dataResponse.data);
 
-      const data = dataResponse.data;
+      // const data = dataResponse.data;
+      const data = dataResponse;
+
       let processedData: DataItem[] = [];
 
       if (!data) {
