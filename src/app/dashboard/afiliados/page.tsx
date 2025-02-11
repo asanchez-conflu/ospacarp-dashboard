@@ -68,10 +68,7 @@ export default function AfiliadosPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [trendData, setTrendData] = useState<ChartData<'line'> | null>(null);
 
-  /*
-    const [error, setError] = useState<string | null>(null);
-  */
-
+  // Opciones de chart.js
   const options = {
     plugins: {
       legend: {
@@ -99,12 +96,16 @@ export default function AfiliadosPage() {
       'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/delegation?Clientappid=21&Startperiod=202402&Endperiod=202501&Origin=:id',
   };
 
-  // Deshabilitar boton cuando esta cargando
+  // Filtro de tipo origen/delegación
   const handleFilterSelect = (type: 'origin' | 'delegations') => {
+    if (loading) {
+      return;
+    }
     setFilterType(type);
     console.log('Filtered by ', type);
   };
 
+  // Cuando se cliquea una barra
   const handleBarClick = (id: string) => {
     if (selectedId) {
       return;
@@ -132,6 +133,7 @@ export default function AfiliadosPage() {
     fetchData(id);
   };
 
+  // Obtiene datos de origen o delegación
   const fetchData = async (id: string | null = null) => {
     setLoading(true);
     try {
@@ -271,22 +273,23 @@ export default function AfiliadosPage() {
     }
   };
 
+  // Regresa al gráfico general
   const goBack = () => {
     setSelectedId(null);
     setTrendData(null);
     fetchData();
   };
 
+  // Va a sección histórica
   const goTrend = () => {
-    console.log(`Buscar trend `, selectedId);
-    console.log(`Buscar trend `, filterType);
+    console.log(`Buscar trend `, selectedId, filterType);
     if (selectedId) {
       fetchTrends(selectedId);
     }
   };
 
+  // Formatea Trend Data para los gráficos
   const convertTrendDataTyped = (trendData: TrendItem[]) => {
-    // Now with a proper type
     const labels = trendData.map((item) => item.monthName);
     const data = trendData.map((item) => parseInt(item.count, 10)); // Parse count to number
 
@@ -308,8 +311,9 @@ export default function AfiliadosPage() {
     };
   };
 
+  // Obtiene histórico/tendencia
   const fetchTrends = async (id: string) => {
-    console.log('fetch trend id: ', id);
+    console.log('Fetch trend id: ', id);
     try {
       setLoading(true);
       const token = localStorage.getItem('jwt');
@@ -326,8 +330,6 @@ export default function AfiliadosPage() {
       } else {
         throw new Error('Invalid type provided');
       }
-
-      console.log('Trend endpoint: ', endpoint);
 
       const dataResponse = await axios.get(endpoint, {
         headers: {
