@@ -9,7 +9,7 @@ import {
   PopoverGroup,
   PopoverPanel,
 } from '@headlessui/react';
-import { ChartData } from 'chart.js';
+import { ChartData, ChartOptions } from 'chart.js';
 import 'chart.js/auto';
 import { MdFavorite, MdTune } from 'react-icons/md';
 
@@ -49,10 +49,27 @@ export default function AfiliadosPage() {
   const [trendData, setTrendData] = useState<ChartData<'line'> | null>(null);
 
   // Opciones de chart.js
-  const options = {
+  const options: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false, // Hide the entire legend
+        display: false,
+      },
+    },
+    scales: {
+      x: {
+        type: 'category', // For category scale on x-axis (labels)
+        grid: {
+          display: false,
+        },
+      },
+      y: {
+        type: 'linear', // For linear scale on y-axis (numbers)
+        position: 'right', // Y-axis on the right
+        grid: {
+          display: false,
+        },
       },
     },
   };
@@ -337,12 +354,7 @@ export default function AfiliadosPage() {
 
         {/* BLOQUE DE CONTENIDO */}
         <div className='flex h-[450px] overflow-y-auto p-5 relative'>
-          {loading === true && (
-            <p className='px-2'>
-              Cargando {filterType === 'origin' ? 'orígenes' : 'delegaciones'}
-              ...
-            </p>
-          )}
+          {loading === true && <p className='px-2'>Cargando...</p>}
           {!loading && !trendData && graphData?.length > 0 && (
             <span className='absolute top-0 right-5 text-xs text-gray-500'>
               Porcentaje
