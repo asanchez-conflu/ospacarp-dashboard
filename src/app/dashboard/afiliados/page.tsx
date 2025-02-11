@@ -249,7 +249,8 @@ export default function AfiliadosPage() {
           label: 'Count',
           data: data,
           fill: false,
-          borderColor: 'rgb(75, 192, 192)',
+          borderColor: '#0560EA',
+          backgroundColor: 'rgba(53, 162, 235, 0.5)',
           legend: {
             display: false, // Hide the label in the legend
           },
