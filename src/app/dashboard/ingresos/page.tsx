@@ -50,6 +50,7 @@ const Ingresos = () => {
   const fetchTrends = async (id: string, type: string) => {
     try {
       setLoading(true);
+      console.log(loading);
       const token = localStorage.getItem('jwt');
       if (!token) {
         throw new Error('No token found');
