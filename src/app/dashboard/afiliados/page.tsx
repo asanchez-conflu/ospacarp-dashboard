@@ -308,13 +308,13 @@ export default function AfiliadosPage() {
         </p>
       </div>
 
-      <div className='flex m-10 gap-5'>
+      <div className='flex mx-10 my-4 gap-5'>
         <CardAfiliados affiliates={affiliatesCount} />
         <CardOtros affiliates={othersCount} />
       </div>
 
       {/* Bloque principal */}
-      <div className='m-10 py-5 bg-white rounded'>
+      <div className='mx-10 py-5 bg-white rounded'>
         <div className='px-7 pt-4 pb-2 relative'>
           <h3 className='font-bold'>
             Distribución de padrón por{' '}
@@ -353,7 +353,7 @@ export default function AfiliadosPage() {
         </div>
 
         {/* BLOQUE DE CONTENIDO */}
-        <div className='flex h-[450px] overflow-y-auto p-5 relative'>
+        <div className='flex h-[360px] overflow-y-auto p-5 relative'>
           {loading === true && <p className='px-2'>Cargando...</p>}
           {!loading && !trendData && graphData?.length > 0 && (
             <span className='absolute top-0 right-5 text-xs text-gray-500'>
