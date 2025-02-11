@@ -85,3 +85,35 @@ export const fetchAffiliates = async (
     handleApiError(error);
   }
 };
+
+// Fetch Affiliates Trends
+export const fetchTrendsData = async (
+  filterType: 'origin' | 'delegations',
+  id: string
+) => {
+  try {
+    console.log('> Fetching Trends ID: ', id);
+    console.log('> Fetching Trends type: ', filterType);
+
+    const token = localStorage.getItem('jwt');
+    let endpoint = '';
+
+    if (filterType === 'origin') {
+      endpoint = endpoints.trendsOrigin.replace(':id', id);
+    } else if (filterType === 'delegations') {
+      endpoint = endpoints.trendsDelegation.replace(':id', id);
+    } else {
+      throw new Error('Invalid type provided');
+    }
+
+    console.log('> Endpoint: ');
+    console.log(endpoint);
+
+    const response = await axios.get(endpoint, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
