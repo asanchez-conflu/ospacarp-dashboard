@@ -30,7 +30,7 @@ import BackButton from '@/components/common/backButton';
 import HistoricButton from '@/components/common/historicButton';
 import CardAfiliados from './cardAfiliados';
 import CardOtros from './cardOtros';
-import HorizontalBar from './horizontalBar';
+import HorizontalBar from '@/app/dashboard/afiliados/horizontalBar';
 
 const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
   ssr: false,

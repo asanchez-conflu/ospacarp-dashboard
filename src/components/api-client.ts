@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// Poner fechas dinamicas
 const endpoints = {
   totals:
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/totals?Clientappid=21&Excludeorigins=3,7,13&Period=202501',
@@ -17,6 +18,23 @@ const endpoints = {
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/origin?Clientappid=21&Startperiod=202402&Endperiod=202501&Origin=:id',
   trendsDelegation:
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/delegation?Clientappid=21&Startperiod=202402&Endperiod=202501&Delegation=:id',
+};
+
+const expensesEndpoints = {
+  origin: {
+    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/origins?Clientappid=21&Period=202405',
+    specific:
+      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/origins?Clientappid=21&Period=202501&Delegation=:originId',
+  },
+  delegations: {
+    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/delegations?Clientappid=21&Period=202405',
+    specific:
+      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/delegations?Clientappid=21&Period=202501&Origin=:delegationId',
+  },
+  trendsOrigin:
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/history/origin?Clientappid=21&Startperiod=202402&Endperiod=202501&Origin=:id',
+  trendsDelegation:
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/history/delegation?Clientappid=21&Startperiod=202402&Endperiod=202501&Delegation=:id',
 };
 
 const handleApiError = (error: unknown) => {
@@ -108,6 +126,40 @@ export const fetchTrendsData = async (
 
     console.log('> Endpoint: ');
     console.log(endpoint);
+
+    const response = await axios.get(endpoint, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+// Expenses endpoints
+
+// Function to fetch origin and delegations
+export const fetchExpenses = async (
+  filterType: 'origin' | 'delegations',
+  id: string | null = null
+) => {
+  try {
+    console.log('> Fetching exp ID: ', id);
+    console.log('> Fetching exp type: ', filterType);
+
+    const token = localStorage.getItem('jwt');
+    let endpoint = '';
+
+    // TEMP: endpoint general en desa
+    if (filterType === 'origin') {
+      endpoint = id
+        ? expensesEndpoints.delegations.specific.replace(':delegationId', id)
+        : endpoints.origin.all;
+    } else if (filterType === 'delegations') {
+      endpoint = id
+        ? expensesEndpoints.origin.specific.replace(':originId', id)
+        : endpoints.delegations.all;
+    }
 
     const response = await axios.get(endpoint, {
       headers: { Authorization: `Bearer ${token}` },
