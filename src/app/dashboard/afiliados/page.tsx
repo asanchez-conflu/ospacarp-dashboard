@@ -187,14 +187,6 @@ export default function AfiliadosPage() {
           (delegation: Delegation) => {
             const percentage =
               (parseFloat(delegation.count) / totalCount) * 100;
-            return { ...delegation, percentage: percentage.toFixed(2) }; // Add percentage property
-          }
-        );
-
-        processedData = dataResponse.delegations.map(
-          (delegation: Delegation) => {
-            const percentage =
-              (parseFloat(delegation.count) / totalCount) * 100;
 
             // Type conversion and creation of DataItem object
             const dataItem: DataItem = {

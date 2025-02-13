@@ -13,13 +13,16 @@ import { ChartData, ChartOptions } from 'chart.js';
 import 'chart.js/auto';
 import { MdFavorite, MdTune } from 'react-icons/md';
 
-import { fetchExpenses, fetchTrendsData } from '@/components/api-client';
+import {
+  fetchExpenses,
+  fetchExpensesHistoricData,
+} from '@/components/api-client';
 
 import type {
-  Delegation,
-  Origin,
+  ExpensesOrigin,
   DataItem,
-  TrendItem,
+  ExpensesDelegation,
+  HistoryItem,
 } from '@/app/types/affiliates';
 
 import BackButton from '@/components/common/backButton';
@@ -95,7 +98,7 @@ export default function EgresosPage() {
 
     // Si es seccion historica/tendencias
     if (trendData) {
-      fetchTrends(id);
+      fetchHistory(id);
       return;
     }
 
@@ -138,18 +141,19 @@ export default function EgresosPage() {
         }
 
         const totalCount = dataResponse.origins.reduce(
-          (acc: number, origin: Origin) => acc + parseInt(origin.count),
+          (acc: number, origin: ExpensesOrigin) => acc + parseInt(origin.total),
           0
         );
 
-        processedData = dataResponse.origins.map((origin: Origin) => {
-          const percentage = (parseFloat(origin.count) / totalCount) * 100;
+        processedData = dataResponse.origins.map((origin: ExpensesOrigin) => {
+          const percentage = (parseFloat(origin.total) / totalCount) * 100;
 
           // Type conversion and creation of DataItem object
           const dataItem: DataItem = {
-            label: origin.originDesc,
+            label: origin.description,
             percentage: parseFloat(percentage.toFixed(2)), // Parse to number
             id: String(origin.origin),
+            total: origin.total,
           };
           return dataItem;
         });
@@ -164,29 +168,22 @@ export default function EgresosPage() {
         }
 
         const totalCount = dataResponse.delegations.reduce(
-          (acc: number, delegation: Delegation) =>
-            acc + parseInt(delegation.count),
+          (acc: number, delegation: ExpensesDelegation) =>
+            acc + parseInt(delegation.total),
           0
         );
 
         processedData = dataResponse.delegations.map(
-          (delegation: Delegation) => {
+          (delegation: ExpensesDelegation) => {
             const percentage =
-              (parseFloat(delegation.count) / totalCount) * 100;
-            return { ...delegation, percentage: percentage.toFixed(2) }; // Add percentage property
-          }
-        );
-
-        processedData = dataResponse.delegations.map(
-          (delegation: Delegation) => {
-            const percentage =
-              (parseFloat(delegation.count) / totalCount) * 100;
+              (parseFloat(delegation.total) / totalCount) * 100;
 
             // Type conversion and creation of DataItem object
             const dataItem: DataItem = {
-              label: delegation.delegationDesc,
+              label: delegation.description,
               percentage: parseFloat(percentage.toFixed(2)), // Parse to number
               id: String(delegation.delegation),
+              total: delegation.total,
             };
             return dataItem;
           }
@@ -219,14 +216,14 @@ export default function EgresosPage() {
   const goTrend = () => {
     console.log(`Buscar trend `, selectedId, filterType);
     if (selectedId) {
-      fetchTrends(selectedId);
+      fetchHistory(selectedId);
     }
   };
 
   // Formatea Trend Data para los gráficos
-  const convertTrendDataTyped = (trendData: TrendItem[]) => {
+  const convertTrendDataTyped = (trendData: HistoryItem[]) => {
     const labels = trendData.map((item) => item.monthName);
-    const data = trendData.map((item) => parseInt(item.count, 10)); // Parse count to number
+    const data = trendData.map((item) => parseInt(item.expenses, 10)); // Parse count to number
 
     return {
       labels: labels,
@@ -247,21 +244,21 @@ export default function EgresosPage() {
   };
 
   // Obtiene histórico/tendencia
-  const fetchTrends = async (id: string) => {
+  const fetchHistory = async (id: string) => {
     try {
       setLoading(true);
-      const dataResponse = await fetchTrendsData(filterType, id);
+      const dataResponse = await fetchExpensesHistoricData(filterType, id);
 
       console.log(`Trend data: `, dataResponse);
 
-      if (!dataResponse || !dataResponse.trend) {
+      if (!dataResponse || !dataResponse.history) {
         console.warn('No data received for this type.');
         setTrendData(null);
         return;
       } else {
-        const trend = convertTrendDataTyped(dataResponse.trend);
-        console.log('Trend: ', trend);
-        setTrendData(trend);
+        const history = convertTrendDataTyped(dataResponse.history);
+        console.log('history: ', history);
+        setTrendData(history);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -337,9 +334,14 @@ export default function EgresosPage() {
         <div className='flex h-[360px] overflow-y-auto p-5 relative'>
           {loading === true && <p className='px-2'>Cargando...</p>}
           {!loading && !trendData && graphData?.length > 0 && (
-            <span className='absolute top-0 right-5 text-xs text-gray-500'>
-              Porcentaje
-            </span>
+            <>
+              <span className='absolute top-0 right-32 text-xs text-gray-500'>
+                Monto
+              </span>
+              <span className='absolute top-0 right-5 text-xs text-gray-500'>
+                Porcentaje
+              </span>
+            </>
           )}
 
           {/* Lista lateral de origenes/delegaciones */}
@@ -371,6 +373,7 @@ export default function EgresosPage() {
                   key={index}
                   leftLabel={item.label}
                   barWidth={item.percentage}
+                  total={item.total}
                   onClick={() => handleBarClick(item.id)}
                 />
               ))}

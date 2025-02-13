@@ -22,19 +22,19 @@ const endpoints = {
 
 const expensesEndpoints = {
   origin: {
-    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/origins?Clientappid=21&Period=202405',
+    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/origins?Clientappid=21&Period=202501',
     specific:
       'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/origins?Clientappid=21&Period=202501&Delegation=:originId',
   },
   delegations: {
-    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/delegations?Clientappid=21&Period=202405',
+    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/delegations?Clientappid=21&Period=202501',
     specific:
       'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/delegations?Clientappid=21&Period=202501&Origin=:delegationId',
   },
-  trendsOrigin:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/history/origin?Clientappid=21&Startperiod=202402&Endperiod=202501&Origin=:id',
-  trendsDelegation:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/history/delegation?Clientappid=21&Startperiod=202402&Endperiod=202501&Delegation=:id',
+  historyOrigin:
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/history/origin?Clientappid=21&Origin=:id&Startperiod=202402&Endperiod=202501',
+  historyDelegation:
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/history/delegation?Clientappid=21&Origin=:id&Startperiod=202402&Endperiod=202501',
 };
 
 const handleApiError = (error: unknown) => {
@@ -150,15 +150,42 @@ export const fetchExpenses = async (
     const token = localStorage.getItem('jwt');
     let endpoint = '';
 
-    // TEMP: endpoint general en desa
     if (filterType === 'origin') {
       endpoint = id
         ? expensesEndpoints.delegations.specific.replace(':delegationId', id)
-        : endpoints.origin.all;
+        : expensesEndpoints.origin.all;
     } else if (filterType === 'delegations') {
       endpoint = id
         ? expensesEndpoints.origin.specific.replace(':originId', id)
-        : endpoints.delegations.all;
+        : expensesEndpoints.delegations.all;
+    }
+
+    const response = await axios.get(endpoint, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const fetchExpensesHistoricData = async (
+  filterType: 'origin' | 'delegations',
+  id: string
+) => {
+  try {
+    console.log('> Fetching historic ID: ', id);
+    console.log('> Fetching historic type: ', filterType);
+
+    const token = localStorage.getItem('jwt');
+    let endpoint = '';
+
+    if (filterType === 'origin') {
+      endpoint = expensesEndpoints.historyOrigin.replace(':id', id);
+    } else if (filterType === 'delegations') {
+      endpoint = expensesEndpoints.historyDelegation.replace(':id', id);
+    } else {
+      throw new Error('Invalid type provided');
     }
 
     const response = await axios.get(endpoint, {
