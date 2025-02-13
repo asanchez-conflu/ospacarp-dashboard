@@ -287,7 +287,7 @@ export default function EgresosPage() {
       <div className='m-10'>
         <h2 className='font-bold text-4xl'>Panel gráfico de Egresos</h2>
         <p className='font-bold text-xl'>
-          Gráficos de distribución de Egresos.
+          Gráficos de distribución de egresos según su padrón.
         </p>
       </div>
 
@@ -295,8 +295,8 @@ export default function EgresosPage() {
       <div className='mx-10 py-5 bg-white rounded'>
         <div className='px-7 pt-4 pb-2 relative'>
           <h3 className='font-bold'>
-            Distribución de padrón por{' '}
-            {filterType === 'origin' ? 'orígenes' : 'delegaciones'} de Egresos
+            Distribución de Egresos por{' '}
+            {filterType === 'origin' ? 'orígenes' : 'delegaciones'} de afiliado
           </h3>
           <p className='text-sm'>Valores acumulados</p>
 
@@ -380,10 +380,7 @@ export default function EgresosPage() {
             </div>
           )}
           {!loading && !trendData && graphData?.length === 0 && (
-            <p className='px-2'>
-              No se encontraron datos de{' '}
-              {filterType === 'origin' ? 'orígenes' : 'delegaciones'}.
-            </p>
+            <p className='px-2'>No se encontraron datos.</p>
           )}
 
           {/* Bloque histórico */}
