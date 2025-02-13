@@ -22,7 +22,7 @@ import type {
   ExpensesOrigin,
   DataItem,
   ExpensesDelegation,
-  HistoryItem,
+  HistoryExpensesItem,
 } from '@/app/types/affiliates';
 
 import BackButton from '@/components/common/backButton';
@@ -221,7 +221,7 @@ export default function EgresosPage() {
   };
 
   // Formatea Trend Data para los gráficos
-  const convertTrendDataTyped = (trendData: HistoryItem[]) => {
+  const convertTrendDataTyped = (trendData: HistoryExpensesItem[]) => {
     const labels = trendData.map((item) => item.monthName);
     const data = trendData.map((item) => parseInt(item.expenses, 10)); // Parse count to number
 
@@ -232,7 +232,7 @@ export default function EgresosPage() {
           label: 'Count',
           data: data,
           fill: false,
-          borderColor: '#0560EA',
+          borderColor: '#FF9441',
           legend: {
             display: false, // Hide the label in the legend
           },
@@ -355,7 +355,7 @@ export default function EgresosPage() {
                   px-4 py-2 hover:bg-gray-100 hover:rounded-[10px] cursor-pointer text-sm flex items-center relative
                   ${
                     selectedId === item.id
-                      ? 'rounded-[10px] text-white bg-gradient-to-r from-[#56CFE1] to-[#0560EA]'
+                      ? 'rounded-[10px] text-white bg-gradient-to-r from-[#0560EA] via-[#FF9441]/95 to-[#FF9441]'
                       : ''
                   }
                 `}

@@ -34,7 +34,24 @@ const expensesEndpoints = {
   historyOrigin:
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/history/origin?Clientappid=21&Origin=:id&Startperiod=202402&Endperiod=202501',
   historyDelegation:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/history/delegation?Clientappid=21&Origin=:id&Startperiod=202402&Endperiod=202501',
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/history/delegation?Clientappid=21&Delegation=:id&Startperiod=202402&Endperiod=202501',
+};
+
+const incomesEndpoints = {
+  origin: {
+    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/origins?Clientappid=21&Period=202501',
+    specific:
+      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/origins?Clientappid=21&Period=202501&Delegation=:originId',
+  },
+  delegations: {
+    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/delegations?Clientappid=21&Period=202501',
+    specific:
+      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/delegations?Clientappid=21&Period=202501&Origin=:delegationId',
+  },
+  historyOrigin:
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/history/origin?Clientappid=21&Origin=:id&Startperiod=202402&Endperiod=202501',
+  historyDelegation:
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/history/delegation?Clientappid=21&Delegation=:id&Startperiod=202402&Endperiod=202501',
 };
 
 const handleApiError = (error: unknown) => {
@@ -184,6 +201,67 @@ export const fetchExpensesHistoricData = async (
       endpoint = expensesEndpoints.historyOrigin.replace(':id', id);
     } else if (filterType === 'delegations') {
       endpoint = expensesEndpoints.historyDelegation.replace(':id', id);
+    } else {
+      throw new Error('Invalid type provided');
+    }
+
+    const response = await axios.get(endpoint, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+// Incomes endpoints
+
+// Function to fetch origin and delegations
+export const fetchIncomes = async (
+  filterType: 'origin' | 'delegations',
+  id: string | null = null
+) => {
+  try {
+    console.log('> Fetching exp ID: ', id);
+    console.log('> Fetching exp type: ', filterType);
+
+    const token = localStorage.getItem('jwt');
+    let endpoint = '';
+
+    if (filterType === 'origin') {
+      endpoint = id
+        ? incomesEndpoints.delegations.specific.replace(':delegationId', id)
+        : incomesEndpoints.origin.all;
+    } else if (filterType === 'delegations') {
+      endpoint = id
+        ? incomesEndpoints.origin.specific.replace(':originId', id)
+        : incomesEndpoints.delegations.all;
+    }
+
+    const response = await axios.get(endpoint, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const fetchIncomesHistoricData = async (
+  filterType: 'origin' | 'delegations',
+  id: string
+) => {
+  try {
+    console.log('> Fetching historic ID: ', id);
+    console.log('> Fetching historic type: ', filterType);
+
+    const token = localStorage.getItem('jwt');
+    let endpoint = '';
+
+    if (filterType === 'origin') {
+      endpoint = incomesEndpoints.historyOrigin.replace(':id', id);
+    } else if (filterType === 'delegations') {
+      endpoint = incomesEndpoints.historyDelegation.replace(':id', id);
     } else {
       throw new Error('Invalid type provided');
     }

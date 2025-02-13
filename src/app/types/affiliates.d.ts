@@ -40,8 +40,15 @@ interface TrendItem {
   percentage: string;
 }
 
-interface HistoryItem {
+interface HistoryExpensesItem {
   expenses: string;
+  month: string;
+  monthName: string;
+  percentage: string;
+}
+
+interface HistoryIncomeItem {
+  income: string;
   month: string;
   monthName: string;
   percentage: string;
@@ -54,5 +61,6 @@ export {
   TrendItem,
   ExpensesOrigin,
   ExpensesDelegation,
-  HistoryItem,
+  HistoryExpensesItem,
+  HistoryIncomeItem,
 };

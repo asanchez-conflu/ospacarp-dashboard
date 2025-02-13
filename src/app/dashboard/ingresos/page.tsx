@@ -1,114 +1,421 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
-import dynamic from 'next/dynamic';
-import 'chart.js/auto';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { ChartData } from 'chart.js';
 
-const endpoints = {
-  trendsOrigin:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/origin?Clientappid=21&Startperiod=202405&Endperiod=202501&Delegation=1',
-  trendsDelegation:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/delegation?Clientappid=21&Startperiod=202405&Endperiod=202501&Origin=1',
-};
+import React, { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
+import {
+  Popover,
+  PopoverButton,
+  PopoverGroup,
+  PopoverPanel,
+} from '@headlessui/react';
+import { ChartData, ChartOptions } from 'chart.js';
+import 'chart.js/auto';
+import { MdFavorite, MdTune } from 'react-icons/md';
+
+import {
+  fetchIncomes,
+  fetchIncomesHistoricData,
+} from '@/components/api-client';
+
+import type {
+  ExpensesOrigin,
+  DataItem,
+  ExpensesDelegation,
+  HistoryIncomeItem,
+} from '@/app/types/affiliates';
+
+import BackButton from '@/components/common/backButton';
+import HistoricButton from '@/components/common/historicButton';
+import HorizontalBar from '@/app/dashboard/ingresos/horizontalBar';
 
 const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
   ssr: false,
 });
 
-// Example interface for your trend data (recommended):
-interface TrendItem {
-  count: string;
-  month: string;
-  monthName: string;
-  percentage: string;
-}
-
-const Ingresos = () => {
-  const [graphData, setGraphData] = useState<ChartData<'line'> | null>(null); // Type the state
+export default function IngresosPage() {
+  const [filterType, setFilterType] = useState<'origin' | 'delegations'>(
+    'origin'
+  );
+  const [graphData, setGraphData] = useState<DataItem[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [listData, setListData] = useState<DataItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [trendData, setTrendData] = useState<ChartData<'line'> | null>(null);
 
-  const convertTrendDataTyped = (trendData: TrendItem[]) => {
-    // Now with a proper type
+  // Opciones de chart.js
+  const options: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+    scales: {
+      x: {
+        type: 'category', // For category scale on x-axis (labels)
+        grid: {
+          display: false,
+        },
+      },
+      y: {
+        type: 'linear', // For linear scale on y-axis (numbers)
+        position: 'right', // Y-axis on the right
+        grid: {
+          display: true,
+        },
+      },
+    },
+  };
+
+  // Filtro de tipo origen/delegación
+  const handleFilterSelect = (type: 'origin' | 'delegations') => {
+    if (loading) {
+      return;
+    }
+    setFilterType(type);
+    console.log('Filtered by ', type);
+  };
+
+  // Cuando se cliquea una barra
+  const handleBarClick = (id: string) => {
+    if (selectedId) {
+      return;
+    }
+    console.log(`Selecciona barra Id ${id}`);
+    setSelectedId(id);
+    fetchData(id);
+  };
+
+  const handleListClick = (id: string) => {
+    if (selectedId === id) {
+      return;
+    }
+
+    console.log(`Selecciona lista Id ${id}`);
+    setSelectedId(id);
+
+    // Si es seccion historica/tendencias
+    if (trendData) {
+      fetchHistory(id);
+      return;
+    }
+
+    // Sino busca datos para nuevo id
+    fetchData(id);
+  };
+
+  // Obtiene datos de origen o delegación
+  const fetchData = async (id: string | null = null) => {
+    setLoading(true);
+    try {
+      const dataResponse = await fetchIncomes(filterType, id);
+
+      let processedData: DataItem[] = [];
+
+      if (!dataResponse) {
+        console.warn('No delegations data received');
+        return;
+      }
+
+      let type = '';
+
+      if (filterType === 'origin' && id === null) {
+        type = 'origin';
+      } else if (filterType === 'delegations' && id) {
+        type = 'origin';
+      } else {
+        type = 'delegations';
+      }
+
+      console.log('TYPE: ', type);
+
+      if (type === 'origin') {
+        console.log('origines', dataResponse.origins);
+
+        if (!dataResponse.origins) {
+          console.log('no data');
+          setGraphData([]);
+          return;
+        }
+
+        // Procesa valores con ****
+        const totalCount = dataResponse.origins.reduce(
+          (acc: number, origin: ExpensesOrigin) => {
+            const total = Number.parseInt(origin.total);
+            return isNaN(total) ? acc : acc + total; // Add total only if it's a valid number
+          },
+          0
+        );
+
+        processedData = dataResponse.origins.map((origin: ExpensesOrigin) => {
+          const percentage = (parseFloat(origin.total) / totalCount) * 100;
+          const percentageValue = parseFloat(percentage.toFixed(2));
+          const displayPercentage = isNaN(percentageValue)
+            ? 0
+            : percentageValue;
+
+          // Type conversion and creation of DataItem object
+          const dataItem: DataItem = {
+            label: origin.description,
+            percentage: displayPercentage,
+            id: String(origin.origin),
+            total: origin.total,
+          };
+          return dataItem;
+        });
+      } else {
+        // process delegations
+        console.log('delegaciones', dataResponse.delegations);
+
+        if (!dataResponse.delegations) {
+          console.log('no data');
+          setGraphData([]);
+          return;
+        }
+
+        const totalCount = dataResponse.delegations.reduce(
+          (acc: number, delegation: ExpensesOrigin) => {
+            const total = Number.parseInt(delegation.total);
+            return isNaN(total) ? acc : acc + total; // Add total only if it's a valid number
+          },
+          0
+        );
+
+        processedData = dataResponse.delegations.map(
+          (delegation: ExpensesDelegation) => {
+            const percentage =
+              (parseFloat(delegation.total) / totalCount) * 100;
+            const percentageValue = parseFloat(percentage.toFixed(2));
+            const displayPercentage = isNaN(percentageValue)
+              ? 0
+              : percentageValue;
+
+            // Type conversion and creation of DataItem object
+            const dataItem: DataItem = {
+              label: delegation.description,
+              percentage: displayPercentage,
+              id: String(delegation.delegation),
+              total: delegation.total,
+            };
+            return dataItem;
+          }
+        );
+      }
+
+      setGraphData(processedData);
+
+      if (id === null) {
+        console.log('List data saved');
+        setListData(processedData);
+      }
+
+      console.log('processedData', processedData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Regresa al gráfico general
+  const goBack = () => {
+    setSelectedId(null);
+    setTrendData(null);
+    fetchData();
+  };
+
+  // Va a sección histórica
+  const goTrend = () => {
+    console.log(`Buscar trend `, selectedId, filterType);
+    if (selectedId) {
+      fetchHistory(selectedId);
+    }
+  };
+
+  // Formatea Trend Data para los gráficos
+  const convertTrendDataTyped = (trendData: HistoryIncomeItem[]) => {
     const labels = trendData.map((item) => item.monthName);
-    const data = trendData.map((item) => parseInt(item.count, 10)); // Parse count to number
+    const data = trendData.map((item) => parseInt(item.income, 10)); // Parse count to number
 
     return {
       labels: labels,
       datasets: [
         {
-          label: 'Trend',
+          label: 'Count',
           data: data,
           fill: false,
-          borderColor: 'rgb(75, 192, 192)',
-          tension: 0.1,
+          borderColor: '#0560EA',
+          legend: {
+            display: false, // Hide the label in the legend
+          },
+          tension: 0.5, // Adjust this value for curve smoothness (0 = straight lines, 1 = maximum curve)
+          pointRadius: 0, // Set point radius to 0 to hide the dots
         },
       ],
     };
   };
 
-  const fetchTrends = async (id: string, type: string) => {
+  // Obtiene histórico/tendencia
+  const fetchHistory = async (id: string) => {
     try {
       setLoading(true);
-      console.log(loading);
-      const token = localStorage.getItem('jwt');
-      if (!token) {
-        throw new Error('No token found');
-      }
+      const dataResponse = await fetchIncomesHistoricData(filterType, id);
 
-      let endpoint = '';
+      console.log(`Trend data: `, dataResponse);
 
-      if (type === 'origin') {
-        endpoint = endpoints.trendsOrigin;
-      } else if (type === 'delegations') {
-        endpoint = endpoints.trendsDelegation;
-      } else {
-        throw new Error('Invalid type provided');
-      }
-
-      const dataResponse = await axios.get(endpoint, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = dataResponse.data;
-
-      if (!data || !data.trend) {
+      if (!dataResponse || !dataResponse.history) {
         console.warn('No data received for this type.');
-        setGraphData(null);
+        setTrendData(null);
         return;
       } else {
-        const trend = convertTrendDataTyped(data.trend);
-        console.log('Trend: ', trend);
-        setGraphData(trend);
+        const history = convertTrendDataTyped(dataResponse.history);
+        console.log('history: ', history);
+        setTrendData(history);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
-      setGraphData(null);
+      setTrendData(null);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchTrends('1', 'origin');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchData();
   }, []);
 
+  useEffect(() => {
+    setSelectedId(null);
+    fetchData();
+  }, [filterType]);
+
   return (
-    <div style={{ width: '700px', height: '700px' }}>
-      <h1>Example 1: Line Chart</h1>
-      {graphData &&
-      graphData.labels &&
-      graphData.datasets &&
-      graphData.datasets.length > 0 ? (
-        <Line data={graphData} />
-      ) : (
-        <p>Loading or no data yet</p> // Or a loading spinner, or nothing at all
-      )}
+    <div>
+      <div className='my-6 flex flex-col items-center'>
+        <MdFavorite size={30} color='#56CFE1' />
+      </div>
+      <hr className='border-gray-200 mx-10' />
+
+      <div className='m-10'>
+        <h2 className='font-bold text-4xl'>Panel gráfico de Ingresos</h2>
+        <p className='font-bold text-xl'>
+          Gráficos de distribución de ingresos según su padrón.
+        </p>
+      </div>
+
+      {/* Bloque principal */}
+      <div className='mx-10 py-5 bg-white rounded'>
+        <div className='px-7 pt-4 pb-2 relative'>
+          <h3 className='font-bold'>
+            Distribución de Ingresos por{' '}
+            {filterType === 'origin' ? 'orígenes' : 'delegaciones'} de afiliado
+          </h3>
+          <p className='text-sm'>Valores acumulados</p>
+
+          {/* FILTRO - ocultar fuera de pantalla 1 */}
+          {!selectedId && (
+            <Popover>
+              <PopoverButton className='absolute top-4 right-7 p-2 bg-white rounded-md shadow-md hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all duration-75'>
+                <MdTune size={20} color='black' />
+              </PopoverButton>
+              <PopoverPanel className='absolute right-7 top-12 w-48 bg-white rounded-md shadow-lg z-10'>
+                <div className='p-2'>
+                  <PopoverGroup>
+                    <PopoverButton
+                      as='button'
+                      className='block px-4 py-2 w-full text-left text-sm text-gray-700 hover:bg-gray-200 rounded-md'
+                      onClick={() => handleFilterSelect('origin')}
+                    >
+                      Origen
+                    </PopoverButton>
+                    <PopoverButton
+                      as='button'
+                      className='block px-4 py-2 w-full text-left text-sm text-gray-700 hover:bg-gray-200 rounded-md'
+                      onClick={() => handleFilterSelect('delegations')}
+                    >
+                      Delegación
+                    </PopoverButton>
+                  </PopoverGroup>
+                </div>
+              </PopoverPanel>
+            </Popover>
+          )}
+        </div>
+
+        {/* BLOQUE DE CONTENIDO */}
+        <div className='flex h-[360px] overflow-y-auto p-5 relative'>
+          {loading === true && <p className='px-2'>Cargando...</p>}
+          {!loading && !trendData && graphData?.length > 0 && (
+            <>
+              <span className='absolute top-0 right-32 text-xs text-gray-500'>
+                Monto
+              </span>
+              <span className='absolute top-0 right-5 text-xs text-gray-500'>
+                Porcentaje
+              </span>
+            </>
+          )}
+
+          {/* Lista lateral de origenes/delegaciones */}
+          {!loading && selectedId && (
+            <ul className='w-64 border-r-2 pr-2 space-y-3 border-[#0560EA]'>
+              {listData.map((item) => (
+                <li
+                  key={item.id}
+                  onClick={() => handleListClick(item.id)}
+                  className={`
+                  px-4 py-2 hover:bg-gray-100 hover:rounded-[10px] cursor-pointer text-sm flex items-center relative
+                  ${
+                    selectedId === item.id
+                      ? 'rounded-[10px] text-white bg-gradient-to-r from-[#56CFE1] to-[#0560EA]'
+                      : ''
+                  }
+                `}
+                >
+                  {item.label}
+                </li>
+              ))}
+            </ul>
+          )}
+          {/* Grafico de barras */}
+          {!loading && !trendData && graphData?.length > 0 && (
+            <div className='flex flex-col w-full gap-3 pl-6'>
+              {graphData?.map((item, index) => (
+                <HorizontalBar
+                  key={index}
+                  leftLabel={item.label}
+                  barWidth={item.percentage}
+                  total={item.total}
+                  onClick={() => handleBarClick(item.id)}
+                />
+              ))}
+            </div>
+          )}
+          {!loading && !trendData && graphData?.length === 0 && (
+            <p className='px-2'>No se encontraron datos.</p>
+          )}
+
+          {/* Bloque histórico */}
+          {!loading && trendData && (
+            <div className='pl-6 w-full h-full'>
+              {trendData.labels &&
+                trendData.datasets &&
+                trendData.datasets.length > 0 && (
+                  <Line data={trendData} options={options} />
+                )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* BOTONES */}
+      <div className='m-10 flex justify-between'>
+        {selectedId && <BackButton onClick={goBack} />}
+        <div></div>
+        {selectedId && !trendData && <HistoricButton onClick={goTrend} />}
+      </div>
     </div>
   );
-};
-
-export default Ingresos;
+}
