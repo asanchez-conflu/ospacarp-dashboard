@@ -46,7 +46,7 @@ const HomePage: React.FC = () => {
         localStorage.setItem('jwt', response.data.access_token);
 
         // Redirect to protected page
-        navigation.push('/dashboard/afiliados');
+        navigation.push('/dashboard');
       } else {
         console.log('Error');
         // setError('Login failed');

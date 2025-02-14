@@ -54,6 +54,17 @@ const incomesEndpoints = {
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/history/delegation?Clientappid=21&Delegation=:id&Startperiod=202402&Endperiod=202501',
 };
 
+const homeEndpoints = {
+  incomeVsExpense:
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/income-vs-expense?Period=202501&Clientappid=21',
+  trends:
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/trends?Startperiod=202402&Endperiod=202501&Clientappid=21',
+  affiliates:
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/affiliates?Period=202501&Clientappid=21',
+  totals:
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/total?Period=202501&Clientappid=21',
+};
+
 const handleApiError = (error: unknown) => {
   console.error('API Error:', error);
 
@@ -267,6 +278,44 @@ export const fetchIncomesHistoricData = async (
     }
 
     const response = await axios.get(endpoint, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+// Dashboard endpoints
+
+export const fetchDashboardVS = async () => {
+  try {
+    const token = localStorage.getItem('jwt');
+    const response = await axios.get(homeEndpoints.incomeVsExpense, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const fetchDashboardTotals = async () => {
+  try {
+    const token = localStorage.getItem('jwt');
+    const response = await axios.get(homeEndpoints.totals, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const fetchDashboardTrends = async () => {
+  try {
+    const token = localStorage.getItem('jwt');
+    const response = await axios.get(homeEndpoints.trends, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;

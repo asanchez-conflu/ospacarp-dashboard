@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import Link from 'next/link';
 import {
@@ -7,8 +8,30 @@ import {
   MdPeople,
   MdOutlineLogout,
 } from 'react-icons/md';
+import { usePathname } from 'next/navigation';
 
 const Sidebar = () => {
+  const pathname = usePathname();
+
+  const sections = [
+    { name: 'Inicio', path: '/dashboard', icon: <MdHome className='mr-2' /> },
+    {
+      name: 'Ingresos',
+      path: '/dashboard/ingresos',
+      icon: <MdTrendingUp className='mr-2' />,
+    },
+    {
+      name: 'Egresos',
+      path: '/dashboard/egresos',
+      icon: <MdArrowDownward className='mr-2' />,
+    },
+    {
+      name: 'Afiliados',
+      path: '/dashboard/afiliados',
+      icon: <MdPeople className='mr-2' />,
+    },
+  ];
+
   return (
     <aside className='fixed top-0 left-0 p-4 bg-white h-screen w-[250px] 2xl:w-[300px] flex flex-col '>
       <div className='flex flex-col items-center mb-4'>
@@ -24,34 +47,22 @@ const Sidebar = () => {
       <hr className='my-4 border-gray-200' />
 
       <div className='flex-grow flex flex-col items-center'>
-        <Link
-          href='/dashboard'
-          className='flex items-center w-[190px] px-5 py-2 mb-2 rounded-full'
-        >
-          <MdHome className='mr-2' />
-          Inicio
-        </Link>
-        <Link
-          href='/dashboard/ingresos'
-          className='flex items-center w-[190px] px-5 py-2 mb-2 rounded-full'
-        >
-          <MdTrendingUp className='mr-2' />
-          Ingresos
-        </Link>
-        <Link
-          href='/dashboard/egresos'
-          className='flex items-center w-[190px] px-5 py-2 mb-2 rounded-full'
-        >
-          <MdArrowDownward className='mr-2' />
-          Egresos
-        </Link>
-        <Link
-          href='/dashboard/afiliados'
-          className='flex items-center w-[190px] px-5 py-2 mb-2 rounded-full bg-blue-600 text-white'
-        >
-          <MdPeople className='mr-2' />
-          Afiliados
-        </Link>
+        {sections.map((section) => (
+          <Link key={section.path} href={section.path} legacyBehavior>
+            <a
+              className={`flex items-center w-[190px] px-5 py-2 mb-2 rounded-full 
+    ${
+      (pathname === section.path || pathname.startsWith(section.path + '/')) &&
+      (section.path !== '/dashboard' || pathname === '/dashboard')
+        ? 'bg-blue-600 text-white'
+        : ''
+    }`}
+            >
+              {section.icon}
+              {section.name}
+            </a>
+          </Link>
+        ))}
       </div>
 
       <hr className='my-4 border-gray-200' />

@@ -3,10 +3,15 @@ import { MdTrendingDown } from 'react-icons/md';
 
 interface ExpensesCardProps {
   month: string;
-  amount: string;
+  current: string;
+  previous: string;
 }
 
-const ExpensesCard: React.FC<ExpensesCardProps> = ({ month, amount }) => {
+const ExpensesCard: React.FC<ExpensesCardProps> = ({
+  month,
+  current,
+  previous,
+}) => {
   return (
     <div className='bg-white rounded-lg shadow-md p-3 w-full h-[140px] flex flex-col justify-between'>
       <div className='flex items-center justify-between'>
@@ -17,8 +22,10 @@ const ExpensesCard: React.FC<ExpensesCardProps> = ({ month, amount }) => {
         <p className='text-gray-500 text-sm'>{month}</p>
       </div>
       <div className='mt-4 text-right'>
-        <p className='text-2xl font-bold'>{formatNumberWithSuffix(amount)}</p>
-        <p className='text-gray-500 text-sm'>{formatNumberWithDots(amount)}</p>
+        <p className='text-2xl font-bold'>{formatNumberWithSuffix(current)}</p>
+        <p className='text-gray-500 text-sm'>
+          {formatNumberWithDots(previous)}
+        </p>
       </div>
     </div>
   );
