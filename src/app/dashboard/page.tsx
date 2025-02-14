@@ -1,19 +1,26 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { MdFavorite } from 'react-icons/md';
 import dynamic from 'next/dynamic';
-import { TooltipItem } from 'chart.js';
+import { ChartData, TooltipItem } from 'chart.js';
 import ExpensesCard from './expensesCard';
 import IncomesCard from './incomesCard';
 import AffiliatesCard from './affiliatesCard';
 
 const DonutChart = dynamic(
-  () => import('react-chartjs-2').then(({ Doughnut }) => Doughnut), // Import Doughnut
-  { ssr: false } // Important: Disable SSR
+  () => import('react-chartjs-2').then(({ Doughnut }) => Doughnut),
+  { ssr: false }
 );
 
+const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
+  ssr: false,
+});
+
 const HomePage: React.FC = () => {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [trendData, setTrendData] = useState<ChartData<'line'> | null>(null);
+
   // Mock data
   const data = {
     labels: ['Ingresos', 'Egresos'],
@@ -81,45 +88,47 @@ const HomePage: React.FC = () => {
 
       {/* Bloque de contenido */}
       <div className='flex flex-col md:flex-row gap-4 mx-10'>
-        {/* Left Big Block */}
+        {/* Gráfico de dona */}
         <div className='md:w-1/3 bg-white rounded-lg shadow-md p-6'>
-          <h2 className='text-2xl font-bold'>Ingresos y Egresos</h2>
-          <p className='text-gray-500'>Mes de Febrero</p>
-          <div className='w-full h-[380px]'>
-            <DonutChart data={data} options={options} />
-          </div>
-          {/* Custom Legend */}
-          <div className='flex justify-around mt-4'>
-            <div>
-              <div
-                className='w-4 h-4 rounded-full mr-2 my-2'
-                style={{
-                  backgroundColor: data.datasets[0].backgroundColor[0],
-                }}
-              ></div>
-              <div className='font-bold text-3xl'>
-                {data.datasets[0].data[0]}%
+          {!loading && (
+            <>
+              <h2 className='text-2xl font-bold'>Ingresos y Egresos</h2>
+              <p className='text-gray-500'>Mes de Febrero</p>
+              <div className='w-full h-[380px]'>
+                <DonutChart data={data} options={options} />
               </div>
-              <div className='text-sm text-gray-500'>{data.labels[0]}</div>
-            </div>
-            <div>
-              <div
-                className='w-4 h-4 rounded-full mr-2 my-2'
-                style={{
-                  backgroundColor: data.datasets[0].backgroundColor[1],
-                }}
-              ></div>
-              <div className='font-bold text-3xl'>
-                {data.datasets[0].data[1]}%
+              <div className='flex justify-around mt-4'>
+                <div>
+                  <div
+                    className='w-4 h-4 rounded-full mr-2 my-2'
+                    style={{
+                      backgroundColor: data.datasets[0].backgroundColor[0],
+                    }}
+                  ></div>
+                  <div className='font-bold text-3xl'>
+                    {data.datasets[0].data[0]}%
+                  </div>
+                  <div className='text-sm text-gray-500'>{data.labels[0]}</div>
+                </div>
+                <div>
+                  <div
+                    className='w-4 h-4 rounded-full mr-2 my-2'
+                    style={{
+                      backgroundColor: data.datasets[0].backgroundColor[1],
+                    }}
+                  ></div>
+                  <div className='font-bold text-3xl'>
+                    {data.datasets[0].data[1]}%
+                  </div>
+                  <div className='text-sm text-gray-500'>{data.labels[1]}</div>
+                </div>
               </div>
-              <div className='text-sm text-gray-500'>{data.labels[1]}</div>
-            </div>
-          </div>
+            </>
+          )}
         </div>
 
-        {/* Right Side Blocks */}
+        {/* Tarjetas de ingresos, egresos y afiliados */}
         <div className='md:w-2/3 flex flex-col gap-4'>
-          {/* Top Row of Small Blocks */}
           <div className='flex gap-4'>
             <div className='w-1/3'>
               <IncomesCard month='Febrero' amount='3000500000' />
@@ -132,10 +141,9 @@ const HomePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Bottom Big Block */}
+          {/* Gráfico de tendencias */}
           <div className='bg-white rounded-lg shadow-md p-6'>
-            {/* Content for the right bottom big block */}
-            Right Bottom Big Block
+            {!loading && <>Right Bottom Big Block</>}
           </div>
         </div>
       </div>
