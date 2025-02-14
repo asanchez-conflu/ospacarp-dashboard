@@ -1,4 +1,4 @@
-import { formatNumberWithDots } from '@/utils/utils';
+import { formatCurrency } from '@/utils/utils';
 import React from 'react';
 
 interface Props {
@@ -28,10 +28,10 @@ const HorizontalBar: React.FC<Props> = ({
       <span
         className={`absolute top-1/2 -translate-y-1/2 right-24 text-sm text-gray-800 px-2`} // Right-24 for total
       >
-        {formatNumberWithDots(total)}
+        {formatCurrency(total)}
       </span>
       <span
-        className={`absolute top-1/2 -translate-y-1/2 right-0 text-sm text-gray-800 px-2`}
+        className={`absolute top-1/2 -translate-y-1/2 right-2 text-sm text-gray-800 px-2`} // Right-8 for barWidth
       >
         {barWidth}%
       </span>

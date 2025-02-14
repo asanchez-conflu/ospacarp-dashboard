@@ -30,7 +30,7 @@ import BackButton from '@/components/common/backButton';
 import HistoricButton from '@/components/common/historicButton';
 import CardAfiliados from './cardAfiliados';
 import CardOtros from './cardOtros';
-import HorizontalBar from './horizontalBar';
+import HorizontalBar from '@/app/dashboard/afiliados/horizontalBar';
 
 const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
   ssr: false,
@@ -164,6 +164,7 @@ export default function AfiliadosPage() {
             label: origin.originDesc,
             percentage: parseFloat(percentage.toFixed(2)), // Parse to number
             id: String(origin.origin),
+            total: origin.count,
           };
           return dataItem;
         });
@@ -187,20 +188,13 @@ export default function AfiliadosPage() {
           (delegation: Delegation) => {
             const percentage =
               (parseFloat(delegation.count) / totalCount) * 100;
-            return { ...delegation, percentage: percentage.toFixed(2) }; // Add percentage property
-          }
-        );
-
-        processedData = dataResponse.delegations.map(
-          (delegation: Delegation) => {
-            const percentage =
-              (parseFloat(delegation.count) / totalCount) * 100;
 
             // Type conversion and creation of DataItem object
             const dataItem: DataItem = {
               label: delegation.delegationDesc,
               percentage: parseFloat(percentage.toFixed(2)), // Parse to number
               id: String(delegation.delegation),
+              total: delegation.count,
             };
             return dataItem;
           }
@@ -308,13 +302,13 @@ export default function AfiliadosPage() {
         </p>
       </div>
 
-      <div className='flex m-10 gap-5'>
+      <div className='flex mx-10 my-4 gap-5'>
         <CardAfiliados affiliates={affiliatesCount} />
         <CardOtros affiliates={othersCount} />
       </div>
 
       {/* Bloque principal */}
-      <div className='m-10 py-5 bg-white rounded'>
+      <div className='mx-10 py-5 bg-white rounded'>
         <div className='px-7 pt-4 pb-2 relative'>
           <h3 className='font-bold'>
             Distribución de padrón por{' '}
@@ -353,12 +347,17 @@ export default function AfiliadosPage() {
         </div>
 
         {/* BLOQUE DE CONTENIDO */}
-        <div className='flex h-[450px] overflow-y-auto p-5 relative'>
+        <div className='flex h-[360px] overflow-y-auto p-5 relative'>
           {loading === true && <p className='px-2'>Cargando...</p>}
           {!loading && !trendData && graphData?.length > 0 && (
-            <span className='absolute top-0 right-5 text-xs text-gray-500'>
-              Porcentaje
-            </span>
+            <>
+              <span className='absolute top-0 right-32 text-xs text-gray-500'>
+                Cantidad
+              </span>
+              <span className='absolute top-0 right-5 text-xs text-gray-500'>
+                Porcentaje
+              </span>
+            </>
           )}
 
           {/* Lista lateral de origenes/delegaciones */}
@@ -369,7 +368,7 @@ export default function AfiliadosPage() {
                   key={item.id}
                   onClick={() => handleListClick(item.id)}
                   className={`
-                  px-4 py-2 hover:bg-gray-100 hover:rounded-[10px] cursor-pointer text-sm flex items-center relative
+                  px-4 py-2 font-bold hover:bg-gray-100 hover:rounded-[10px] cursor-pointer text-sm flex items-center relative
                   ${
                     selectedId === item.id
                       ? 'rounded-[10px] text-white bg-gradient-to-r from-[#56CFE1] to-[#0560EA]'
@@ -390,6 +389,7 @@ export default function AfiliadosPage() {
                   key={index}
                   leftLabel={item.label}
                   barWidth={item.percentage}
+                  total={item.total}
                   onClick={() => handleBarClick(item.id)}
                 />
               ))}
