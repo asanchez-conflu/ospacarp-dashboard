@@ -1,3 +1,4 @@
+import { formatNumberWithDots, formatNumberWithSuffix } from '@/utils/utils';
 import { MdTrendingDown } from 'react-icons/md';
 
 interface ExpensesCardProps {
@@ -6,45 +7,21 @@ interface ExpensesCardProps {
 }
 
 const ExpensesCard: React.FC<ExpensesCardProps> = ({ month, amount }) => {
-  const formattedAmount = formatNumberWithLetters(amount); // Format amount
-
   return (
-    <div className='bg-white rounded-lg shadow-md p-6 w-full'>
+    <div className='bg-white rounded-lg shadow-md p-3 w-full h-[140px] flex flex-col justify-between'>
       <div className='flex items-center justify-between'>
-        <div>
-          <h3 className='text-xl font-semibold'>Egresos</h3>
-          <p className='text-gray-500 text-sm'>{month}</p>
-        </div>
-        <MdTrendingDown className='text-2xl' />
+        <h3 className='text-xl font-semibold'>Egresos</h3>
+        <MdTrendingDown className='text-2xl ml-2' />
       </div>
-      <div className='mt-4'>
-        <p className='text-2xl font-bold'>{formattedAmount}</p>{' '}
-        {/* Use formatted amount */}
-        <p className='text-gray-500 text-sm'>{amount}</p>{' '}
-        {/* Detail (hardcoded for now) */}
+      <div>
+        <p className='text-gray-500 text-sm'>{month}</p>
+      </div>
+      <div className='mt-4 text-right'>
+        <p className='text-2xl font-bold'>{formatNumberWithSuffix(amount)}</p>
+        <p className='text-gray-500 text-sm'>{formatNumberWithDots(amount)}</p>
       </div>
     </div>
   );
 };
-
-function formatNumberWithLetters(amount: string): string {
-  let num = parseFloat(amount); // Parse to a number, use let for reassignment
-
-  if (isNaN(num)) {
-    return 'Invalid Number';
-  }
-
-  const absNum = Math.abs(num);
-  const suffixes = ['', 'K', 'M', 'B', 'T'];
-  let i = 0;
-
-  while (absNum >= 1000 && i < suffixes.length - 1) {
-    num /= 1000; // Now num can be reassigned
-    i++;
-  }
-
-  const formatted = num.toFixed(1).replace(/\.0$/, '');
-  return formatted + suffixes[i];
-}
 
 export default ExpensesCard;

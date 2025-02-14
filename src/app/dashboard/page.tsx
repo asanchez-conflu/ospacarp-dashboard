@@ -5,6 +5,8 @@ import { MdFavorite } from 'react-icons/md';
 import dynamic from 'next/dynamic';
 import { TooltipItem } from 'chart.js';
 import ExpensesCard from './expensesCard';
+import IncomesCard from './incomesCard';
+import AffiliatesCard from './affiliatesCard';
 
 const DonutChart = dynamic(
   () => import('react-chartjs-2').then(({ Doughnut }) => Doughnut), // Import Doughnut
@@ -119,16 +121,14 @@ const HomePage: React.FC = () => {
         <div className='md:w-2/3 flex flex-col gap-4'>
           {/* Top Row of Small Blocks */}
           <div className='flex gap-4'>
-            <div className='w-1/3 bg-white rounded-lg shadow-md p-4'>
-              {/* Content for small block 1 */}
-              Small 1
+            <div className='w-1/3'>
+              <IncomesCard month='Febrero' amount='3000500000' />
             </div>
             <div className='w-1/3'>
               <ExpensesCard month='Febrero' amount='2940526218' />
             </div>
-            <div className='w-1/3 bg-white rounded-lg shadow-md p-4'>
-              {/* Content for small block 3 */}
-              Small 3
+            <div className='w-1/3'>
+              <AffiliatesCard amount='88053' />
             </div>
           </div>
 

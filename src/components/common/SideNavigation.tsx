@@ -13,7 +13,7 @@ const Sidebar = () => {
     <aside className='fixed top-0 left-0 p-4 bg-white h-screen w-[250px] 2xl:w-[300px] flex flex-col '>
       <div className='flex flex-col items-center mb-4'>
         <div className='w-16 h-16 rounded-full flex items-center justify-center bg-blue-500'>
-          <span className='text-2xl font-semibold'>MO</span>
+          <span className='text-2xl font-semibold text-white '>MO</span>
         </div>
         <div className='text-center'>
           <h2 className='text-lg font-semibold'>Milton Olivera</h2>
