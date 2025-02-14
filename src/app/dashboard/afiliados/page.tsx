@@ -352,7 +352,7 @@ export default function AfiliadosPage() {
           {!loading && !trendData && graphData?.length > 0 && (
             <>
               <span className='absolute top-0 right-32 text-xs text-gray-500'>
-                Monto
+                Cantidad
               </span>
               <span className='absolute top-0 right-5 text-xs text-gray-500'>
                 Porcentaje
@@ -368,7 +368,7 @@ export default function AfiliadosPage() {
                   key={item.id}
                   onClick={() => handleListClick(item.id)}
                   className={`
-                  px-4 py-2 hover:bg-gray-100 hover:rounded-[10px] cursor-pointer text-sm flex items-center relative
+                  px-4 py-2 font-bold hover:bg-gray-100 hover:rounded-[10px] cursor-pointer text-sm flex items-center relative
                   ${
                     selectedId === item.id
                       ? 'rounded-[10px] text-white bg-gradient-to-r from-[#56CFE1] to-[#0560EA]'

@@ -13,7 +13,7 @@ const IncomesCard: React.FC<IncomesCardProps> = ({
   previous,
 }) => {
   return (
-    <div className='bg-[#0560EA] text-white rounded-lg shadow-md p-3 w-full h-[140px] flex flex-col justify-between'>
+    <div className='bg-[#0560EA] text-white rounded-lg p-3 w-full h-[140px] flex flex-col justify-between'>
       <div className='flex items-center justify-between'>
         <h3 className='text-xl font-semibold'>Ingresos</h3>
         <MdTrendingUp className='text-2xl ml-2' />

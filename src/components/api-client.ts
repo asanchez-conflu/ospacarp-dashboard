@@ -56,13 +56,13 @@ const incomesEndpoints = {
 
 const homeEndpoints = {
   incomeVsExpense:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/income-vs-expense?Period=202501&Clientappid=21',
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/income-vs-expense?Period=202412&Clientappid=21',
   trends:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/trends?Startperiod=202402&Endperiod=202501&Clientappid=21',
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/trends?Startperiod=202403&Endperiod=202502&Clientappid=21',
   affiliates:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/affiliates?Period=202501&Clientappid=21',
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/affiliates?Period=202412&Clientappid=21',
   totals:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/total?Period=202501&Clientappid=21',
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/total?Period=202412&Clientappid=21',
 };
 
 const handleApiError = (error: unknown) => {

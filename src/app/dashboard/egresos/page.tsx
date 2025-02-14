@@ -352,7 +352,7 @@ export default function EgresosPage() {
                   key={item.id}
                   onClick={() => handleListClick(item.id)}
                   className={`
-                  px-4 py-2 hover:bg-gray-100 hover:rounded-[10px] cursor-pointer text-sm flex items-center relative
+                  px-4 py-2 hover:bg-gray-100 hover:rounded-[10px] cursor-pointer text-sm flex items-center relative font-bold
                   ${
                     selectedId === item.id
                       ? 'rounded-[10px] text-white bg-gradient-to-r from-[#0560EA] via-[#FF9441]/95 to-[#FF9441]'

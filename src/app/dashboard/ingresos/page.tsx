@@ -366,7 +366,7 @@ export default function IngresosPage() {
                   key={item.id}
                   onClick={() => handleListClick(item.id)}
                   className={`
-                  px-4 py-2 hover:bg-gray-100 hover:rounded-[10px] cursor-pointer text-sm flex items-center relative
+                  px-4 py-2 hover:bg-gray-100 hover:rounded-[10px] cursor-pointer text-sm flex items-center relative  font-bold
                   ${
                     selectedId === item.id
                       ? 'rounded-[10px] text-white bg-gradient-to-r from-[#56CFE1] to-[#0560EA]'

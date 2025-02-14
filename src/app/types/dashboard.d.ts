@@ -29,4 +29,20 @@ interface DashboardData {
   trends: TrendsData | null; // Trends can be null initially
 }
 
-export { DashboardData, VersusData, TrendsData, TotalsData, CardData };
+interface TrendItem {
+  expenses: string;
+  income: string;
+  month: string;
+  monthName: string;
+  percentageExpenses: string;
+  percentageIncome: string;
+}
+
+export {
+  DashboardData,
+  VersusData,
+  TrendsData,
+  TotalsData,
+  CardData,
+  TrendItem,
+};

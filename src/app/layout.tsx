@@ -1,7 +1,7 @@
-import { Inter } from 'next/font/google';
+import { Raleway } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
+const raleway = Raleway({ subsets: ['latin'] });
 
 export default function RootLayout({
   children,
@@ -13,7 +13,7 @@ export default function RootLayout({
       <head>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
       </head>
-      <body className={`${inter.className} min-h-screen text-black`}>
+      <body className={`${raleway.className} min-h-screen text-[#2A2A2A]`}>
         {children}
       </body>
     </html>

@@ -14,7 +14,7 @@ import {
   getTotals,
 } from '@/components/api-client';
 import 'chart.js/auto';
-import { DashboardData, VersusData } from '@/app/types/dashboard';
+import { DashboardData, VersusData, TrendItem } from '@/app/types/dashboard';
 
 const DonutChart = dynamic(
   () => import('react-chartjs-2').then(({ Doughnut }) => Doughnut),
@@ -60,6 +60,44 @@ const options: ChartOptions<'doughnut'> = {
   rotation: 90,
 };
 
+const trendOptions: ChartOptions<'line'> = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: false,
+    },
+  },
+  scales: {
+    x: {
+      type: 'category', // For category scale on x-axis (labels)
+      grid: {
+        display: false,
+      },
+    },
+    y: {
+      type: 'linear', // For linear scale on y-axis (numbers)
+      position: 'left', // Y-axis on the right
+      grid: {
+        display: true,
+      },
+      ticks: {
+        display: true,
+      },
+    },
+    y1: {
+      type: 'linear',
+      position: 'right',
+      grid: {
+        display: false,
+      },
+      ticks: {
+        display: false,
+      },
+    },
+  },
+};
+
 const HomePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState<DashboardData>({
@@ -85,9 +123,11 @@ const HomePage: React.FC = () => {
     number[],
     unknown
   > | null>(null);
-  const [trendsChartData, setTrendsChartData] = useState<ChartData | null>(
-    null
-  );
+  const [trendsChartData, setTrendsChartData] = useState<ChartData<
+    'line',
+    number[],
+    unknown
+  > | null>(null);
 
   const convertVersusData = (data: VersusData) => {
     if (data) {
@@ -106,7 +146,7 @@ const HomePage: React.FC = () => {
         datasets: [
           {
             data: [incomePercentage, expensePercentage],
-            backgroundColor: ['#0EA5E9', '#172554'],
+            backgroundColor: ['#56CFE1', '#0560EA'],
             borderColor: 'transparent',
             borderRadius: 10,
             hoverOffset: 20,
@@ -117,23 +157,60 @@ const HomePage: React.FC = () => {
     }
   };
 
+  const convertTrendData = (trendData: TrendItem[]) => {
+    const labels = trendData.map((item) => item.monthName);
+    const incomeData = trendData.map((item) => parseInt(item.income, 10)); // Parse to number
+    const expenseData = trendData.map((item) => parseInt(item.expenses, 10)); // Parse to number
+
+    const data = {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Ingresos',
+          data: incomeData,
+          fill: false,
+          borderColor: '#56CFE1',
+          tension: 0.5,
+          pointRadius: 0,
+          yAxisID: 'y',
+        },
+        {
+          label: 'Egresos',
+          data: expenseData,
+          fill: false,
+          borderColor: '#0560EA',
+          tension: 0.5,
+          pointRadius: 0,
+          yAxisID: 'y1',
+        },
+      ],
+      type: 'line' as const,
+    };
+    setTrendsChartData(data);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const totals = await getTotals();
         const versus = await fetchDashboardVS();
         const cards = await fetchDashboardTotals();
-        // const trends = await fetchDashboardTrends();
+        const trends = await fetchDashboardTrends();
 
         const data = {
           totals: totals,
           versus: versus,
           cards: cards,
-          trends: null,
+          trends: trends,
         };
 
         setDashboardData(data);
         convertVersusData(data.versus);
+
+        if (data.trends && data.trends.trend) {
+          convertTrendData(data.trends.trend);
+        }
+
         console.log('DATA: ', data);
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -164,11 +241,11 @@ const HomePage: React.FC = () => {
       {/* Bloque de contenido */}
       <div className='flex flex-col md:flex-row gap-4 mx-10'>
         {/* Gráfico de dona */}
-        <div className='md:w-1/3 bg-white rounded-lg shadow-md p-6'>
+        <div className='md:w-1/3 bg-white rounded-lg p-6'>
           {!loading && versusChartData && (
             <>
               <h2 className='text-2xl font-bold'>Ingresos y Egresos</h2>
-              <p className='text-gray-500'>Mes de Febrero</p>
+              <p className='text-gray-500'>Mes de Diciembre</p>
               <div className='w-full h-[380px]'>
                 <DonutChart data={versusChartData} options={options} />
               </div>
@@ -177,7 +254,7 @@ const HomePage: React.FC = () => {
                   <div
                     className='w-4 h-4 rounded-full mr-2 my-2'
                     style={{
-                      backgroundColor: '#0EA5E9',
+                      backgroundColor: '#56CFE1',
                     }}
                   ></div>
                   <div className='font-bold text-3xl'>
@@ -189,7 +266,7 @@ const HomePage: React.FC = () => {
                   <div
                     className='w-4 h-4 rounded-full mr-2 my-2'
                     style={{
-                      backgroundColor: '#172554',
+                      backgroundColor: '#0560EA',
                     }}
                   ></div>
                   <div className='font-bold text-3xl'>
@@ -207,14 +284,14 @@ const HomePage: React.FC = () => {
           <div className='flex gap-4'>
             <div className='w-1/3'>
               <IncomesCard
-                month='Febrero'
+                month='Diciembre'
                 current={dashboardData.cards.currentIncome}
                 previous={dashboardData.cards.previousIncome}
               />
             </div>
             <div className='w-1/3'>
               <ExpensesCard
-                month='Febrero'
+                month='Diciembre'
                 current={dashboardData.cards.currentExpense}
                 previous={dashboardData.cards.previousExpense}
               />
@@ -225,8 +302,34 @@ const HomePage: React.FC = () => {
           </div>
 
           {/* Gráfico de tendencias */}
-          <div className='bg-white rounded-lg shadow-md p-6'>
-            {!loading && <>Right Bottom Big Block</>}
+          <div className='bg-white rounded-lg p-6'>
+            {!loading && (
+              <div className='mb-5'>
+                <div className='flex items-center justify-between'>
+                  <span className='font-bold text-xl mr-4'>Tendencias</span>
+                  <div className='flex items-center'>
+                    <div className='flex items-center mr-4'>
+                      <div className='w-2 h-2 rounded-full bg-[#56CFE1] mr-2'></div>
+                      <span className='text-gray-700'>Ingresos</span>
+                    </div>
+                    <div className='flex items-center'>
+                      <div className='w-2 h-2 rounded-full bg-[#0560EA] mr-2'></div>
+                      <span className='text-gray-700'>Egresos</span>
+                    </div>
+                  </div>
+                </div>
+                <span className='text-sm text-gray-500 mr-8'>Último año</span>{' '}
+              </div>
+            )}
+            {!loading && trendsChartData && (
+              <div className='pl-6 w-full h-[320px]'>
+                {trendsChartData.labels &&
+                  trendsChartData.datasets &&
+                  trendsChartData.datasets.length > 0 && (
+                    <Line data={trendsChartData} options={trendOptions} />
+                  )}
+              </div>
+            )}
           </div>
         </div>
       </div>
