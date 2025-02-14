@@ -164,6 +164,7 @@ export default function AfiliadosPage() {
             label: origin.originDesc,
             percentage: parseFloat(percentage.toFixed(2)), // Parse to number
             id: String(origin.origin),
+            total: origin.count,
           };
           return dataItem;
         });
@@ -193,6 +194,7 @@ export default function AfiliadosPage() {
               label: delegation.delegationDesc,
               percentage: parseFloat(percentage.toFixed(2)), // Parse to number
               id: String(delegation.delegation),
+              total: delegation.count,
             };
             return dataItem;
           }
@@ -348,9 +350,14 @@ export default function AfiliadosPage() {
         <div className='flex h-[360px] overflow-y-auto p-5 relative'>
           {loading === true && <p className='px-2'>Cargando...</p>}
           {!loading && !trendData && graphData?.length > 0 && (
-            <span className='absolute top-0 right-5 text-xs text-gray-500'>
-              Porcentaje
-            </span>
+            <>
+              <span className='absolute top-0 right-32 text-xs text-gray-500'>
+                Monto
+              </span>
+              <span className='absolute top-0 right-5 text-xs text-gray-500'>
+                Porcentaje
+              </span>
+            </>
           )}
 
           {/* Lista lateral de origenes/delegaciones */}
@@ -382,6 +389,7 @@ export default function AfiliadosPage() {
                   key={index}
                   leftLabel={item.label}
                   barWidth={item.percentage}
+                  total={item.total}
                   onClick={() => handleBarClick(item.id)}
                 />
               ))}
