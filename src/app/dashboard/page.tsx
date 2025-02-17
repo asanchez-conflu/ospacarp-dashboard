@@ -146,7 +146,7 @@ const HomePage: React.FC = () => {
         datasets: [
           {
             data: [incomePercentage, expensePercentage],
-            backgroundColor: ['#56CFE1', '#0560EA'],
+            backgroundColor: ['#0560EA', '#56CFE1'],
             borderColor: 'transparent',
             borderRadius: 10,
             hoverOffset: 20,
@@ -169,7 +169,7 @@ const HomePage: React.FC = () => {
           label: 'Ingresos',
           data: incomeData,
           fill: false,
-          borderColor: '#56CFE1',
+          borderColor: '#0560EA',
           tension: 0.5,
           pointRadius: 0,
           yAxisID: 'y',
@@ -178,7 +178,7 @@ const HomePage: React.FC = () => {
           label: 'Egresos',
           data: expenseData,
           fill: false,
-          borderColor: '#0560EA',
+          borderColor: '#56CFE1',
           tension: 0.5,
           pointRadius: 0,
           yAxisID: 'y1',
@@ -254,7 +254,7 @@ const HomePage: React.FC = () => {
                   <div
                     className='w-4 h-4 rounded-full mr-2 my-2'
                     style={{
-                      backgroundColor: '#56CFE1',
+                      backgroundColor: '#0560EA',
                     }}
                   ></div>
                   <div className='font-bold text-3xl'>
@@ -266,7 +266,7 @@ const HomePage: React.FC = () => {
                   <div
                     className='w-4 h-4 rounded-full mr-2 my-2'
                     style={{
-                      backgroundColor: '#0560EA',
+                      backgroundColor: '#56CFE1',
                     }}
                   ></div>
                   <div className='font-bold text-3xl'>
@@ -297,7 +297,7 @@ const HomePage: React.FC = () => {
               />
             </div>
             <div className='w-1/3'>
-              <AffiliatesCard amount={dashboardData.totals.total} />
+              <AffiliatesCard amount={dashboardData.totals.totalMembers} />
             </div>
           </div>
 
@@ -309,11 +309,11 @@ const HomePage: React.FC = () => {
                   <span className='font-bold text-xl mr-4'>Tendencias</span>
                   <div className='flex items-center'>
                     <div className='flex items-center mr-4'>
-                      <div className='w-2 h-2 rounded-full bg-[#56CFE1] mr-2'></div>
+                      <div className='w-2 h-2 rounded-full bg-[#0560EA] mr-2'></div>
                       <span className='text-gray-700'>Ingresos</span>
                     </div>
                     <div className='flex items-center'>
-                      <div className='w-2 h-2 rounded-full bg-[#0560EA] mr-2'></div>
+                      <div className='w-2 h-2 rounded-full bg-[#56CFE1] mr-2'></div>
                       <span className='text-gray-700'>Egresos</span>
                     </div>
                   </div>

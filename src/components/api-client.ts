@@ -1,26 +1,26 @@
 import axios from 'axios';
 
 // Poner fechas dinamicas
-const endpoints = {
+export const endpoints = {
   totals:
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/totals?Clientappid=21&Excludeorigins=3,7,13&Period=202501',
   origin: {
-    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=202405',
+    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=202405&Excludeorigins=3,7,13',
     specific:
-      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=202501&Delegation=:originId',
+      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=202501&Delegation=:originId&Excludeorigins=3,7,13',
   },
   delegations: {
-    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202405',
+    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202405&Excludeorigins=3,7,13',
     specific:
-      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202501&Origin=:delegationId',
+      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202501&Origin=:delegationId&Excludeorigins=3,7,13',
   },
   trendsOrigin:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/origin?Clientappid=21&Startperiod=202402&Endperiod=202501&Origin=:id',
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/origin?Clientappid=21&Startperiod=202402&Endperiod=202501&Origin=:id&Excludeorigins=3,7,13',
   trendsDelegation:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/delegation?Clientappid=21&Startperiod=202402&Endperiod=202501&Delegation=:id',
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/delegation?Clientappid=21&Startperiod=202402&Endperiod=202501&Delegation=:id&Excludeorigins=3,7,13',
 };
 
-const expensesEndpoints = {
+export const expensesEndpoints = {
   origin: {
     all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/origins?Clientappid=21&Period=202501',
     specific:
@@ -37,7 +37,7 @@ const expensesEndpoints = {
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/history/delegation?Clientappid=21&Delegation=:id&Startperiod=202402&Endperiod=202501',
 };
 
-const incomesEndpoints = {
+export const incomesEndpoints = {
   origin: {
     all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/origins?Clientappid=21&Period=202501',
     specific:
@@ -54,15 +54,39 @@ const incomesEndpoints = {
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/history/delegation?Clientappid=21&Delegation=:id&Startperiod=202402&Endperiod=202501',
 };
 
-const homeEndpoints = {
-  incomeVsExpense:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/income-vs-expense?Period=202412&Clientappid=21',
-  trends:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/trends?Startperiod=202403&Endperiod=202502&Clientappid=21',
-  affiliates:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/affiliates?Period=202412&Clientappid=21',
-  totals:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/total?Period=202412&Clientappid=21',
+export const homeEndpoints = {
+  incomeVsExpense: (period: string): string =>
+    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/income-vs-expense?Period=${period}&Clientappid=21`,
+  trends: (startPeriod: string, endPeriod: string): string =>
+    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/trends?Startperiod=${startPeriod}&Endperiod=${endPeriod}&Clientappid=21`,
+  affiliates: (period: string): string =>
+    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/affiliates?Period=${period}&Clientappid=21&Excludeorigins=3,7,13`,
+  totals: (period: string): string =>
+    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/total?Period=${period}&Clientappid=21`,
+};
+
+// &Excludeorigins=3,7,13
+
+export const loginEndpoints = {
+  userdata:
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/userdata/guid?Userid=:userid',
+};
+
+type Period = string;
+
+const getPeriod = (monthsToSubtract: number = 2): Period => {
+  const today = new Date();
+  let year = today.getFullYear();
+  let month = today.getMonth() + 1 - monthsToSubtract; // Months are 0-indexed
+
+  if (month <= 0) {
+    month = 12 + month; // Adjust for previous year
+    year--;
+  }
+
+  const formattedMonth = month < 10 ? `0${month}` : `${month}`;
+
+  return `${year}${formattedMonth}`;
 };
 
 const handleApiError = (error: unknown) => {
@@ -287,11 +311,12 @@ export const fetchIncomesHistoricData = async (
 };
 
 // Dashboard endpoints
-
 export const fetchDashboardVS = async () => {
   try {
+    const period = getPeriod();
     const token = localStorage.getItem('jwt');
-    const response = await axios.get(homeEndpoints.incomeVsExpense, {
+    const url = homeEndpoints.incomeVsExpense(period); // Use typed endpoints
+    const response = await axios.get(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
@@ -302,8 +327,10 @@ export const fetchDashboardVS = async () => {
 
 export const fetchDashboardTotals = async () => {
   try {
+    const period = getPeriod();
     const token = localStorage.getItem('jwt');
-    const response = await axios.get(homeEndpoints.totals, {
+    const url = homeEndpoints.totals(period); // Use typed endpoints
+    const response = await axios.get(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
@@ -314,8 +341,11 @@ export const fetchDashboardTotals = async () => {
 
 export const fetchDashboardTrends = async () => {
   try {
+    const endPeriod = getPeriod();
+    const startPeriod = getPeriod(12);
     const token = localStorage.getItem('jwt');
-    const response = await axios.get(homeEndpoints.trends, {
+    const url = homeEndpoints.trends(startPeriod, endPeriod); // Use typed endpoints
+    const response = await axios.get(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
