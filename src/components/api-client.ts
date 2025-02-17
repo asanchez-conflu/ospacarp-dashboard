@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Poner fechas dinamicas
-const endpoints = {
+export const endpoints = {
   totals:
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/totals?Clientappid=21&Excludeorigins=3,7,13&Period=202501',
   origin: {
@@ -20,7 +20,7 @@ const endpoints = {
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/delegation?Clientappid=21&Startperiod=202402&Endperiod=202501&Delegation=:id',
 };
 
-const expensesEndpoints = {
+export const expensesEndpoints = {
   origin: {
     all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/origins?Clientappid=21&Period=202501',
     specific:
@@ -37,7 +37,7 @@ const expensesEndpoints = {
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/history/delegation?Clientappid=21&Delegation=:id&Startperiod=202402&Endperiod=202501',
 };
 
-const incomesEndpoints = {
+export const incomesEndpoints = {
   origin: {
     all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/origins?Clientappid=21&Period=202501',
     specific:
@@ -54,15 +54,22 @@ const incomesEndpoints = {
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/history/delegation?Clientappid=21&Delegation=:id&Startperiod=202402&Endperiod=202501',
 };
 
-const homeEndpoints = {
+export const homeEndpoints = {
   incomeVsExpense:
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/income-vs-expense?Period=202412&Clientappid=21',
   trends:
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/trends?Startperiod=202403&Endperiod=202502&Clientappid=21',
   affiliates:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/affiliates?Period=202412&Clientappid=21',
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/affiliates?Period=202412&Clientappid=21&Excludeorigins=3,7,13',
   totals:
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/total?Period=202412&Clientappid=21',
+};
+
+// &Excludeorigins=3,7,13
+
+export const loginEndpoints = {
+  userdata:
+    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/userdata/guid?Userid=:userid',
 };
 
 const handleApiError = (error: unknown) => {
