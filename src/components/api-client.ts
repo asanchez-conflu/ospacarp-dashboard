@@ -1,23 +1,30 @@
 import axios from 'axios';
 
-// Poner fechas dinamicas
+type Period = string;
+
 export const endpoints = {
-  totals:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/totals?Clientappid=21&Excludeorigins=3,7,13&Period=202501',
+  totals: (period: Period): string =>
+    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/totals?Clientappid=21&Excludeorigins=3,7,13&Period=${period}`,
   origin: {
-    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=202405&Excludeorigins=3,7,13',
-    specific:
-      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=202501&Delegation=:originId&Excludeorigins=3,7,13',
+    all: (period: Period): string =>
+      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=${period}&Excludeorigins=3,7,13`,
+    specific: (period: Period, originId: string): string =>
+      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=${period}&Delegation=${originId}&Excludeorigins=3,7,13`, // Corrected Delegation param
   },
   delegations: {
-    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202405&Excludeorigins=3,7,13',
-    specific:
-      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202501&Origin=:delegationId&Excludeorigins=3,7,13',
+    all: (period: Period): string =>
+      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=${period}&Excludeorigins=3,7,13`,
+    specific: (period: Period, delegationId: string): string =>
+      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=${period}&Origin=${delegationId}&Excludeorigins=3,7,13`, // Corrected Origin param
   },
-  trendsOrigin:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/origin?Clientappid=21&Startperiod=202402&Endperiod=202501&Origin=:id&Excludeorigins=3,7,13',
-  trendsDelegation:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/delegation?Clientappid=21&Startperiod=202402&Endperiod=202501&Delegation=:id&Excludeorigins=3,7,13',
+  trendsOrigin: (startPeriod: Period, endPeriod: Period, id: string): string =>
+    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/origin?Clientappid=21&Startperiod=${startPeriod}&Endperiod=${endPeriod}&Origin=${id}&Excludeorigins=3,7,13`,
+  trendsDelegation: (
+    startPeriod: Period,
+    endPeriod: Period,
+    id: string
+  ): string =>
+    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/delegation?Clientappid=21&Startperiod=${startPeriod}&Endperiod=${endPeriod}&Delegation=${id}&Excludeorigins=3,7,13`,
 };
 
 export const expensesEndpoints = {
@@ -72,8 +79,6 @@ export const loginEndpoints = {
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/userdata/guid?Userid=:userid',
 };
 
-type Period = string;
-
 const getPeriod = (monthsToSubtract: number = 2): Period => {
   const today = new Date();
   let year = today.getFullYear();
@@ -112,8 +117,9 @@ const handleApiError = (error: unknown) => {
 // Function to fetch totals
 export const getTotals = async () => {
   try {
+    const period = getPeriod();
     const token = localStorage.getItem('jwt');
-    const response = await axios.get(endpoints.totals, {
+    const response = await axios.get(endpoints.totals(period), {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
@@ -128,24 +134,22 @@ export const fetchAffiliates = async (
   id: string | null = null
 ) => {
   try {
-    console.log('> Fetching ID: ', id);
-    console.log('> Fetching type: ', filterType);
-
+    const period = getPeriod();
     const token = localStorage.getItem('jwt');
-    let endpoint = '';
+    let endpoint: string = '';
 
     if (filterType === 'origin') {
       endpoint = id
-        ? endpoints.delegations.specific.replace(':delegationId', id)
-        : endpoints.origin.all;
+        ? endpoints.delegations.specific(period, id)
+        : endpoints.origin.all(period);
     } else if (filterType === 'delegations') {
       endpoint = id
-        ? endpoints.origin.specific.replace(':originId', id)
-        : endpoints.delegations.all;
+        ? endpoints.origin.specific(period, id)
+        : endpoints.delegations.all(period);
+    } else {
+      console.error('Invalid filterType:', filterType);
+      throw new Error('Invalid filterType');
     }
-
-    console.log('> Endpoint: ');
-    console.log(endpoint);
 
     const response = await axios.get(endpoint, {
       headers: { Authorization: `Bearer ${token}` },
@@ -162,22 +166,18 @@ export const fetchTrendsData = async (
   id: string
 ) => {
   try {
-    console.log('> Fetching Trends ID: ', id);
-    console.log('> Fetching Trends type: ', filterType);
-
     const token = localStorage.getItem('jwt');
-    let endpoint = '';
+    let endpoint: string = '';
+    const endPeriod = getPeriod();
+    const startPeriod = getPeriod(13);
 
     if (filterType === 'origin') {
-      endpoint = endpoints.trendsOrigin.replace(':id', id);
+      endpoint = endpoints.trendsOrigin(startPeriod, endPeriod, id);
     } else if (filterType === 'delegations') {
-      endpoint = endpoints.trendsDelegation.replace(':id', id);
+      endpoint = endpoints.trendsDelegation(startPeriod, endPeriod, id);
     } else {
       throw new Error('Invalid type provided');
     }
-
-    console.log('> Endpoint: ');
-    console.log(endpoint);
 
     const response = await axios.get(endpoint, {
       headers: { Authorization: `Bearer ${token}` },
@@ -342,7 +342,7 @@ export const fetchDashboardTotals = async () => {
 export const fetchDashboardTrends = async () => {
   try {
     const endPeriod = getPeriod();
-    const startPeriod = getPeriod(12);
+    const startPeriod = getPeriod(13);
     const token = localStorage.getItem('jwt');
     const url = homeEndpoints.trends(startPeriod, endPeriod); // Use typed endpoints
     const response = await axios.get(url, {
