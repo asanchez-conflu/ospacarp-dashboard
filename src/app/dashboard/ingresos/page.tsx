@@ -150,8 +150,13 @@ export default function IngresosPage() {
         );
 
         processedData = dataResponse.origins.map((origin: ExpensesOrigin) => {
-          const percentage = (parseFloat(origin.total) / totalCount) * 100;
+          const percentage =
+            totalCount === 0
+              ? 0
+              : (parseFloat(origin.total) / totalCount) * 100;
+
           const percentageValue = parseFloat(percentage.toFixed(2));
+
           const displayPercentage = isNaN(percentageValue)
             ? 0
             : percentageValue;
@@ -186,8 +191,12 @@ export default function IngresosPage() {
         processedData = dataResponse.delegations.map(
           (delegation: ExpensesDelegation) => {
             const percentage =
-              (parseFloat(delegation.total) / totalCount) * 100;
+              totalCount === 0
+                ? 0
+                : (parseFloat(delegation.total) / totalCount) * 100;
+
             const percentageValue = parseFloat(percentage.toFixed(2));
+
             const displayPercentage = isNaN(percentageValue)
               ? 0
               : percentageValue;
@@ -320,19 +329,33 @@ export default function IngresosPage() {
               <PopoverButton className='absolute top-4 right-7 p-2 bg-white rounded-md shadow-md hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all duration-75'>
                 <MdTune size={20} color='black' />
               </PopoverButton>
-              <PopoverPanel className='absolute right-7 top-12 w-48 bg-white rounded-md shadow-lg z-10'>
+              <PopoverPanel className='absolute right-7 top-12 w-48 bg-[#F6F7FB] font-semibold rounded-md shadow-lg z-10'>
                 <div className='p-2'>
                   <PopoverGroup>
                     <PopoverButton
                       as='button'
-                      className='block px-4 py-2 w-full text-left text-sm text-gray-700 hover:bg-gray-200 rounded-md'
+                      className={`
+                        block px-4 py-2 w-full text-left text-sm text-[#2A2A2A] hover:bg-gray-200 rounded-md
+                        ${
+                          filterType === 'origin'
+                            ? 'text-white bg-[#0560EA]'
+                            : ''
+                        }
+                      `}
                       onClick={() => handleFilterSelect('origin')}
                     >
                       Origen
                     </PopoverButton>
                     <PopoverButton
                       as='button'
-                      className='block px-4 py-2 w-full text-left text-sm text-gray-700 hover:bg-gray-200 rounded-md'
+                      className={`
+                        block px-4 py-2 w-full text-left text-sm text-[#2A2A2A] hover:bg-gray-200 rounded-md
+                        ${
+                          filterType === 'delegations'
+                            ? 'text-white bg-[#0560EA]'
+                            : ''
+                        }
+                      `}
                       onClick={() => handleFilterSelect('delegations')}
                     >
                       Delegación
@@ -345,7 +368,7 @@ export default function IngresosPage() {
         </div>
 
         {/* BLOQUE DE CONTENIDO */}
-        <div className='flex h-[360px] overflow-y-auto p-5 relative'>
+        <div className='flex h-[360px]  p-5 relative'>
           {loading === true && <p className='px-2'>Cargando...</p>}
           {!loading && !trendData && graphData?.length > 0 && (
             <>
@@ -360,7 +383,13 @@ export default function IngresosPage() {
 
           {/* Lista lateral de origenes/delegaciones */}
           {!loading && selectedId && (
-            <ul className='w-64 border-r-2 pr-2 space-y-3 border-[#0560EA]'>
+            <ul
+              className='w-64 border-r-2 pr-2 space-y-3 border-[#0560EA] overflow-y-auto'
+              style={{
+                msOverflowStyle: 'none',
+                scrollbarWidth: 'none',
+              }}
+            >
               {listData.map((item) => (
                 <li
                   key={item.id}
@@ -381,7 +410,13 @@ export default function IngresosPage() {
           )}
           {/* Grafico de barras */}
           {!loading && !trendData && graphData?.length > 0 && (
-            <div className='flex flex-col w-full gap-3 pl-6'>
+            <div
+              className='flex flex-col w-full gap-3 pl-6 overflow-y-auto'
+              style={{
+                msOverflowStyle: 'none',
+                scrollbarWidth: 'none',
+              }}
+            >
               {graphData?.map((item, index) => (
                 <HorizontalBar
                   key={index}

@@ -1,57 +1,77 @@
+import { getPeriod } from '@/utils/utils';
 import axios from 'axios';
 
-// Poner fechas dinamicas
+type Period = string;
+
 export const endpoints = {
-  totals:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/totals?Clientappid=21&Excludeorigins=3,7,13&Period=202501',
+  totals: (period: Period): string =>
+    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/totals?Clientappid=21&Excludeorigins=3,7,13&Period=${period}`,
   origin: {
-    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=202405&Excludeorigins=3,7,13',
-    specific:
-      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=202501&Delegation=:originId&Excludeorigins=3,7,13',
+    all: (period: Period): string =>
+      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=${period}&Excludeorigins=3,7,13`,
+    specific: (period: Period, originId: string): string =>
+      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=${period}&Delegation=${originId}&Excludeorigins=3,7,13`, // Corrected Delegation param
   },
   delegations: {
-    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202405&Excludeorigins=3,7,13',
-    specific:
-      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=202501&Origin=:delegationId&Excludeorigins=3,7,13',
+    all: (period: Period): string =>
+      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=${period}&Excludeorigins=3,7,13`,
+    specific: (period: Period, delegationId: string): string =>
+      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=${period}&Origin=${delegationId}&Excludeorigins=3,7,13`, // Corrected Origin param
   },
-  trendsOrigin:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/origin?Clientappid=21&Startperiod=202402&Endperiod=202501&Origin=:id&Excludeorigins=3,7,13',
-  trendsDelegation:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/delegation?Clientappid=21&Startperiod=202402&Endperiod=202501&Delegation=:id&Excludeorigins=3,7,13',
+  trendsOrigin: (startPeriod: Period, endPeriod: Period, id: string): string =>
+    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/origin?Clientappid=21&Startperiod=${startPeriod}&Endperiod=${endPeriod}&Origin=${id}&Excludeorigins=3,7,13`,
+  trendsDelegation: (
+    startPeriod: Period,
+    endPeriod: Period,
+    id: string
+  ): string =>
+    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/delegation?Clientappid=21&Startperiod=${startPeriod}&Endperiod=${endPeriod}&Delegation=${id}&Excludeorigins=3,7,13`,
 };
 
 export const expensesEndpoints = {
   origin: {
-    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/origins?Clientappid=21&Period=202501',
-    specific:
-      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/origins?Clientappid=21&Period=202501&Delegation=:originId',
+    all: (period: Period): string =>
+      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/origins?Clientappid=21&Period=${period}`,
+    specific: (period: Period, originId: string): string =>
+      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/origins?Clientappid=21&Period=${period}&Delegation=${originId}`,
   },
   delegations: {
-    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/delegations?Clientappid=21&Period=202501',
-    specific:
-      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/delegations?Clientappid=21&Period=202501&Origin=:delegationId',
+    all: (period: Period): string =>
+      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/delegations?Clientappid=21&Period=${period}`,
+    specific: (period: Period, delegationId: string): string =>
+      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/delegations?Clientappid=21&Period=${period}&Origin=${delegationId}`,
   },
-  historyOrigin:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/history/origin?Clientappid=21&Origin=:id&Startperiod=202402&Endperiod=202501',
-  historyDelegation:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/history/delegation?Clientappid=21&Delegation=:id&Startperiod=202402&Endperiod=202501',
+  historyOrigin: (startPeriod: Period, endPeriod: Period, id: string): string =>
+    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/history/origin?Clientappid=21&Origin=${id}&Startperiod=${startPeriod}&Endperiod=${endPeriod}`,
+  historyDelegation: (
+    startPeriod: Period,
+    endPeriod: Period,
+    id: string
+  ): string =>
+    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/history/delegation?Clientappid=21&Delegation=${id}&Startperiod=${startPeriod}&Endperiod=${endPeriod}`,
 };
 
 export const incomesEndpoints = {
   origin: {
-    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/origins?Clientappid=21&Period=202501',
-    specific:
-      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/origins?Clientappid=21&Period=202501&Delegation=:originId',
+    all: (period: Period): string =>
+      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/origins?Clientappid=21&Period=${period}`,
+    specific: (period: Period, originId: string): string =>
+      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/origins?Clientappid=21&Period=${period}&Delegation=${originId}`,
   },
   delegations: {
-    all: 'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/delegations?Clientappid=21&Period=202501',
-    specific:
-      'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/delegations?Clientappid=21&Period=202501&Origin=:delegationId',
+    all: (period: Period): string =>
+      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/delegations?Clientappid=21&Period=${period}`,
+    specific: (period: Period, delegationId: string): string =>
+      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/delegations?Clientappid=21&Period=${period}&Origin=${delegationId}`,
   },
-  historyOrigin:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/history/origin?Clientappid=21&Origin=:id&Startperiod=202402&Endperiod=202501',
-  historyDelegation:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/history/delegation?Clientappid=21&Delegation=:id&Startperiod=202402&Endperiod=202501',
+  historyOrigin: (startPeriod: Period, endPeriod: Period, id: string): string =>
+    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/history/origin?Clientappid=21&Origin=${id}&Startperiod=${startPeriod}&Endperiod=${endPeriod}`,
+  historyDelegation: (
+    startPeriod: Period,
+    endPeriod: Period,
+    id: string
+  ): string =>
+    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/history/delegation?Clientappid=21&Delegation=${id}&Startperiod=${startPeriod}&Endperiod=${endPeriod}`,
 };
 
 export const homeEndpoints = {
@@ -70,23 +90,6 @@ export const homeEndpoints = {
 export const loginEndpoints = {
   userdata:
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/userdata/guid?Userid=:userid',
-};
-
-type Period = string;
-
-const getPeriod = (monthsToSubtract: number = 2): Period => {
-  const today = new Date();
-  let year = today.getFullYear();
-  let month = today.getMonth() + 1 - monthsToSubtract; // Months are 0-indexed
-
-  if (month <= 0) {
-    month = 12 + month; // Adjust for previous year
-    year--;
-  }
-
-  const formattedMonth = month < 10 ? `0${month}` : `${month}`;
-
-  return `${year}${formattedMonth}`;
 };
 
 const handleApiError = (error: unknown) => {
@@ -112,8 +115,9 @@ const handleApiError = (error: unknown) => {
 // Function to fetch totals
 export const getTotals = async () => {
   try {
+    const period = getPeriod();
     const token = localStorage.getItem('jwt');
-    const response = await axios.get(endpoints.totals, {
+    const response = await axios.get(endpoints.totals(period), {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
@@ -128,24 +132,22 @@ export const fetchAffiliates = async (
   id: string | null = null
 ) => {
   try {
-    console.log('> Fetching ID: ', id);
-    console.log('> Fetching type: ', filterType);
-
+    const period = getPeriod();
     const token = localStorage.getItem('jwt');
-    let endpoint = '';
+    let endpoint: string = '';
 
     if (filterType === 'origin') {
       endpoint = id
-        ? endpoints.delegations.specific.replace(':delegationId', id)
-        : endpoints.origin.all;
+        ? endpoints.delegations.specific(period, id)
+        : endpoints.origin.all(period);
     } else if (filterType === 'delegations') {
       endpoint = id
-        ? endpoints.origin.specific.replace(':originId', id)
-        : endpoints.delegations.all;
+        ? endpoints.origin.specific(period, id)
+        : endpoints.delegations.all(period);
+    } else {
+      console.error('Invalid filterType:', filterType);
+      throw new Error('Invalid filterType');
     }
-
-    console.log('> Endpoint: ');
-    console.log(endpoint);
 
     const response = await axios.get(endpoint, {
       headers: { Authorization: `Bearer ${token}` },
@@ -162,22 +164,18 @@ export const fetchTrendsData = async (
   id: string
 ) => {
   try {
-    console.log('> Fetching Trends ID: ', id);
-    console.log('> Fetching Trends type: ', filterType);
-
     const token = localStorage.getItem('jwt');
-    let endpoint = '';
+    let endpoint: string = '';
+    const endPeriod = getPeriod();
+    const startPeriod = getPeriod(13);
 
     if (filterType === 'origin') {
-      endpoint = endpoints.trendsOrigin.replace(':id', id);
+      endpoint = endpoints.trendsOrigin(startPeriod, endPeriod, id);
     } else if (filterType === 'delegations') {
-      endpoint = endpoints.trendsDelegation.replace(':id', id);
+      endpoint = endpoints.trendsDelegation(startPeriod, endPeriod, id);
     } else {
       throw new Error('Invalid type provided');
     }
-
-    console.log('> Endpoint: ');
-    console.log(endpoint);
 
     const response = await axios.get(endpoint, {
       headers: { Authorization: `Bearer ${token}` },
@@ -196,20 +194,21 @@ export const fetchExpenses = async (
   id: string | null = null
 ) => {
   try {
-    console.log('> Fetching exp ID: ', id);
-    console.log('> Fetching exp type: ', filterType);
-
     const token = localStorage.getItem('jwt');
-    let endpoint = '';
+    let endpoint: string = '';
+    const period = getPeriod();
 
     if (filterType === 'origin') {
       endpoint = id
-        ? expensesEndpoints.delegations.specific.replace(':delegationId', id)
-        : expensesEndpoints.origin.all;
+        ? expensesEndpoints.delegations.specific(period, id)
+        : expensesEndpoints.origin.all(period);
     } else if (filterType === 'delegations') {
       endpoint = id
-        ? expensesEndpoints.origin.specific.replace(':originId', id)
-        : expensesEndpoints.delegations.all;
+        ? expensesEndpoints.origin.specific(period, id)
+        : expensesEndpoints.delegations.all(period);
+    } else {
+      console.error('Invalid filterType:', filterType);
+      throw new Error('Invalid filterType');
     }
 
     const response = await axios.get(endpoint, {
@@ -226,16 +225,19 @@ export const fetchExpensesHistoricData = async (
   id: string
 ) => {
   try {
-    console.log('> Fetching historic ID: ', id);
-    console.log('> Fetching historic type: ', filterType);
-
+    let endpoint: string = '';
     const token = localStorage.getItem('jwt');
-    let endpoint = '';
+    const endPeriod = getPeriod();
+    const startPeriod = getPeriod(13);
 
     if (filterType === 'origin') {
-      endpoint = expensesEndpoints.historyOrigin.replace(':id', id);
+      endpoint = expensesEndpoints.historyOrigin(startPeriod, endPeriod, id);
     } else if (filterType === 'delegations') {
-      endpoint = expensesEndpoints.historyDelegation.replace(':id', id);
+      endpoint = expensesEndpoints.historyDelegation(
+        startPeriod,
+        endPeriod,
+        id
+      );
     } else {
       throw new Error('Invalid type provided');
     }
@@ -257,20 +259,18 @@ export const fetchIncomes = async (
   id: string | null = null
 ) => {
   try {
-    console.log('> Fetching exp ID: ', id);
-    console.log('> Fetching exp type: ', filterType);
-
+    const period = getPeriod();
     const token = localStorage.getItem('jwt');
     let endpoint = '';
 
     if (filterType === 'origin') {
       endpoint = id
-        ? incomesEndpoints.delegations.specific.replace(':delegationId', id)
-        : incomesEndpoints.origin.all;
+        ? incomesEndpoints.delegations.specific(period, id)
+        : incomesEndpoints.origin.all(period);
     } else if (filterType === 'delegations') {
       endpoint = id
-        ? incomesEndpoints.origin.specific.replace(':originId', id)
-        : incomesEndpoints.delegations.all;
+        ? incomesEndpoints.origin.specific(period, id)
+        : incomesEndpoints.delegations.all(period);
     }
 
     const response = await axios.get(endpoint, {
@@ -287,16 +287,15 @@ export const fetchIncomesHistoricData = async (
   id: string
 ) => {
   try {
-    console.log('> Fetching historic ID: ', id);
-    console.log('> Fetching historic type: ', filterType);
-
     const token = localStorage.getItem('jwt');
     let endpoint = '';
+    const endPeriod = getPeriod();
+    const startPeriod = getPeriod(13);
 
     if (filterType === 'origin') {
-      endpoint = incomesEndpoints.historyOrigin.replace(':id', id);
+      endpoint = incomesEndpoints.historyOrigin(startPeriod, endPeriod, id);
     } else if (filterType === 'delegations') {
-      endpoint = incomesEndpoints.historyDelegation.replace(':id', id);
+      endpoint = incomesEndpoints.historyDelegation(startPeriod, endPeriod, id);
     } else {
       throw new Error('Invalid type provided');
     }
@@ -311,11 +310,18 @@ export const fetchIncomesHistoricData = async (
 };
 
 // Dashboard endpoints
-export const fetchDashboardVS = async () => {
+export const fetchDashboardVS = async (month?: string) => {
   try {
-    const period = getPeriod();
     const token = localStorage.getItem('jwt');
-    const url = homeEndpoints.incomeVsExpense(period); // Use typed endpoints
+    let url: string;
+
+    if (month) {
+      url = homeEndpoints.incomeVsExpense(month); // Use the provided month
+    } else {
+      const period = getPeriod(); // Calculate period if month is not provided
+      url = homeEndpoints.incomeVsExpense(period);
+    }
+
     const response = await axios.get(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -325,11 +331,18 @@ export const fetchDashboardVS = async () => {
   }
 };
 
-export const fetchDashboardTotals = async () => {
+export const fetchDashboardTotals = async (month?: string) => {
   try {
-    const period = getPeriod();
     const token = localStorage.getItem('jwt');
-    const url = homeEndpoints.totals(period); // Use typed endpoints
+    let url: string;
+
+    if (month) {
+      url = homeEndpoints.totals(month); // Use the provided month
+    } else {
+      const period = getPeriod(); // Calculate period if month is not provided
+      url = homeEndpoints.totals(period);
+    }
+
     const response = await axios.get(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -342,9 +355,9 @@ export const fetchDashboardTotals = async () => {
 export const fetchDashboardTrends = async () => {
   try {
     const endPeriod = getPeriod();
-    const startPeriod = getPeriod(12);
+    const startPeriod = getPeriod(13);
     const token = localStorage.getItem('jwt');
-    const url = homeEndpoints.trends(startPeriod, endPeriod); // Use typed endpoints
+    const url = homeEndpoints.trends(startPeriod, endPeriod);
     const response = await axios.get(url, {
       headers: { Authorization: `Bearer ${token}` },
     });

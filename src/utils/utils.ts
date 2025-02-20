@@ -52,3 +52,47 @@ export const formatNumberWithSuffix = (amount: number | string): string => {
     return num.toString();
   }
 };
+
+// Returns last 4 months in format { month: 'Diciembre 2024', period: '202412' }
+export const getPastMonths = (numMonths: number) => {
+  const months = [];
+  const today = new Date();
+
+  for (let i = 2; i < 2 + numMonths; i++) {
+    const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+
+    const formattedDate = date.toLocaleString('default', {
+      month: 'long',
+      year: 'numeric',
+    });
+
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    const formattedMonth = month < 10 ? `0${month}` : `${month}`;
+    const period = `${year}${formattedMonth}`;
+
+    months.push({
+      month: formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1),
+      period: period,
+    });
+  }
+
+  return months.reverse();
+};
+
+export type Period = string;
+
+export const getPeriod = (monthsToSubtract: number = 2): Period => {
+  const today = new Date();
+  let year = today.getFullYear();
+  let month = today.getMonth() + 1 - monthsToSubtract; // Months are 0-indexed
+
+  if (month <= 0) {
+    month = 12 + month; // Adjust for previous year
+    year--;
+  }
+
+  const formattedMonth = month < 10 ? `0${month}` : `${month}`;
+
+  return `${year}${formattedMonth}`;
+};
