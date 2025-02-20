@@ -1,3 +1,4 @@
+import { getPeriod } from '@/utils/utils';
 import axios from 'axios';
 
 type Period = string;
@@ -89,21 +90,6 @@ export const homeEndpoints = {
 export const loginEndpoints = {
   userdata:
     'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/userdata/guid?Userid=:userid',
-};
-
-const getPeriod = (monthsToSubtract: number = 2): Period => {
-  const today = new Date();
-  let year = today.getFullYear();
-  let month = today.getMonth() + 1 - monthsToSubtract; // Months are 0-indexed
-
-  if (month <= 0) {
-    month = 12 + month; // Adjust for previous year
-    year--;
-  }
-
-  const formattedMonth = month < 10 ? `0${month}` : `${month}`;
-
-  return `${year}${formattedMonth}`;
 };
 
 const handleApiError = (error: unknown) => {
@@ -324,11 +310,18 @@ export const fetchIncomesHistoricData = async (
 };
 
 // Dashboard endpoints
-export const fetchDashboardVS = async () => {
+export const fetchDashboardVS = async (month?: string) => {
   try {
-    const period = getPeriod();
     const token = localStorage.getItem('jwt');
-    const url = homeEndpoints.incomeVsExpense(period);
+    let url: string;
+
+    if (month) {
+      url = homeEndpoints.incomeVsExpense(month); // Use the provided month
+    } else {
+      const period = getPeriod(); // Calculate period if month is not provided
+      url = homeEndpoints.incomeVsExpense(period);
+    }
+
     const response = await axios.get(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -338,11 +331,18 @@ export const fetchDashboardVS = async () => {
   }
 };
 
-export const fetchDashboardTotals = async () => {
+export const fetchDashboardTotals = async (month?: string) => {
   try {
-    const period = getPeriod();
     const token = localStorage.getItem('jwt');
-    const url = homeEndpoints.totals(period);
+    let url: string;
+
+    if (month) {
+      url = homeEndpoints.totals(month); // Use the provided month
+    } else {
+      const period = getPeriod(); // Calculate period if month is not provided
+      url = homeEndpoints.totals(period);
+    }
+
     const response = await axios.get(url, {
       headers: { Authorization: `Bearer ${token}` },
     });

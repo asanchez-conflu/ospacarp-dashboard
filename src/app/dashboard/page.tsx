@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { MdFavorite } from 'react-icons/md';
+import { MdDataUsage, MdFavorite } from 'react-icons/md';
 import dynamic from 'next/dynamic';
 import { ChartData, ChartOptions, TooltipItem } from 'chart.js';
 import ExpensesCard from './expensesCard';
@@ -15,6 +15,13 @@ import {
 } from '@/components/api-client';
 import 'chart.js/auto';
 import { DashboardData, VersusData, TrendItem } from '@/app/types/dashboard';
+import {
+  Popover,
+  PopoverButton,
+  PopoverGroup,
+  PopoverPanel,
+} from '@headlessui/react';
+import { getPastMonths, getPeriod } from '@/utils/utils';
 
 const DonutChart = dynamic(
   () => import('react-chartjs-2').then(({ Doughnut }) => Doughnut),
@@ -25,6 +32,7 @@ const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
   ssr: false,
 });
 
+// Opciones del gráfico de Dona
 const options: ChartOptions<'doughnut'> = {
   cutout: '80%',
   interaction: {
@@ -60,6 +68,7 @@ const options: ChartOptions<'doughnut'> = {
   rotation: 90,
 };
 
+// Opciones del gráfico de Línea doble
 const trendOptions: ChartOptions<'line'> = {
   responsive: true,
   maintainAspectRatio: false,
@@ -98,8 +107,14 @@ const trendOptions: ChartOptions<'line'> = {
   },
 };
 
+interface MonthPeriod {
+  month: string;
+  period: string;
+}
+
 const HomePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
+  const [selectedMonth, setSelectedMonth] = useState<string>(getPeriod());
   const [dashboardData, setDashboardData] = useState<DashboardData>({
     cards: {
       currentExpense: '',
@@ -118,6 +133,7 @@ const HomePage: React.FC = () => {
     },
     trends: null,
   });
+
   const [versusChartData, setVersusChartData] = useState<ChartData<
     'doughnut',
     number[],
@@ -128,6 +144,41 @@ const HomePage: React.FC = () => {
     number[],
     unknown
   > | null>(null);
+
+  const lastFourMonths = getPastMonths(4);
+
+  const handleFilterSelect = async (month: MonthPeriod) => {
+    if (loading) {
+      return;
+    }
+    console.log('Filtered by ', month);
+
+    try {
+      const versus = await fetchDashboardVS(month.period);
+      const cards = await fetchDashboardTotals(month.period);
+
+      const data = {
+        versus: versus,
+        cards: cards,
+      };
+
+      setSelectedMonth(month.month);
+
+      setDashboardData((prevState) => ({
+        ...prevState,
+        versus: versus,
+        cards: cards,
+      }));
+
+      convertVersusData(data.versus);
+
+      console.log('Month: ', month);
+    } catch (err) {
+      console.error('Error fetching data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const convertVersusData = (data: VersusData) => {
     if (data) {
@@ -244,10 +295,40 @@ const HomePage: React.FC = () => {
         <div className='md:w-1/3 bg-white rounded-lg p-6'>
           {!loading && versusChartData && (
             <>
-              <h2 className='text-2xl font-bold'>Ingresos y Egresos</h2>
-              <p className='text-gray-500'>Mes de Diciembre</p>
-              <div className='w-full h-[380px]'>
+              <div className='flex items-center justify-between'>
+                <div>
+                  <h2 className='text-2xl font-bold'>Ingresos y Egresos</h2>
+                  <p className='text-gray-500'>Mes de {selectedMonth}</p>
+                </div>
+                <Popover className='relative'>
+                  <PopoverButton className='p-2 bg-white rounded-md shadow-md hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all duration-75'>
+                    <MdDataUsage size={30} />
+                  </PopoverButton>
+                  <PopoverPanel className='absolute top-12 w-48 bg-white rounded-md shadow-lg z-10'>
+                    <div className='p-2'>
+                      <PopoverGroup>
+                        {lastFourMonths.map((month) => {
+                          return (
+                            <PopoverButton
+                              key={month.period}
+                              as='button'
+                              className='block px-4 py-2 w-full text-left text-sm text-gray-700 hover:bg-gray-200 rounded-md'
+                              onClick={() => handleFilterSelect(month)}
+                            >
+                              {month.month}
+                            </PopoverButton>
+                          );
+                        })}
+                      </PopoverGroup>
+                    </div>
+                  </PopoverPanel>
+                </Popover>
+              </div>
+              <div className='w-full h-[380px] relative'>
                 <DonutChart data={versusChartData} options={options} />
+                <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-7xl font-[Poppins] font-bold pointer-events-none'>
+                  100%
+                </div>
               </div>
               <div className='flex justify-around mt-4'>
                 <div>
@@ -257,7 +338,7 @@ const HomePage: React.FC = () => {
                       backgroundColor: '#0560EA',
                     }}
                   ></div>
-                  <div className='font-bold text-3xl'>
+                  <div className='font-bold font-[Poppins] text-3xl'>
                     {versusChartData.datasets[0].data[0]}%
                   </div>
                   <div className='text-sm text-gray-500'>Ingresos</div>
@@ -269,7 +350,7 @@ const HomePage: React.FC = () => {
                       backgroundColor: '#56CFE1',
                     }}
                   ></div>
-                  <div className='font-bold text-3xl'>
+                  <div className='font-bold font-[Poppins] text-3xl'>
                     {versusChartData.datasets[0].data[1]}%
                   </div>
                   <div className='text-sm text-gray-500'>Egresos</div>
@@ -284,14 +365,14 @@ const HomePage: React.FC = () => {
           <div className='flex gap-4'>
             <div className='w-1/3'>
               <IncomesCard
-                month='Diciembre'
+                month={selectedMonth}
                 current={dashboardData.cards.currentIncome}
                 previous={dashboardData.cards.previousIncome}
               />
             </div>
             <div className='w-1/3'>
               <ExpensesCard
-                month='Diciembre'
+                month={selectedMonth}
                 current={dashboardData.cards.currentExpense}
                 previous={dashboardData.cards.previousExpense}
               />

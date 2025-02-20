@@ -1,4 +1,5 @@
 import { Raleway } from 'next/font/google';
+import '@fontsource/poppins';
 import './globals.css';
 
 const raleway = Raleway({ subsets: ['latin'] });
