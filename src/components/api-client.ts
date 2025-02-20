@@ -5,91 +5,91 @@ type Period = string;
 
 export const endpoints = {
   totals: (period: Period): string =>
-    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/totals?Clientappid=21&Excludeorigins=3,7,13&Period=${period}`,
+    `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/affiliates/totals?Clientappid=21&Excludeorigins=3,7,13&Period=${period}`,
   origin: {
     all: (period: Period): string =>
-      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=${period}&Excludeorigins=3,7,13`,
+      `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=${period}&Excludeorigins=3,7,13`,
     specific: (period: Period, originId: string): string =>
-      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=${period}&Delegation=${originId}&Excludeorigins=3,7,13`, // Corrected Delegation param
+      `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/affiliates/distribution/origin?Clientappid=21&Period=${period}&Delegation=${originId}&Excludeorigins=3,7,13`, // Corrected Delegation param
   },
   delegations: {
     all: (period: Period): string =>
-      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=${period}&Excludeorigins=3,7,13`,
+      `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=${period}&Excludeorigins=3,7,13`,
     specific: (period: Period, delegationId: string): string =>
-      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=${period}&Origin=${delegationId}&Excludeorigins=3,7,13`, // Corrected Origin param
+      `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/affiliates/distribution/delegation?Clientappid=21&Period=${period}&Origin=${delegationId}&Excludeorigins=3,7,13`, // Corrected Origin param
   },
   trendsOrigin: (startPeriod: Period, endPeriod: Period, id: string): string =>
-    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/origin?Clientappid=21&Startperiod=${startPeriod}&Endperiod=${endPeriod}&Origin=${id}&Excludeorigins=3,7,13`,
+    `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/affiliates/trends/origin?Clientappid=21&Startperiod=${startPeriod}&Endperiod=${endPeriod}&Origin=${id}&Excludeorigins=3,7,13`,
   trendsDelegation: (
     startPeriod: Period,
     endPeriod: Period,
     id: string
   ): string =>
-    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/affiliates/trends/delegation?Clientappid=21&Startperiod=${startPeriod}&Endperiod=${endPeriod}&Delegation=${id}&Excludeorigins=3,7,13`,
+    `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/affiliates/trends/delegation?Clientappid=21&Startperiod=${startPeriod}&Endperiod=${endPeriod}&Delegation=${id}&Excludeorigins=3,7,13`,
 };
 
 export const expensesEndpoints = {
   origin: {
     all: (period: Period): string =>
-      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/origins?Clientappid=21&Period=${period}`,
+      `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/expenses/origins?Clientappid=21&Period=${period}`,
     specific: (period: Period, originId: string): string =>
-      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/origins?Clientappid=21&Period=${period}&Delegation=${originId}`,
+      `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/expenses/origins?Clientappid=21&Period=${period}&Delegation=${originId}`,
   },
   delegations: {
     all: (period: Period): string =>
-      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/delegations?Clientappid=21&Period=${period}`,
+      `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/expenses/delegations?Clientappid=21&Period=${period}`,
     specific: (period: Period, delegationId: string): string =>
-      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/delegations?Clientappid=21&Period=${period}&Origin=${delegationId}`,
+      `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/expenses/delegations?Clientappid=21&Period=${period}&Origin=${delegationId}`,
   },
   historyOrigin: (startPeriod: Period, endPeriod: Period, id: string): string =>
-    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/history/origin?Clientappid=21&Origin=${id}&Startperiod=${startPeriod}&Endperiod=${endPeriod}`,
+    `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/expenses/history/origin?Clientappid=21&Origin=${id}&Startperiod=${startPeriod}&Endperiod=${endPeriod}`,
   historyDelegation: (
     startPeriod: Period,
     endPeriod: Period,
     id: string
   ): string =>
-    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/expenses/history/delegation?Clientappid=21&Delegation=${id}&Startperiod=${startPeriod}&Endperiod=${endPeriod}`,
+    `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/expenses/history/delegation?Clientappid=21&Delegation=${id}&Startperiod=${startPeriod}&Endperiod=${endPeriod}`,
 };
 
 export const incomesEndpoints = {
   origin: {
     all: (period: Period): string =>
-      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/origins?Clientappid=21&Period=${period}`,
+      `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/incomes/origins?Clientappid=21&Period=${period}`,
     specific: (period: Period, originId: string): string =>
-      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/origins?Clientappid=21&Period=${period}&Delegation=${originId}`,
+      `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/incomes/origins?Clientappid=21&Period=${period}&Delegation=${originId}`,
   },
   delegations: {
     all: (period: Period): string =>
-      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/delegations?Clientappid=21&Period=${period}`,
+      `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/incomes/delegations?Clientappid=21&Period=${period}`,
     specific: (period: Period, delegationId: string): string =>
-      `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/delegations?Clientappid=21&Period=${period}&Origin=${delegationId}`,
+      `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/incomes/delegations?Clientappid=21&Period=${period}&Origin=${delegationId}`,
   },
   historyOrigin: (startPeriod: Period, endPeriod: Period, id: string): string =>
-    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/history/origin?Clientappid=21&Origin=${id}&Startperiod=${startPeriod}&Endperiod=${endPeriod}`,
+    `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/incomes/history/origin?Clientappid=21&Origin=${id}&Startperiod=${startPeriod}&Endperiod=${endPeriod}`,
   historyDelegation: (
     startPeriod: Period,
     endPeriod: Period,
     id: string
   ): string =>
-    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/incomes/history/delegation?Clientappid=21&Delegation=${id}&Startperiod=${startPeriod}&Endperiod=${endPeriod}`,
+    `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/incomes/history/delegation?Clientappid=21&Delegation=${id}&Startperiod=${startPeriod}&Endperiod=${endPeriod}`,
 };
 
 export const homeEndpoints = {
   incomeVsExpense: (period: string): string =>
-    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/income-vs-expense?Period=${period}&Clientappid=21`,
+    `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/overview/income-vs-expense?Period=${period}&Clientappid=21`,
   trends: (startPeriod: string, endPeriod: string): string =>
-    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/trends?Startperiod=${startPeriod}&Endperiod=${endPeriod}&Clientappid=21`,
+    `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/overview/trends?Startperiod=${startPeriod}&Endperiod=${endPeriod}&Clientappid=21`,
   affiliates: (period: string): string =>
-    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/affiliates?Period=${period}&Clientappid=21&Excludeorigins=3,7,13`,
+    `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/overview/affiliates?Period=${period}&Clientappid=21&Excludeorigins=3,7,13`,
   totals: (period: string): string =>
-    `https://sisaludapi-prepro.confluenciait.com/ospacarpqa/overview/total?Period=${period}&Clientappid=21`,
+    `https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/overview/total?Period=${period}&Clientappid=21`,
 };
 
 // &Excludeorigins=3,7,13
 
 export const loginEndpoints = {
   userdata:
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/userdata/guid?Userid=:userid',
+    'https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/userdata/guid?Userid=:userid',
 };
 
 const handleApiError = (error: unknown) => {

@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const HomePage: React.FC = () => {
   const endpoint =
-    'https://sisaludapi-prepro.confluenciait.com/ospacarpqa/oauth/gam/v2.0/access_token';
+    'https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/oauth/gam/v2.0/access_token';
 
   const style = {
     height: '100vh',
