@@ -150,8 +150,13 @@ export default function IngresosPage() {
         );
 
         processedData = dataResponse.origins.map((origin: ExpensesOrigin) => {
-          const percentage = (parseFloat(origin.total) / totalCount) * 100;
+          const percentage =
+            totalCount === 0
+              ? 0
+              : (parseFloat(origin.total) / totalCount) * 100;
+
           const percentageValue = parseFloat(percentage.toFixed(2));
+
           const displayPercentage = isNaN(percentageValue)
             ? 0
             : percentageValue;
@@ -186,8 +191,12 @@ export default function IngresosPage() {
         processedData = dataResponse.delegations.map(
           (delegation: ExpensesDelegation) => {
             const percentage =
-              (parseFloat(delegation.total) / totalCount) * 100;
+              totalCount === 0
+                ? 0
+                : (parseFloat(delegation.total) / totalCount) * 100;
+
             const percentageValue = parseFloat(percentage.toFixed(2));
+
             const displayPercentage = isNaN(percentageValue)
               ? 0
               : percentageValue;

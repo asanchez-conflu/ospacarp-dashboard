@@ -157,7 +157,10 @@ export default function AfiliadosPage() {
         );
 
         processedData = dataResponse.origins.map((origin: Origin) => {
-          const percentage = (parseFloat(origin.count) / totalCount) * 100;
+          const percentage =
+            totalCount === 0
+              ? 0
+              : (parseFloat(origin.count) / totalCount) * 100;
 
           // Type conversion and creation of DataItem object
           const dataItem: DataItem = {
@@ -187,7 +190,9 @@ export default function AfiliadosPage() {
         processedData = dataResponse.delegations.map(
           (delegation: Delegation) => {
             const percentage =
-              (parseFloat(delegation.count) / totalCount) * 100;
+              totalCount === 0
+                ? 0
+                : (parseFloat(delegation.count) / totalCount) * 100;
 
             // Type conversion and creation of DataItem object
             const dataItem: DataItem = {

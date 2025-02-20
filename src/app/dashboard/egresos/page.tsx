@@ -146,7 +146,13 @@ export default function EgresosPage() {
         );
 
         processedData = dataResponse.origins.map((origin: ExpensesOrigin) => {
-          const percentage = (parseFloat(origin.total) / totalCount) * 100;
+          const percentage =
+            totalCount === 0
+              ? 0
+              : (parseFloat(origin.total) / totalCount) * 100;
+
+          console.log('DEBUG origin: ', origin);
+          console.log('DEBUG count: ', totalCount);
 
           // Type conversion and creation of DataItem object
           const dataItem: DataItem = {
@@ -176,7 +182,9 @@ export default function EgresosPage() {
         processedData = dataResponse.delegations.map(
           (delegation: ExpensesDelegation) => {
             const percentage =
-              (parseFloat(delegation.total) / totalCount) * 100;
+              totalCount === 0
+                ? 0
+                : (parseFloat(delegation.total) / totalCount) * 100;
 
             // Type conversion and creation of DataItem object
             const dataItem: DataItem = {
