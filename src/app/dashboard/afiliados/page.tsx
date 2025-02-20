@@ -322,19 +322,33 @@ export default function AfiliadosPage() {
               <PopoverButton className='absolute top-4 right-7 p-2 bg-white rounded-md shadow-md hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all duration-75'>
                 <MdTune size={20} color='black' />
               </PopoverButton>
-              <PopoverPanel className='absolute right-7 top-12 w-48 bg-white rounded-md shadow-lg z-10'>
+              <PopoverPanel className='absolute right-7 top-12 w-48 bg-[#F6F7FB] font-semibold rounded-md shadow-lg z-10'>
                 <div className='p-2'>
                   <PopoverGroup>
                     <PopoverButton
                       as='button'
-                      className='block px-4 py-2 w-full text-left text-sm text-gray-700 hover:bg-gray-200 rounded-md'
+                      className={`
+                        block px-4 py-2 w-full text-left text-sm text-[#2A2A2A] hover:bg-gray-200 rounded-md
+                        ${
+                          filterType === 'origin'
+                            ? 'text-white bg-[#0560EA]'
+                            : ''
+                        }
+                      `}
                       onClick={() => handleFilterSelect('origin')}
                     >
                       Origen
                     </PopoverButton>
                     <PopoverButton
                       as='button'
-                      className='block px-4 py-2 w-full text-left text-sm text-gray-700 hover:bg-gray-200 rounded-md'
+                      className={`
+                        block px-4 py-2 w-full text-left text-sm text-[#2A2A2A] hover:bg-gray-200 rounded-md
+                        ${
+                          filterType === 'delegations'
+                            ? 'text-white bg-[#0560EA]'
+                            : ''
+                        }
+                      `}
                       onClick={() => handleFilterSelect('delegations')}
                     >
                       Delegación

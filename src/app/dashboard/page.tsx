@@ -304,7 +304,7 @@ const HomePage: React.FC = () => {
                   <PopoverButton className='p-2 bg-white rounded-md shadow-md hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all duration-75'>
                     <MdDataUsage size={30} />
                   </PopoverButton>
-                  <PopoverPanel className='absolute top-12 w-48 bg-white rounded-md shadow-lg z-10'>
+                  <PopoverPanel className='absolute top-12 w-48 bg-[#F6F7FB] font-semibold rounded-md shadow-lg z-10'>
                     <div className='p-2'>
                       <PopoverGroup>
                         {lastFourMonths.map((month) => {
@@ -312,7 +312,14 @@ const HomePage: React.FC = () => {
                             <PopoverButton
                               key={month.period}
                               as='button'
-                              className='block px-4 py-2 w-full text-left text-sm text-gray-700 hover:bg-gray-200 rounded-md'
+                              className={`
+                                block px-4 py-2 w-full text-left text-sm text-[#2A2A2A] hover:bg-gray-200 rounded-md
+                                ${
+                                  selectedMonth === month.month
+                                    ? 'text-white bg-[#0560EA]'
+                                    : ''
+                                }
+                              `}
                               onClick={() => handleFilterSelect(month)}
                             >
                               {month.month}
