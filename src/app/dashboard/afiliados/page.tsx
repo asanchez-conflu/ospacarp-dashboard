@@ -376,7 +376,13 @@ export default function AfiliadosPage() {
 
           {/* Lista lateral de origenes/delegaciones */}
           {!loading && selectedId && (
-            <ul className='w-64 border-r-2 pr-2 space-y-3 border-[#0560EA]'>
+            <ul
+              className='w-64 border-r-2 pr-2 space-y-3 border-[#0560EA] overflow-y-auto'
+              style={{
+                msOverflowStyle: 'none',
+                scrollbarWidth: 'none',
+              }}
+            >
               {listData.map((item) => (
                 <li
                   key={item.id}
@@ -397,7 +403,13 @@ export default function AfiliadosPage() {
           )}
           {/* Grafico de barras */}
           {!loading && !trendData && graphData?.length > 0 && (
-            <div className='flex flex-col w-full gap-3 pl-6'>
+            <div
+              className='flex flex-col w-full gap-3 pl-6 overflow-y-auto'
+              style={{
+                msOverflowStyle: 'none',
+                scrollbarWidth: 'none',
+              }}
+            >
               {graphData?.map((item, index) => (
                 <HorizontalBar
                   key={index}

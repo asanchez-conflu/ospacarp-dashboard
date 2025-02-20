@@ -345,7 +345,7 @@ export default function EgresosPage() {
         </div>
 
         {/* BLOQUE DE CONTENIDO */}
-        <div className='flex h-[360px] overflow-y-auto p-5 relative'>
+        <div className='flex h-[360px] p-5 relative'>
           {loading === true && <p className='px-2'>Cargando...</p>}
           {!loading && !trendData && graphData?.length > 0 && (
             <>
@@ -360,7 +360,13 @@ export default function EgresosPage() {
 
           {/* Lista lateral de origenes/delegaciones */}
           {!loading && selectedId && (
-            <ul className='w-64 border-r-2 pr-2 space-y-3 border-[#0560EA]'>
+            <ul
+              className='w-64 border-r-2 pr-2 space-y-3 border-[#0560EA] overflow-y-auto'
+              style={{
+                msOverflowStyle: 'none',
+                scrollbarWidth: 'none',
+              }}
+            >
               {listData.map((item) => (
                 <li
                   key={item.id}
@@ -381,7 +387,13 @@ export default function EgresosPage() {
           )}
           {/* Grafico de barras */}
           {!loading && !trendData && graphData?.length > 0 && (
-            <div className='flex flex-col w-full gap-3 pl-6'>
+            <div
+              className='flex flex-col w-full gap-3 pl-6 overflow-y-auto'
+              style={{
+                msOverflowStyle: 'none',
+                scrollbarWidth: 'none',
+              }}
+            >
               {graphData?.map((item, index) => (
                 <HorizontalBar
                   key={index}
