@@ -19,9 +19,9 @@ const IncomesCard: React.FC<IncomesCardProps> = ({
         <MdTrendingUp className='text-2xl ml-2' />
       </div>
       <div>
-        <p className='text-sm'>{month}</p>
+        <p className='text-sm'>Mes de {month}</p>
       </div>
-      <div className='mt-4 text-right'>
+      <div className='mt-4 text-right font-[Poppins]'>
         <p className='text-2xl font-bold'>{formatNumberWithSuffix(current)}</p>
         <p className='text-sm'>{formatNumberWithDots(previous)}</p>
       </div>

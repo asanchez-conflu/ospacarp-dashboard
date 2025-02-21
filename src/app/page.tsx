@@ -3,11 +3,9 @@ import LoginForm from '@/components/login/loginForm';
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import { getUserData, loginEndpoints } from '@/components/api-client';
 
 const HomePage: React.FC = () => {
-  const endpoint =
-    'https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa/oauth/gam/v2.0/access_token';
-
   const style = {
     height: '100vh',
     width: '100vw',
@@ -34,7 +32,7 @@ const HomePage: React.FC = () => {
     formData.append('grant_type', 'Password');
 
     try {
-      const response = await axios.post(endpoint, formData, {
+      const response = await axios.post(loginEndpoints.login, formData, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
@@ -42,8 +40,11 @@ const HomePage: React.FC = () => {
 
       if (response.status === 200) {
         // Store JWT in local storage (or use a secure cookie library)
-        console.log('LOGIN: ', response);
         localStorage.setItem('jwt', response.data.access_token);
+
+        const userData = await getUserData(response.data.user_guid);
+        console.log('userData: ', userData);
+        localStorage.setItem('user', JSON.stringify(userData));
 
         // Redirect to protected page
         navigation.push('/dashboard');
