@@ -38,6 +38,16 @@ interface TrendItem {
   percentageIncome: string;
 }
 
+interface User {
+  Roles: string;
+  UserEMail: string;
+  UserFirstName: string;
+  UserGender: 'N' | 'M' | 'F' | string;
+  UserLastName: string;
+  UserName: string;
+  UserURLImage?: string | null;
+}
+
 export {
   DashboardData,
   VersusData,
@@ -45,4 +55,5 @@ export {
   TotalsData,
   CardData,
   TrendItem,
+  User,
 };

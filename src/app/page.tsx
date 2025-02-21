@@ -3,7 +3,7 @@ import LoginForm from '@/components/login/loginForm';
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import { loginEndpoints } from '@/components/api-client';
+import { getUserData, loginEndpoints } from '@/components/api-client';
 
 const HomePage: React.FC = () => {
   const style = {
@@ -41,6 +41,10 @@ const HomePage: React.FC = () => {
       if (response.status === 200) {
         // Store JWT in local storage (or use a secure cookie library)
         localStorage.setItem('jwt', response.data.access_token);
+
+        const userData = await getUserData(response.data.user_guid);
+        console.log('userData: ', userData);
+        localStorage.setItem('user', JSON.stringify(userData));
 
         // Redirect to protected page
         navigation.push('/dashboard');

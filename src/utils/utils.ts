@@ -1,3 +1,5 @@
+import { User } from '@/app/types/dashboard';
+
 // Format $999.999.999
 export const formatCurrency = (amount: number | string): string => {
   // Convert to number if it's a string
@@ -116,4 +118,15 @@ export const getMonthFormatted = (monthsToSubtract: number = 2): string => {
   formattedMonth = formattedMonth.replace(/^\w/, (c) => c.toUpperCase());
 
   return formattedMonth;
+};
+
+export const getInitials = (user: User): string => {
+  if (!user || !user.UserFirstName || !user.UserLastName) {
+    return ''; // Handle cases where user or names are missing
+  }
+
+  const firstNameInitial = user.UserFirstName.charAt(0).toUpperCase();
+  const lastNameInitial = user.UserLastName.charAt(0).toUpperCase();
+
+  return `${firstNameInitial}${lastNameInitial}`;
 };

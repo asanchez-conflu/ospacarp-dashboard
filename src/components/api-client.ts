@@ -91,7 +91,7 @@ export const homeEndpoints = {
 
 export const loginEndpoints = {
   login: `${api}/oauth/gam/v2.0/access_token`,
-  userdata: `${api}/userdata/guid?Userid=:userid`,
+  userData: (userId: string): string => `${api}/userdata/guid?Userid=${userId}`,
   userInfo: `${api}/oauth/userinfo`,
 };
 
@@ -362,6 +362,31 @@ export const fetchDashboardTrends = async () => {
     const token = localStorage.getItem('jwt');
     const url = homeEndpoints.trends(startPeriod, endPeriod);
     const response = await axios.get(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+// Login calls
+export const getUserData = async (userId: string) => {
+  try {
+    const token = localStorage.getItem('jwt');
+    const response = await axios.get(loginEndpoints.userData(userId), {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+export const getUserInfo = async () => {
+  try {
+    const token = localStorage.getItem('jwt');
+    const response = await axios.get(loginEndpoints.userInfo, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
