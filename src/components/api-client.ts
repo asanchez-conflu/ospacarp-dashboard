@@ -90,7 +90,9 @@ export const homeEndpoints = {
 // &Excludeorigins=3,7,13
 
 export const loginEndpoints = {
-  userdata: '${api}/userdata/guid?Userid=:userid',
+  login: `${api}/oauth/gam/v2.0/access_token`,
+  userdata: `${api}/userdata/guid?Userid=:userid`,
+  userInfo: `${api}/oauth/userinfo`,
 };
 
 const handleApiError = (error: unknown) => {
