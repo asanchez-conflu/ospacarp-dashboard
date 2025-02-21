@@ -21,7 +21,7 @@ import {
   PopoverGroup,
   PopoverPanel,
 } from '@headlessui/react';
-import { getPastMonths, getPeriod } from '@/utils/utils';
+import { getMonthFormatted, getPastMonths } from '@/utils/utils';
 
 const DonutChart = dynamic(
   () => import('react-chartjs-2').then(({ Doughnut }) => Doughnut),
@@ -114,7 +114,9 @@ interface MonthPeriod {
 
 const HomePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
-  const [selectedMonth, setSelectedMonth] = useState<string>(getPeriod());
+  const [selectedMonth, setSelectedMonth] = useState<string>(
+    getMonthFormatted()
+  );
   const [dashboardData, setDashboardData] = useState<DashboardData>({
     cards: {
       currentExpense: '',

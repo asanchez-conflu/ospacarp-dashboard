@@ -96,3 +96,24 @@ export const getPeriod = (monthsToSubtract: number = 2): Period => {
 
   return `${year}${formattedMonth}`;
 };
+
+export const getMonthFormatted = (monthsToSubtract: number = 2): string => {
+  const today = new Date();
+  let year = today.getFullYear();
+  let month = today.getMonth() + 1 - monthsToSubtract;
+
+  if (month <= 0) {
+    month = 12 + month;
+    year--;
+  }
+
+  const dateToFormat = new Date(year, month - 1, 1);
+  let formattedMonth = dateToFormat.toLocaleString('default', {
+    month: 'long',
+    year: 'numeric',
+  });
+
+  formattedMonth = formattedMonth.replace(/^\w/, (c) => c.toUpperCase());
+
+  return formattedMonth;
+};

@@ -16,7 +16,7 @@ const LoginForm: React.FC<LoginProps> = ({ onSubmit }) => {
   };
 
   return (
-    <div className='bg-white rounded-lg w-4/12 h-[450px] p-5'>
+    <div className='bg-white rounded-lg w-[348px] h-[450px] p-5'>
       <form
         onSubmit={handleSubmit}
         className='h-full flex flex-col items-center'
@@ -48,19 +48,21 @@ const LoginForm: React.FC<LoginProps> = ({ onSubmit }) => {
           />
         </div>
 
-        <div>
-          <button
-            type='button'
-            className='bg-transparent text-gray-700 font-medium py-5'
-          >
-            <u>Recuperar contraseña</u>
-          </button>
-        </div>
+        {/* Oculto hasta desarrollo
+          <div>
+            <button
+              type='button'
+              className='bg-transparent text-gray-700 font-medium py-5'
+            >
+              <u>Recuperar contraseña</u>
+            </button>
+          </div>
+        */}
 
         <div className='flex space-x-4 pt-2 w-full'>
           <button
             type='button'
-            className='bg-gray-200 text-gray-700 font-medium py-2 px-4 w-full rounded-full'
+            className='border border-[#56CFE1] bg-[#56CFE1]/10 text-[#56CFE1] font-medium py-2 px-4 w-full rounded-full'
           >
             Cancelar
           </button>
