@@ -276,13 +276,13 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      <div className='my-6 flex flex-col items-center'>
+    <div className='container max-w-[900px] 2xl:max-w-[1080px] ml-[calc(100%/12)]'>
+      <div className='py-6 flex flex-col items-center'>
         <MdFavorite size={30} color='#56CFE1' />
       </div>
-      <hr className='border-gray-200 mx-10' />
+      <hr className='border-gray-200' />
 
-      <div className='m-10'>
+      <div className='my-10'>
         <h2 className='text-4xl'>
           <span className='font-bold'>Obra Social</span> | Panel general
         </h2>
@@ -292,7 +292,7 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Bloque de contenido */}
-      <div className='flex flex-col md:flex-row gap-4 mx-10'>
+      <div className='flex flex-col md:flex-row gap-4'>
         {/* Gráfico de dona */}
         <div className='md:w-1/3 bg-white rounded-lg p-6'>
           {!loading && versusChartData && (

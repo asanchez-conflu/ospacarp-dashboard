@@ -53,7 +53,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className='fixed top-0 left-0 p-4 bg-white h-screen w-[250px] flex flex-col '>
+    <aside className='fixed top-0 left-0 p-4 bg-white h-screen w-[250px] 2xl:w-[300px] flex flex-col '>
       {user && (
         <div className='flex flex-col items-center mb-4'>
           <div className='w-16 h-16 rounded-full flex items-center justify-center bg-blue-500'>
