@@ -12,16 +12,18 @@ const IncomesCard: React.FC<IncomesCardProps> = ({
   current,
   previous,
 }) => {
+  const monthOnly = month.split(' ')[0];
+
   return (
-    <div className='bg-[#0560EA] text-white rounded-lg p-3 w-full h-[140px] flex flex-col justify-between'>
+    <div className='bg-[#0560EA] text-white rounded-lg p-2 w-full h-[140px] flex flex-col justify-between'>
       <div className='flex items-center justify-between'>
-        <h3 className='text-xl font-semibold'>Ingresos</h3>
+        <h3 className='text-lg font-semibold'>Ingresos</h3>
         <MdTrendingUp className='text-2xl ml-2' />
       </div>
       <div>
-        <p className='text-sm'>Mes de {month}</p>
+        <p className='text-sm'>Mes de {monthOnly}</p>
       </div>
-      <div className='mt-4 text-right font-[Poppins]'>
+      <div className='flex-grow text-right font-[Poppins] flex flex-col justify-end'>
         <p className='text-2xl font-bold'>{formatNumberWithSuffix(current)}</p>
         <p className='text-sm'>{formatNumberWithDots(previous)}</p>
       </div>
