@@ -21,7 +21,11 @@ import {
   PopoverGroup,
   PopoverPanel,
 } from '@headlessui/react';
-import { getMonthFormatted, getPastMonths } from '@/utils/utils';
+import {
+  formatNumberWithSuffix,
+  getMonthFormatted,
+  getPastMonths,
+} from '@/utils/utils';
 
 const DonutChart = dynamic(
   () => import('react-chartjs-2').then(({ Doughnut }) => Doughnut),
@@ -91,7 +95,9 @@ const trendOptions: ChartOptions<'line'> = {
         display: true,
       },
       ticks: {
-        display: true,
+        callback: function (value) {
+          return formatNumberWithSuffix(value); // Apply your formatter
+        },
       },
     },
     y1: {
@@ -211,10 +217,11 @@ const HomePage: React.FC = () => {
   };
 
   const convertTrendData = (trendData: TrendItem[]) => {
-    const labels = trendData.map((item) => item.monthName);
+    const labels = trendData.map((item) => item.monthName.charAt(0));
     const incomeData = trendData.map((item) => parseInt(item.income, 10)); // Parse to number
     const expenseData = trendData.map((item) => parseInt(item.expenses, 10)); // Parse to number
 
+    console.log('trendData', trendData);
     const data = {
       labels: labels,
       datasets: [
@@ -276,13 +283,13 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      <div className='my-6 flex flex-col items-center'>
+    <div className='container max-w-[900px] 2xl:max-w-[1080px] ml-[calc(100%/12)]'>
+      <div className='py-6 flex flex-col items-center'>
         <MdFavorite size={30} color='#56CFE1' />
       </div>
-      <hr className='border-gray-200 mx-10' />
+      <hr className='border-gray-200' />
 
-      <div className='m-10'>
+      <div className='my-10'>
         <h2 className='text-4xl'>
           <span className='font-bold'>Obra Social</span> | Panel general
         </h2>
@@ -292,19 +299,21 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Bloque de contenido */}
-      <div className='flex flex-col md:flex-row gap-4 mx-10'>
+      <div className='flex flex-col md:flex-row gap-4'>
         {/* Gráfico de dona */}
-        <div className='md:w-1/3 bg-white rounded-lg p-6'>
+        <div className='md:w-1/3 h-[500px] bg-white rounded-lg p-3'>
           {!loading && versusChartData && (
-            <>
+            <div className='flex flex-col h-full'>
               <div className='flex items-center justify-between'>
                 <div>
-                  <h2 className='text-2xl font-bold'>Ingresos y Egresos</h2>
-                  <p className='text-gray-500'>Mes de {selectedMonth}</p>
+                  <h2 className='font-bold'>Ingresos y Egresos</h2>
+                  <p className='text-xs text-gray-500'>
+                    Mes de {selectedMonth}
+                  </p>
                 </div>
                 <Popover className='relative'>
-                  <PopoverButton className='p-2 bg-white rounded-md shadow-md hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all duration-75'>
-                    <MdDataUsage size={30} />
+                  <PopoverButton className='p-1 bg-white rounded-md shadow-md hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all duration-75'>
+                    <MdDataUsage size={20} />
                   </PopoverButton>
                   <PopoverPanel className='absolute top-12 w-48 bg-[#F6F7FB] font-semibold rounded-md shadow-lg z-10'>
                     <div className='p-2'>
@@ -333,7 +342,7 @@ const HomePage: React.FC = () => {
                   </PopoverPanel>
                 </Popover>
               </div>
-              <div className='w-full h-[380px] relative'>
+              <div className='w-full flex-grow relative'>
                 <DonutChart data={versusChartData} options={options} />
                 <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-7xl font-[Poppins] font-bold pointer-events-none'>
                   100%
@@ -350,7 +359,7 @@ const HomePage: React.FC = () => {
                   <div className='font-bold font-[Poppins] text-3xl'>
                     {versusChartData.datasets[0].data[0]}%
                   </div>
-                  <div className='text-sm text-gray-500'>Ingresos</div>
+                  <div className='text-xs text-gray-500'>Ingresos</div>
                 </div>
                 <div>
                   <div
@@ -362,16 +371,16 @@ const HomePage: React.FC = () => {
                   <div className='font-bold font-[Poppins] text-3xl'>
                     {versusChartData.datasets[0].data[1]}%
                   </div>
-                  <div className='text-sm text-gray-500'>Egresos</div>
+                  <div className='text-xs text-gray-500'>Egresos</div>
                 </div>
               </div>
-            </>
+            </div>
           )}
         </div>
 
         {/* Tarjetas de ingresos, egresos y afiliados */}
-        <div className='md:w-2/3 flex flex-col gap-4'>
-          <div className='flex gap-4'>
+        <div className='md:w-2/3 h-[500px] flex flex-col gap-4'>
+          <div className='flex h-full gap-4'>
             <div className='w-1/3'>
               <IncomesCard
                 month={selectedMonth}
@@ -392,27 +401,28 @@ const HomePage: React.FC = () => {
           </div>
 
           {/* Gráfico de tendencias */}
-          <div className='bg-white rounded-lg p-6'>
+          <div className='bg-white rounded-lg p-3'>
             {!loading && (
-              <div className='mb-5'>
+              <div className='mb-4'>
                 <div className='flex items-center justify-between'>
-                  <span className='font-bold text-xl mr-4'>Tendencias</span>
+                  <span className='font-bold mr-4'>Tendencias</span>
                   <div className='flex items-center'>
                     <div className='flex items-center mr-4'>
                       <div className='w-2 h-2 rounded-full bg-[#0560EA] mr-2'></div>
-                      <span className='text-gray-700'>Ingresos</span>
+                      <span className='text-xs text-gray-700'>Ingresos</span>
                     </div>
                     <div className='flex items-center'>
                       <div className='w-2 h-2 rounded-full bg-[#56CFE1] mr-2'></div>
-                      <span className='text-gray-700'>Egresos</span>
+                      <span className='text-xs text-gray-700'>Egresos</span>
                     </div>
                   </div>
                 </div>
-                <span className='text-sm text-gray-500 mr-8'>Último año</span>{' '}
+                <span className='text-xs text-gray-500 mr-8'>Último año</span>{' '}
               </div>
             )}
+            {/* Gráfico de líneas */}
             {!loading && trendsChartData && (
-              <div className='pl-6 w-full h-[320px]'>
+              <div className='pl-6 w-full h-[250px]'>
                 {trendsChartData.labels &&
                   trendsChartData.datasets &&
                   trendsChartData.datasets.length > 0 && (
