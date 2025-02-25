@@ -21,10 +21,10 @@ const ExpensesCard: React.FC<ExpensesCardProps> = ({
         <MdTrendingDown className='text-2xl ml-2' />
       </div>
       <div>
-        <p className='text-gray-500 text-sm'>Mes de {monthOnly}</p>
+        <p className='text-gray-500 text-xs'>Mes de {monthOnly}</p>
       </div>
       <div className='flex-grow text-right font-[Poppins] flex flex-col justify-end'>
-        <p className='text-2xl font-bold'>{formatNumberWithSuffix(current)}</p>
+        <p className='text-3xl font-bold'>{formatNumberWithSuffix(current)}</p>
         <p className='text-gray-500 text-sm'>
           {formatNumberWithDots(previous)}
         </p>
