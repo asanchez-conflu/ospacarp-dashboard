@@ -303,7 +303,7 @@ export default function EgresosPage() {
       <div className='my-10'>
         <h2 className='font-bold text-4xl'>Panel gráfico de Egresos</h2>
         <p className='font-bold text-xl'>
-          Gráficos de distribución de egresos según su padrón.
+          Gráficos de distribución de egresos según padrón.
         </p>
       </div>
 

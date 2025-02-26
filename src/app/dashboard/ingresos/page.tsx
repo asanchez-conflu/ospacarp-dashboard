@@ -318,7 +318,7 @@ export default function IngresosPage() {
       <div className='my-10'>
         <h2 className='font-bold text-4xl'>Panel gráfico de Ingresos</h2>
         <p className='font-bold text-xl'>
-          Gráficos de distribución de ingresos según su padrón.
+          Gráficos de distribución de ingresos según padrón.
         </p>
       </div>
 

@@ -25,7 +25,7 @@ const IncomesCard: React.FC<IncomesCardProps> = ({
       </div>
       <div className='flex-grow text-right font-[Poppins] flex flex-col justify-end'>
         <p className='text-3xl font-bold'>{formatNumberWithSuffix(current)}</p>
-        <p className='text-sm'>{formatNumberWithDots(previous)}</p>
+        <p className='text-sm font-bold'>{formatNumberWithDots(previous)}</p>
       </div>
     </div>
   );
