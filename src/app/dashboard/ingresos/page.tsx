@@ -323,7 +323,7 @@ export default function IngresosPage() {
       </div>
 
       {/* Bloque principal */}
-      <div className='pt-4 bg-white rounded h-[460px] flex flex-col'>
+      <div className='pt-4 bg-white rounded-lg h-[460px] flex flex-col'>
         <div className='px-7 relative h-[44px]'>
           <h3 className='font-bold'>
             Distribución de Ingresos por
@@ -339,7 +339,7 @@ export default function IngresosPage() {
               <PopoverButton className='absolute top-0 right-7 p-2 bg-white rounded-md shadow-md hover:bg-gray-100 active:bg-gray-200 active:scale-95 transition-all duration-75'>
                 <MdTune size={20} color='black' />
               </PopoverButton>
-              <PopoverPanel className='absolute right-7 top-12 w-48 bg-[#F6F7FB] font-semibold rounded-md shadow-lg z-10'>
+              <PopoverPanel className='absolute right-7 top-10 w-48 bg-[#F6F7FB] font-semibold rounded-md shadow-lg z-10'>
                 <div className='p-2'>
                   <PopoverGroup>
                     <PopoverButton
@@ -457,7 +457,7 @@ export default function IngresosPage() {
       </div>
 
       {/* BOTONES */}
-      <div className='m-10 flex justify-between'>
+      <div className='mt-10 flex justify-between'>
         {selectedId && <BackButton onClick={goBack} />}
         <div></div>
         {selectedId && !trendData && <HistoricButton onClick={goTrend} />}
