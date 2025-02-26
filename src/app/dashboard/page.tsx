@@ -38,7 +38,7 @@ const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
 
 // Opciones del gráfico de Dona
 const options: ChartOptions<'doughnut'> = {
-  cutout: '80%',
+  cutout: '75%',
   interaction: {
     mode: 'nearest' as const,
     intersect: false,
@@ -60,8 +60,8 @@ const options: ChartOptions<'doughnut'> = {
   },
   layout: {
     padding: {
-      left: 12,
-      right: 12,
+      left: 24,
+      right: 24,
       top: 12,
       bottom: 12,
     },
@@ -344,7 +344,7 @@ const HomePage: React.FC = () => {
               </div>
               <div className='w-full flex-grow relative'>
                 <DonutChart data={versusChartData} options={options} />
-                <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-7xl font-[Poppins] font-bold pointer-events-none'>
+                <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl font-[Poppins] font-bold pointer-events-none'>
                   100%
                 </div>
               </div>
