@@ -28,7 +28,7 @@ import type {
 import BackButton from '@/components/common/backButton';
 import HistoricButton from '@/components/common/historicButton';
 import HorizontalBar from '@/app/dashboard/egresos/horizontalBar';
-import { getMonth, toTitleCase } from '@/utils/utils';
+import { formatNumberWithSuffix, getMonth, toTitleCase } from '@/utils/utils';
 
 const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
   ssr: false,
@@ -67,6 +67,11 @@ export default function EgresosPage() {
         position: 'right', // Y-axis on the right
         grid: {
           display: true,
+        },
+        ticks: {
+          callback: function (value) {
+            return formatNumberWithSuffix(value); // Apply your formatter
+          },
         },
       },
     },
@@ -233,7 +238,7 @@ export default function EgresosPage() {
 
   // Formatea Trend Data para los gráficos
   const convertTrendDataTyped = (trendData: HistoryExpensesItem[]) => {
-    const labels = trendData.map((item) => item.monthName);
+    const labels = trendData.map((item) => item.monthName.charAt(0));
     const data = trendData.map((item) => parseInt(item.expenses, 10)); // Parse count to number
 
     return {
@@ -289,13 +294,13 @@ export default function EgresosPage() {
   }, [filterType]);
 
   return (
-    <div>
+    <div className='container max-w-[900px] 2xl:max-w-[1080px] ml-[calc(100%/12)]'>
       <div className='my-6 flex flex-col items-center'>
         <MdFavorite size={30} color='#56CFE1' />
       </div>
-      <hr className='border-gray-200 mx-10' />
+      <hr className='border-gray-200' />
 
-      <div className='m-10'>
+      <div className='my-10'>
         <h2 className='font-bold text-4xl'>Panel gráfico de Egresos</h2>
         <p className='font-bold text-xl'>
           Gráficos de distribución de egresos según su padrón.
@@ -303,10 +308,10 @@ export default function EgresosPage() {
       </div>
 
       {/* Bloque principal */}
-      <div className='mx-10 py-5 bg-white rounded'>
-        <div className='px-7 pt-4 pb-2 relative'>
+      <div className='pt-4 bg-white rounded h-[460px] flex flex-col'>
+        <div className='px-7 relative h-[44px]'>
           <h3 className='font-bold'>
-            Distribución de Egresos por{' '}
+            Distribución de Egresos por
             {filterType === 'origin' ? 'orígenes' : 'delegaciones'} de afiliado
           </h3>
           <p className='text-sm'>
@@ -357,24 +362,24 @@ export default function EgresosPage() {
           )}
         </div>
 
-        {/* BLOQUE DE CONTENIDO */}
-        <div className='flex h-[360px] p-5 relative'>
-          {loading === true && <p className='px-2'>Cargando...</p>}
-          {!loading && !trendData && graphData?.length > 0 && (
+        {/* TAGS */}
+        <div className='text-right pr-4 mb-1 h-[28px]'>
+          {!loading && !trendData && (
             <>
-              <span className='absolute top-0 right-32 text-xs text-gray-500'>
-                Monto
-              </span>
-              <span className='absolute top-0 right-5 text-xs text-gray-500'>
-                Porcentaje
-              </span>
+              <span className='text-xs text-gray-500'>Monto</span>
+              <span className='text-xs ml-12 text-gray-500'>Porcentaje</span>
             </>
           )}
+        </div>
+
+        {/* BLOQUE DE CONTENIDO */}
+        <div className='flex h-[372px] pr-4 relative'>
+          {loading === true && <p className='px-7'>Cargando...</p>}
 
           {/* Lista lateral de origenes/delegaciones */}
           {!loading && selectedId && (
             <ul
-              className='w-64 border-r-2 pr-2 space-y-3 border-[#0560EA] overflow-y-auto'
+              className='w-64 border-r-2 pl-4 pr-2 space-y-3 border-[#0560EA] overflow-y-auto'
               style={{
                 msOverflowStyle: 'none',
                 scrollbarWidth: 'none',
@@ -424,7 +429,7 @@ export default function EgresosPage() {
 
           {/* Bloque histórico */}
           {!loading && trendData && (
-            <div className='pl-6 w-full h-full'>
+            <div className='p-4 w-full h-full'>
               {trendData.labels &&
                 trendData.datasets &&
                 trendData.datasets.length > 0 && (

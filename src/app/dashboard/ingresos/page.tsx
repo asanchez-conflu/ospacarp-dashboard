@@ -326,7 +326,7 @@ export default function IngresosPage() {
       <div className='pt-4 bg-white rounded h-[460px] flex flex-col'>
         <div className='px-7 relative h-[44px]'>
           <h3 className='font-bold'>
-            Distribución de Ingresos por{' '}
+            Distribución de Ingresos por
             {filterType === 'origin' ? 'orígenes' : 'delegaciones'} de afiliado
           </h3>
           <p className='text-sm'>
@@ -377,6 +377,7 @@ export default function IngresosPage() {
           )}
         </div>
 
+        {/* TAGS */}
         <div className='text-right pr-4 mb-1 h-[28px]'>
           {!loading && !trendData && (
             <>
