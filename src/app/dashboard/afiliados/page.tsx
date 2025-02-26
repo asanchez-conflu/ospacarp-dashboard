@@ -32,12 +32,13 @@ import CardAfiliados from './cardAfiliados';
 import CardOtros from './cardOtros';
 import HorizontalBar from '@/app/dashboard/afiliados/horizontalBar';
 import { getMonth, toTitleCase } from '@/utils/utils';
+import withAuth from '@/components/withAuth';
 
 const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
   ssr: false,
 });
 
-export default function AfiliadosPage() {
+const AfiliadosPage: React.FC = () => {
   const [affiliatesCount, setAffiliatesCount] = useState('0');
   const [othersCount, setOthersCount] = useState('0');
   const [filterType, setFilterType] = useState<'origin' | 'delegations'>(
@@ -459,4 +460,6 @@ export default function AfiliadosPage() {
       </div>
     </div>
   );
-}
+};
+
+export default withAuth(AfiliadosPage);

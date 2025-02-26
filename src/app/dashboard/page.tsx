@@ -26,6 +26,7 @@ import {
   getMonthFormatted,
   getPastMonths,
 } from '@/utils/utils';
+import withAuth from '@/components/withAuth';
 
 const DonutChart = dynamic(
   () => import('react-chartjs-2').then(({ Doughnut }) => Doughnut),
@@ -435,4 +436,4 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage;
+export default withAuth(HomePage);

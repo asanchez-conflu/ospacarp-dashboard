@@ -29,12 +29,13 @@ import BackButton from '@/components/common/backButton';
 import HistoricButton from '@/components/common/historicButton';
 import HorizontalBar from '@/app/dashboard/ingresos/horizontalBar';
 import { formatNumberWithSuffix, getMonth, toTitleCase } from '@/utils/utils';
+import withAuth from '@/components/withAuth';
 
 const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
   ssr: false,
 });
 
-export default function IngresosPage() {
+const IngresosPage: React.FC = () => {
   const [filterType, setFilterType] = useState<'origin' | 'delegations'>(
     'origin'
   );
@@ -464,4 +465,6 @@ export default function IngresosPage() {
       </div>
     </div>
   );
-}
+};
+
+export default withAuth(IngresosPage);

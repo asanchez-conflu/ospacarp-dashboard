@@ -8,7 +8,7 @@ import {
   MdPeople,
   MdOutlineLogout,
 } from 'react-icons/md';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { User } from '@/app/types/dashboard';
 import { getInitials } from '@/utils/utils';
 
@@ -32,6 +32,7 @@ const Sidebar = () => {
   }, []);
 
   const pathname = usePathname();
+  const navigation = useRouter();
 
   const sections = [
     { name: 'Inicio', path: '/dashboard', icon: <MdHome className='mr-2' /> },
@@ -51,6 +52,11 @@ const Sidebar = () => {
       icon: <MdPeople className='mr-2' />,
     },
   ];
+
+  const handleLogout = () => {
+    localStorage.removeItem('jwt');
+    navigation.push('/');
+  };
 
   return (
     <aside className='fixed top-0 left-0 p-4 bg-white h-screen w-[250px] 2xl:w-[300px] flex flex-col '>
@@ -107,6 +113,10 @@ const Sidebar = () => {
       <Link
         href='/'
         className='flex items-center w-[190px] px-5 py-2 mb-2 font-bold'
+        onClick={(e) => {
+          e.preventDefault(); // Prevent default link behavior
+          handleLogout();
+        }}
       >
         <MdOutlineLogout className='mr-2' />
         Cerrar sesión
