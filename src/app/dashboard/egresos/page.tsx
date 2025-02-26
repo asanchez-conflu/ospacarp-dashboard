@@ -28,6 +28,7 @@ import type {
 import BackButton from '@/components/common/backButton';
 import HistoricButton from '@/components/common/historicButton';
 import HorizontalBar from '@/app/dashboard/egresos/horizontalBar';
+import { getMonth, toTitleCase } from '@/utils/utils';
 
 const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
   ssr: false,
@@ -42,6 +43,8 @@ export default function EgresosPage() {
   const [listData, setListData] = useState<DataItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [trendData, setTrendData] = useState<ChartData<'line'> | null>(null);
+
+  const selectedLabel = listData.find((item) => item.id === selectedId)?.label;
 
   // Opciones de chart.js
   const options: ChartOptions<'line'> = {
@@ -156,7 +159,7 @@ export default function EgresosPage() {
 
           // Type conversion and creation of DataItem object
           const dataItem: DataItem = {
-            label: origin.description,
+            label: toTitleCase(origin.description),
             percentage: parseFloat(percentage.toFixed(2)), // Parse to number
             id: String(origin.origin),
             total: origin.total,
@@ -188,7 +191,7 @@ export default function EgresosPage() {
 
             // Type conversion and creation of DataItem object
             const dataItem: DataItem = {
-              label: delegation.description,
+              label: toTitleCase(delegation.description),
               percentage: parseFloat(percentage.toFixed(2)), // Parse to number
               id: String(delegation.delegation),
               total: delegation.total,
@@ -306,7 +309,9 @@ export default function EgresosPage() {
             Distribución de Egresos por{' '}
             {filterType === 'origin' ? 'orígenes' : 'delegaciones'} de afiliado
           </h3>
-          <p className='text-sm'>Valores acumulados</p>
+          <p className='text-sm'>
+            Mes de {getMonth()} {selectedLabel && ` | ${selectedLabel}`}
+          </p>
 
           {/* FILTRO - ocultar fuera de pantalla 1 */}
           {!selectedId && (

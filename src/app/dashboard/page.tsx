@@ -402,34 +402,32 @@ const HomePage: React.FC = () => {
 
           {/* Gráfico de tendencias */}
           <div className='bg-white rounded-lg p-3'>
-            {!loading && (
-              <div className='mb-4'>
-                <div className='flex items-center justify-between'>
-                  <span className='font-bold mr-4'>Tendencias</span>
+            <div className='mb-4'>
+              <div className='flex items-center justify-between'>
+                <span className='font-bold mr-4'>Tendencias</span>
+                <div className='flex items-center'>
+                  <div className='flex items-center mr-4'>
+                    <div className='w-2 h-2 rounded-full bg-[#0560EA] mr-2'></div>
+                    <span className='text-xs text-gray-700'>Ingresos</span>
+                  </div>
                   <div className='flex items-center'>
-                    <div className='flex items-center mr-4'>
-                      <div className='w-2 h-2 rounded-full bg-[#0560EA] mr-2'></div>
-                      <span className='text-xs text-gray-700'>Ingresos</span>
-                    </div>
-                    <div className='flex items-center'>
-                      <div className='w-2 h-2 rounded-full bg-[#56CFE1] mr-2'></div>
-                      <span className='text-xs text-gray-700'>Egresos</span>
-                    </div>
+                    <div className='w-2 h-2 rounded-full bg-[#56CFE1] mr-2'></div>
+                    <span className='text-xs text-gray-700'>Egresos</span>
                   </div>
                 </div>
-                <span className='text-xs text-gray-500 mr-8'>Último año</span>{' '}
               </div>
-            )}
+              <span className='text-xs text-gray-500 mr-8'>Último año</span>
+            </div>
             {/* Gráfico de líneas */}
-            {!loading && trendsChartData && (
-              <div className='pl-6 w-full h-[250px]'>
-                {trendsChartData.labels &&
-                  trendsChartData.datasets &&
-                  trendsChartData.datasets.length > 0 && (
-                    <Line data={trendsChartData} options={trendOptions} />
-                  )}
-              </div>
-            )}
+            <div className='pl-6 w-full h-[250px]'>
+              {!loading &&
+                trendsChartData &&
+                trendsChartData.labels &&
+                trendsChartData.datasets &&
+                trendsChartData.datasets.length > 0 && (
+                  <Line data={trendsChartData} options={trendOptions} />
+                )}
+            </div>
           </div>
         </div>
       </div>

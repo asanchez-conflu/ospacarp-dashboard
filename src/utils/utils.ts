@@ -120,6 +120,28 @@ export const getMonthFormatted = (monthsToSubtract: number = 2): string => {
   return formattedMonth;
 };
 
+export const getMonth = (monthsToSubtract: number = 2): string => {
+  const today = new Date();
+  let year = today.getFullYear();
+  let month = today.getMonth() + 1 - monthsToSubtract;
+
+  if (month <= 0) {
+    month = 12 + month;
+    year--;
+  }
+
+  const dateToFormat = new Date(year, month - 1, 1);
+  let formattedMonth = dateToFormat.toLocaleString('default', {
+    month: 'long',
+    year: 'numeric',
+  });
+
+  formattedMonth = formattedMonth.replace(/^\w/, (c) => c.toUpperCase());
+  const monthOnly = formattedMonth.split(' ')[0];
+
+  return monthOnly;
+};
+
 export const getInitials = (user: User): string => {
   if (!user || !user.UserFirstName || !user.UserLastName) {
     return ''; // Handle cases where user or names are missing
@@ -129,4 +151,16 @@ export const getInitials = (user: User): string => {
   const lastNameInitial = user.UserLastName.charAt(0).toUpperCase();
 
   return `${firstNameInitial}${lastNameInitial}`;
+};
+
+export const toTitleCase = (str: string): string => {
+  if (!str) {
+    return '';
+  }
+
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 };

@@ -31,6 +31,7 @@ import HistoricButton from '@/components/common/historicButton';
 import CardAfiliados from './cardAfiliados';
 import CardOtros from './cardOtros';
 import HorizontalBar from '@/app/dashboard/afiliados/horizontalBar';
+import { getMonth, toTitleCase } from '@/utils/utils';
 
 const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
   ssr: false,
@@ -47,6 +48,8 @@ export default function AfiliadosPage() {
   const [listData, setListData] = useState<DataItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [trendData, setTrendData] = useState<ChartData<'line'> | null>(null);
+
+  const selectedLabel = listData.find((item) => item.id === selectedId)?.label;
 
   // Opciones de chart.js
   const options: ChartOptions<'line'> = {
@@ -164,7 +167,7 @@ export default function AfiliadosPage() {
 
           // Type conversion and creation of DataItem object
           const dataItem: DataItem = {
-            label: origin.originDesc,
+            label: toTitleCase(origin.originDesc),
             percentage: parseFloat(percentage.toFixed(2)), // Parse to number
             id: String(origin.origin),
             total: origin.count,
@@ -196,7 +199,7 @@ export default function AfiliadosPage() {
 
             // Type conversion and creation of DataItem object
             const dataItem: DataItem = {
-              label: delegation.delegationDesc,
+              label: toTitleCase(delegation.delegationDesc),
               percentage: parseFloat(percentage.toFixed(2)), // Parse to number
               id: String(delegation.delegation),
               total: delegation.count,
@@ -319,7 +322,9 @@ export default function AfiliadosPage() {
             Distribución de padrón por{' '}
             {filterType === 'origin' ? 'orígenes' : 'delegaciones'} de Afiliado
           </h3>
-          <p className='text-sm'>Valores acumulados</p>
+          <p className='text-sm'>
+            Mes de {getMonth()} {selectedLabel && ` | ${selectedLabel}`}
+          </p>
 
           {/* FILTRO - ocultar fuera de pantalla 1 */}
           {!selectedId && (
