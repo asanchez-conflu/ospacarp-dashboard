@@ -8,7 +8,7 @@ import {
   MdPeople,
   MdOutlineLogout,
 } from 'react-icons/md';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { User } from '@/app/types/dashboard';
 import { getInitials } from '@/utils/utils';
 
@@ -32,6 +32,7 @@ const Sidebar = () => {
   }, []);
 
   const pathname = usePathname();
+  const navigation = useRouter();
 
   const sections = [
     { name: 'Inicio', path: '/dashboard', icon: <MdHome className='mr-2' /> },
@@ -52,28 +53,38 @@ const Sidebar = () => {
     },
   ];
 
+  const handleLogout = () => {
+    localStorage.removeItem('jwt');
+    navigation.push('/');
+  };
+
   return (
     <aside className='fixed top-0 left-0 p-4 bg-white h-screen w-[250px] 2xl:w-[300px] flex flex-col '>
-      {user && (
-        <div className='flex flex-col items-center mb-4'>
-          <div className='w-16 h-16 rounded-full flex items-center justify-center bg-blue-500'>
-            <span className='text-2xl font-semibold text-white '>
-              {getInitials(user)}
-            </span>
-          </div>
-          {/* user.UserURLImage && (
+      <div className='flex flex-col h-[120px] items-center m-4'>
+        {user && (
+          <>
+            <div className='w-16 h-16 rounded-full flex items-center justify-center bg-blue-500'>
+              <span className='text-2xl font-semibold text-white '>
+                {getInitials(user)}
+              </span>
+            </div>
+
+            <div className='text-center'>
+              <h2 className='text-lg font-semibold'>
+                {user.UserFirstName} {user.UserLastName}
+              </h2>
+              <p className='text-sm'>{user.Roles}</p>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* user.UserURLImage && (
             <div>
               <img src={user.UserURLImage}></img>
             </div>
-          ) */}
-          <div className='text-center'>
-            <h2 className='text-lg font-semibold'>
-              {user.UserFirstName} {user.UserLastName}
-            </h2>
-            <p className='text-sm'>{user.Roles}</p>
-          </div>
-        </div>
-      )}
+          ) 
+      */}
 
       <hr className='my-4 border-gray-200' />
 
@@ -102,6 +113,10 @@ const Sidebar = () => {
       <Link
         href='/'
         className='flex items-center w-[190px] px-5 py-2 mb-2 font-bold'
+        onClick={(e) => {
+          e.preventDefault(); // Prevent default link behavior
+          handleLogout();
+        }}
       >
         <MdOutlineLogout className='mr-2' />
         Cerrar sesión

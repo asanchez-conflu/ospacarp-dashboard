@@ -26,6 +26,7 @@ import {
   getMonthFormatted,
   getPastMonths,
 } from '@/utils/utils';
+import withAuth from '@/components/withAuth';
 
 const DonutChart = dynamic(
   () => import('react-chartjs-2').then(({ Doughnut }) => Doughnut),
@@ -38,7 +39,7 @@ const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
 
 // Opciones del gráfico de Dona
 const options: ChartOptions<'doughnut'> = {
-  cutout: '80%',
+  cutout: '75%',
   interaction: {
     mode: 'nearest' as const,
     intersect: false,
@@ -60,8 +61,8 @@ const options: ChartOptions<'doughnut'> = {
   },
   layout: {
     padding: {
-      left: 12,
-      right: 12,
+      left: 24,
+      right: 24,
       top: 12,
       bottom: 12,
     },
@@ -79,6 +80,22 @@ const trendOptions: ChartOptions<'line'> = {
   plugins: {
     legend: {
       display: false,
+    },
+    tooltip: {
+      mode: 'index', // Show tooltips for all points at the same x-value
+      intersect: false, // Don't require the mouse to be exactly over a point
+      callbacks: {
+        label: function (context) {
+          let label = context.dataset.label || '';
+          if (label) {
+            label += ': ';
+          }
+          if (context.parsed.y !== null) {
+            label += formatNumberWithSuffix(context.parsed.y);
+          }
+          return label;
+        },
+      },
     },
   },
   scales: {
@@ -344,7 +361,7 @@ const HomePage: React.FC = () => {
               </div>
               <div className='w-full flex-grow relative'>
                 <DonutChart data={versusChartData} options={options} />
-                <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-7xl font-[Poppins] font-bold pointer-events-none'>
+                <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl font-[Poppins] font-bold pointer-events-none'>
                   100%
                 </div>
               </div>
@@ -402,34 +419,32 @@ const HomePage: React.FC = () => {
 
           {/* Gráfico de tendencias */}
           <div className='bg-white rounded-lg p-3'>
-            {!loading && (
-              <div className='mb-4'>
-                <div className='flex items-center justify-between'>
-                  <span className='font-bold mr-4'>Tendencias</span>
+            <div className='mb-4'>
+              <div className='flex items-center justify-between'>
+                <span className='font-bold mr-4'>Tendencias</span>
+                <div className='flex items-center'>
+                  <div className='flex items-center mr-4'>
+                    <div className='w-2 h-2 rounded-full bg-[#0560EA] mr-2'></div>
+                    <span className='text-xs text-gray-700'>Ingresos</span>
+                  </div>
                   <div className='flex items-center'>
-                    <div className='flex items-center mr-4'>
-                      <div className='w-2 h-2 rounded-full bg-[#0560EA] mr-2'></div>
-                      <span className='text-xs text-gray-700'>Ingresos</span>
-                    </div>
-                    <div className='flex items-center'>
-                      <div className='w-2 h-2 rounded-full bg-[#56CFE1] mr-2'></div>
-                      <span className='text-xs text-gray-700'>Egresos</span>
-                    </div>
+                    <div className='w-2 h-2 rounded-full bg-[#56CFE1] mr-2'></div>
+                    <span className='text-xs text-gray-700'>Egresos</span>
                   </div>
                 </div>
-                <span className='text-xs text-gray-500 mr-8'>Último año</span>{' '}
               </div>
-            )}
+              <span className='text-xs text-gray-500 mr-8'>Último año</span>
+            </div>
             {/* Gráfico de líneas */}
-            {!loading && trendsChartData && (
-              <div className='pl-6 w-full h-[250px]'>
-                {trendsChartData.labels &&
-                  trendsChartData.datasets &&
-                  trendsChartData.datasets.length > 0 && (
-                    <Line data={trendsChartData} options={trendOptions} />
-                  )}
-              </div>
-            )}
+            <div className='pl-6 w-full h-[250px]'>
+              {!loading &&
+                trendsChartData &&
+                trendsChartData.labels &&
+                trendsChartData.datasets &&
+                trendsChartData.datasets.length > 0 && (
+                  <Line data={trendsChartData} options={trendOptions} />
+                )}
+            </div>
           </div>
         </div>
       </div>
@@ -437,4 +452,4 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage;
+export default withAuth(HomePage);

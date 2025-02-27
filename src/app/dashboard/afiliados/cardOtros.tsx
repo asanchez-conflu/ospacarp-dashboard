@@ -6,12 +6,12 @@ interface AffiliatesProps {
 
 const CardOtros: React.FC<AffiliatesProps> = ({ affiliates }) => {
   return (
-    <div className='w-1/2 bg-white rounded-lg p-4 flex justify-between items-center'>
+    <div className='h-[50px] w-1/2 bg-white rounded-lg p-2 flex justify-between items-center'>
       <div>
-        <h2 className='text-lg font-semibold'>Otros</h2>
-        <p className='text-sm'>Osde Genuino - Visitar - Tercerizado</p>
+        <h2 className='font-semibold leading-5'>Otros</h2>
+        <p className='text-xs'>Osde Genuino - Visitar - Tercerizado</p>
       </div>
-      <div className='text-2xl font-bold'>{affiliates}</div>
+      <div className='text-2xl font-bold font-[Poppins]'>{affiliates}</div>
     </div>
   );
 };

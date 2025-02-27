@@ -4,9 +4,10 @@ import { MdFavorite } from 'react-icons/md';
 
 interface LoginProps {
   onSubmit: (username: string, password: string) => void;
+  error: string | null;
 }
 
-const LoginForm: React.FC<LoginProps> = ({ onSubmit }) => {
+const LoginForm: React.FC<LoginProps> = ({ onSubmit, error = null }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -46,6 +47,9 @@ const LoginForm: React.FC<LoginProps> = ({ onSubmit }) => {
             onChange={(e) => setPassword(e.target.value)}
             className='mt-1 p-2 border border-gray-300 rounded-md w-full focus:ring-blue-500 focus:border-blue-500'
           />
+          {error && (
+            <div className='text-center mt-3 text-red-600'>{error}</div>
+          )}
         </div>
 
         {/* Oculto hasta desarrollo

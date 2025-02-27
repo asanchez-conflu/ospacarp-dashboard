@@ -25,7 +25,7 @@ const ExpensesCard: React.FC<ExpensesCardProps> = ({
       </div>
       <div className='flex-grow text-right font-[Poppins] flex flex-col justify-end'>
         <p className='text-3xl font-bold'>{formatNumberWithSuffix(current)}</p>
-        <p className='text-gray-500 text-sm'>
+        <p className='text-gray-500 font-bold text-sm'>
           {formatNumberWithDots(previous)}
         </p>
       </div>
