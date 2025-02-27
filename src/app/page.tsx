@@ -12,7 +12,7 @@ const HomePage: React.FC = () => {
   const style = {
     height: '100vh',
     width: '100vw',
-    backgroundImage: `url(http://localhost:3000/background.jpeg)`,
+    backgroundImage: `url(/background.jpeg)`,
     backgroundSize: 'cover',
     backgroundPosition: 'center center',
   };
