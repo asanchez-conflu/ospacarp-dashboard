@@ -1,11 +1,14 @@
 'use client';
 import LoginForm from '@/components/login/loginForm';
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { getUserData, loginEndpoints } from '@/components/api-client';
 
 const HomePage: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const style = {
     height: '100vh',
     width: '100vw',
@@ -20,6 +23,10 @@ const HomePage: React.FC = () => {
     console.log('Email:', username);
     console.log('Password:', password);
 
+    if (loading) {
+      return;
+    }
+
     const formData = new URLSearchParams();
     formData.append('username', username);
     formData.append('password', password);
@@ -32,6 +39,9 @@ const HomePage: React.FC = () => {
     formData.append('grant_type', 'Password');
 
     try {
+      setLoading(true);
+      setError(null);
+
       const response = await axios.post(loginEndpoints.login, formData, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -39,29 +49,28 @@ const HomePage: React.FC = () => {
       });
 
       if (response.status === 200) {
-        // Store JWT in local storage (or use a secure cookie library)
         localStorage.setItem('jwt', response.data.access_token);
 
         const userData = await getUserData(response.data.user_guid);
-        console.log('userData: ', userData);
         localStorage.setItem('user', JSON.stringify(userData));
 
-        // Redirect to protected page
         navigation.push('/dashboard');
       } else {
         console.log('Error');
-        // setError('Login failed');
+        setError('Credenciales incorrectas');
       }
     } catch (error) {
       console.log('Error: ', error);
-      // setError('Invalid username or password');
+      setError('Error de login');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <main style={style} className='flex flex-col items-center justify-center'>
       <div className='max-w-7xl w-full h-screen flex flex-col items-center justify-center'>
-        <LoginForm onSubmit={handleSubmit} />
+        <LoginForm onSubmit={handleSubmit} error={error} />
       </div>
     </main>
   );

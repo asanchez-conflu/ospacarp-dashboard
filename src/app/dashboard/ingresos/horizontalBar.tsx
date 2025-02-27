@@ -26,12 +26,12 @@ const HorizontalBar: React.FC<Props> = ({
       </span>
 
       <span
-        className={`absolute top-1/2 -translate-y-1/2 right-24 text-sm text-gray-800 px-2`} // Right-24 for total
+        className={`absolute top-1/2 -translate-y-1/2 right-24 text-sm text-gray-800 px-2 font-[Poppins]`} // Right-24 for total
       >
         {formatCurrency(total)}
       </span>
       <span
-        className={`absolute top-1/2 -translate-y-1/2 right-2 text-sm text-gray-800 px-2`} // Right-8 for barWidth
+        className={`absolute top-1/2 -translate-y-1/2 right-2 text-sm text-gray-800 px-2 font-[Poppins]`} // Right-8 for barWidth
       >
         {barWidth}%
       </span>

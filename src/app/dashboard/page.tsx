@@ -81,6 +81,22 @@ const trendOptions: ChartOptions<'line'> = {
     legend: {
       display: false,
     },
+    tooltip: {
+      mode: 'index', // Show tooltips for all points at the same x-value
+      intersect: false, // Don't require the mouse to be exactly over a point
+      callbacks: {
+        label: function (context) {
+          let label = context.dataset.label || '';
+          if (label) {
+            label += ': ';
+          }
+          if (context.parsed.y !== null) {
+            label += formatNumberWithSuffix(context.parsed.y);
+          }
+          return label;
+        },
+      },
+    },
   },
   scales: {
     x: {
