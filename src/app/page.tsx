@@ -27,6 +27,9 @@ const HomePage: React.FC = () => {
       return;
     }
 
+    setLoading(true);
+    setError(null);
+
     const formData = new URLSearchParams();
     formData.append('username', username);
     formData.append('password', password);
@@ -39,9 +42,6 @@ const HomePage: React.FC = () => {
     formData.append('grant_type', 'Password');
 
     try {
-      setLoading(true);
-      setError(null);
-
       const response = await axios.post(loginEndpoints.login, formData, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
