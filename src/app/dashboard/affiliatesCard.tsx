@@ -13,7 +13,7 @@ const AffiliatesCard: React.FC<AffiliatesCardProps> = ({ amount }) => {
         <MdPeople className='text-2xl ml-2' />
       </div>
       <div className='flex-grow text-right font-[Poppins] flex flex-col justify-end'>
-        <p className='text-gray-500 font-bold text-sm'>
+        <p className='text-2xl font-bold'>
           {formatNumberWithDots(amount)}
         </p>
       </div>

@@ -313,7 +313,7 @@ const EgresosPage: React.FC = () => {
         <div className='px-7 relative h-[44px]'>
           <h3 className='font-bold'>
             Distribución de Egresos por
-            {filterType === 'origin' ? 'orígenes' : 'delegaciones'} de afiliado
+            {filterType === 'origin' ? ' orígenes ' : ' delegaciones '} de afiliado
           </h3>
           <p className='text-sm'>
             Mes de {getMonth()} {selectedLabel && ` | ${selectedLabel}`}

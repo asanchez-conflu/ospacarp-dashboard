@@ -32,7 +32,7 @@ const LoginForm: React.FC<LoginProps> = ({ onSubmit, error = null }) => {
             type='text'
             id='username'
             value={username}
-            placeholder='Email Empresarial'
+            placeholder='Correo Empresarial'
             onChange={(e) => setUsername(e.target.value)}
             className='mt-1 p-2 border border-gray-300 rounded-md w-full focus:ring-blue-500 focus:border-blue-500'
           />

@@ -375,7 +375,7 @@ const AfiliadosPage: React.FC = () => {
         <div className='text-right pr-4 mb-1 h-[28px]'>
           {!loading && !trendData && (
             <>
-              <span className='text-xs text-gray-500'>Monto</span>
+              <span className='text-xs text-gray-500'>Cantidad</span>
               <span className='text-xs ml-12 text-gray-500'>Porcentaje</span>
             </>
           )}
