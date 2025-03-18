@@ -19,7 +19,7 @@ const HorizontalBar: React.FC<Props> = ({
       <div className='bg-gradient-to-r from-[#0560EA] via-[#FF9441]/95 to-[#FF9441] w-full h-8 rounded-lg absolute top-0 right-px' />
       <div
         className='bg-[#F6F7FB] w-full h-8 rounded-r-lg absolute top-0 right-0 max-w-[99%]'
-        style={{ width: `calc(100% - ${barWidth}%)` }}
+        style={{ width: `calc(100% - ${parseFloat(barWidth)}%)` }}
       />
       <span className='text-sm font-bold text-white px-2 absolute top-1/2 -translate-y-1/2 left-2'>
         {leftLabel}
