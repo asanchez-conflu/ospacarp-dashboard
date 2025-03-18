@@ -63,7 +63,7 @@ const options: ChartOptions<'doughnut'> = {
       display: false, // Hide default legend
     },
     tooltip: {
-      enabled: true,
+      enabled: false,
       callbacks: {
         label: (context: TooltipItem<'doughnut'>) => {
           const value = context.formattedValue; // Get the numeric value
