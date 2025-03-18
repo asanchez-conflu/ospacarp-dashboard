@@ -170,10 +170,17 @@ const IngresosPage: React.FC = () => {
             ? 0
             : percentageValue;
 
+          const formattedPercentage = parseFloat(
+            displayPercentage.toFixed(2)
+          ).toLocaleString('es-AR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+
           // Type conversion and creation of DataItem object
           const dataItem: DataItem = {
             label: toTitleCase(origin.description),
-            percentage: displayPercentage,
+            percentage: formattedPercentage,
             id: String(origin.origin),
             total: origin.total,
           };
@@ -210,10 +217,17 @@ const IngresosPage: React.FC = () => {
               ? 0
               : percentageValue;
 
+            const formattedPercentage = parseFloat(
+              displayPercentage.toFixed(2)
+            ).toLocaleString('es-AR', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            });
+
             // Type conversion and creation of DataItem object
             const dataItem: DataItem = {
               label: toTitleCase(delegation.description),
-              percentage: displayPercentage,
+              percentage: formattedPercentage,
               id: String(delegation.delegation),
               total: delegation.total,
             };
@@ -328,7 +342,8 @@ const IngresosPage: React.FC = () => {
         <div className='px-7 relative h-[44px]'>
           <h3 className='font-bold'>
             Distribución de Ingresos por
-            {filterType === 'origin' ? ' orígenes ' : ' delegaciones '} de afiliado
+            {filterType === 'origin' ? ' orígenes ' : ' delegaciones '} de
+            afiliado
           </h3>
           <p className='text-sm'>
             Mes de {getMonth()} {selectedLabel && ` | ${selectedLabel}`}

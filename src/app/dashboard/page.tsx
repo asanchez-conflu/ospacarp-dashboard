@@ -37,6 +37,20 @@ const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
   ssr: false,
 });
 
+const formatPercentage = (value: number): string => {
+  const roundedValue = parseFloat(value.toFixed(2));
+  const parts = roundedValue.toString().split('.');
+
+  if (parts.length === 1 || parseInt(parts[1], 10) === 0) {
+    return parts[0];
+  } else {
+    return roundedValue.toLocaleString('es-AR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
+};
+
 // Opciones del gráfico de Dona
 const options: ChartOptions<'doughnut'> = {
   cutout: '75%',
@@ -136,8 +150,8 @@ interface MonthPeriod {
 }
 
 interface PercentageState {
-  incomePercentage: number;
-  expensePercentage: number;
+  incomePercentage: string;
+  expensePercentage: string;
 }
 
 const HomePage: React.FC = () => {
@@ -165,8 +179,8 @@ const HomePage: React.FC = () => {
   });
 
   const [percentages, setPercentages] = useState<PercentageState>({
-    incomePercentage: 0,
-    expensePercentage: 0,
+    incomePercentage: '0,00',
+    expensePercentage: '0,00',
   });
 
   const [versusChartData, setVersusChartData] = useState<ChartData<
@@ -186,7 +200,6 @@ const HomePage: React.FC = () => {
     if (loading) {
       return;
     }
-    console.log('Filtered by ', month);
 
     try {
       const versus = await fetchDashboardVS(month.period);
@@ -206,8 +219,6 @@ const HomePage: React.FC = () => {
       }));
 
       convertVersusData(data.versus);
-
-      console.log('Month: ', month);
     } catch (err) {
       console.error('Error fetching data:', err);
     } finally {
@@ -241,8 +252,8 @@ const HomePage: React.FC = () => {
       ];
 
       setPercentages({
-        incomePercentage: incomePercentage,
-        expensePercentage: expensePercentage,
+        incomePercentage: formatPercentage(incomePercentage),
+        expensePercentage: formatPercentage(expensePercentage),
       });
 
       const chart: ChartData<'doughnut', number[], unknown> = {
@@ -267,7 +278,6 @@ const HomePage: React.FC = () => {
     const incomeData = trendData.map((item) => parseInt(item.income, 10)); // Parse to number
     const expenseData = trendData.map((item) => parseInt(item.expenses, 10)); // Parse to number
 
-    console.log('trendData', trendData);
     const data = {
       labels: labels,
       datasets: [
@@ -316,8 +326,6 @@ const HomePage: React.FC = () => {
         if (data.trends && data.trends.trend) {
           convertTrendData(data.trends.trend);
         }
-
-        console.log('DATA: ', data);
       } catch (err) {
         console.error('Error fetching data:', err);
       } finally {

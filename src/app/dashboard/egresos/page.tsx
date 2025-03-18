@@ -160,13 +160,17 @@ const EgresosPage: React.FC = () => {
               ? 0
               : (parseFloat(origin.total) / totalCount) * 100;
 
-          console.log('DEBUG origin: ', origin);
-          console.log('DEBUG count: ', totalCount);
+          const formattedPercentage = parseFloat(
+            percentage.toFixed(2)
+          ).toLocaleString('es-AR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
 
           // Type conversion and creation of DataItem object
           const dataItem: DataItem = {
             label: toTitleCase(origin.description),
-            percentage: parseFloat(percentage.toFixed(2)), // Parse to number
+            percentage: formattedPercentage,
             id: String(origin.origin),
             total: origin.total,
           };
@@ -195,10 +199,16 @@ const EgresosPage: React.FC = () => {
                 ? 0
                 : (parseFloat(delegation.total) / totalCount) * 100;
 
+            const formattedPercentage = parseFloat(
+              percentage.toFixed(2)
+            ).toLocaleString('es-AR', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            });
             // Type conversion and creation of DataItem object
             const dataItem: DataItem = {
               label: toTitleCase(delegation.description),
-              percentage: parseFloat(percentage.toFixed(2)), // Parse to number
+              percentage: formattedPercentage,
               id: String(delegation.delegation),
               total: delegation.total,
             };
@@ -313,7 +323,8 @@ const EgresosPage: React.FC = () => {
         <div className='px-7 relative h-[44px]'>
           <h3 className='font-bold'>
             Distribución de Egresos por
-            {filterType === 'origin' ? ' orígenes ' : ' delegaciones '} de afiliado
+            {filterType === 'origin' ? ' orígenes ' : ' delegaciones '} de
+            afiliado
           </h3>
           <p className='text-sm'>
             Mes de {getMonth()} {selectedLabel && ` | ${selectedLabel}`}

@@ -3,7 +3,7 @@ import React from 'react';
 
 interface Props {
   leftLabel: string;
-  barWidth: number;
+  barWidth: string;
   total: string;
   onClick: () => void;
 }
