@@ -17,14 +17,12 @@ const Sidebar = () => {
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
-    console.log('storedUser: ', storedUser);
 
     if (storedUser) {
       try {
         // Parse the stored JSON string
         const parsedUser: User = JSON.parse(storedUser);
         setUser(parsedUser);
-        console.log('parsedUser: ', parsedUser);
       } catch (error) {
         console.error('Error parsing user data:', error);
       }

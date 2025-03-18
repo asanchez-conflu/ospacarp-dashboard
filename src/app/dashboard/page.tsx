@@ -37,6 +37,20 @@ const Line = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), {
   ssr: false,
 });
 
+const formatPercentage = (value: number): string => {
+  const roundedValue = parseFloat(value.toFixed(2));
+  const parts = roundedValue.toString().split('.');
+
+  if (parts.length === 1 || parseInt(parts[1], 10) === 0) {
+    return parts[0];
+  } else {
+    return roundedValue.toLocaleString('es-AR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
+};
+
 // Opciones del gráfico de Dona
 const options: ChartOptions<'doughnut'> = {
   cutout: '75%',
@@ -135,6 +149,11 @@ interface MonthPeriod {
   period: string;
 }
 
+interface PercentageState {
+  incomePercentage: string;
+  expensePercentage: string;
+}
+
 const HomePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState<string>(
@@ -159,6 +178,11 @@ const HomePage: React.FC = () => {
     trends: null,
   });
 
+  const [percentages, setPercentages] = useState<PercentageState>({
+    incomePercentage: '0,00',
+    expensePercentage: '0,00',
+  });
+
   const [versusChartData, setVersusChartData] = useState<ChartData<
     'doughnut',
     number[],
@@ -176,7 +200,6 @@ const HomePage: React.FC = () => {
     if (loading) {
       return;
     }
-    console.log('Filtered by ', month);
 
     try {
       const versus = await fetchDashboardVS(month.period);
@@ -196,8 +219,6 @@ const HomePage: React.FC = () => {
       }));
 
       convertVersusData(data.versus);
-
-      console.log('Month: ', month);
     } catch (err) {
       console.error('Error fetching data:', err);
     } finally {
@@ -214,14 +235,32 @@ const HomePage: React.FC = () => {
       const total = expense + income;
 
       // Calculate percentages
-      const expensePercentage = (expense / total) * 100;
-      const incomePercentage = (income / total) * 100;
+      let expensePercentage: number;
+      let incomePercentage: number;
+
+      if (total === 0) {
+        expensePercentage = 50.0;
+        incomePercentage = 50.0;
+      } else {
+        expensePercentage = parseFloat(((expense / total) * 100).toFixed(2));
+        incomePercentage = parseFloat(((income / total) * 100).toFixed(2));
+      }
+
+      const chartData = [
+        incomePercentage < 2 ? 2 : incomePercentage,
+        expensePercentage < 2 ? 2 : expensePercentage,
+      ];
+
+      setPercentages({
+        incomePercentage: formatPercentage(incomePercentage),
+        expensePercentage: formatPercentage(expensePercentage),
+      });
 
       const chart: ChartData<'doughnut', number[], unknown> = {
         labels: ['Ingresos', 'Egresos'],
         datasets: [
           {
-            data: [incomePercentage, expensePercentage],
+            data: chartData,
             backgroundColor: ['#0560EA', '#56CFE1'],
             borderColor: 'transparent',
             borderRadius: 10,
@@ -229,6 +268,7 @@ const HomePage: React.FC = () => {
           },
         ],
       };
+
       setVersusChartData(chart);
     }
   };
@@ -238,7 +278,6 @@ const HomePage: React.FC = () => {
     const incomeData = trendData.map((item) => parseInt(item.income, 10)); // Parse to number
     const expenseData = trendData.map((item) => parseInt(item.expenses, 10)); // Parse to number
 
-    console.log('trendData', trendData);
     const data = {
       labels: labels,
       datasets: [
@@ -287,8 +326,6 @@ const HomePage: React.FC = () => {
         if (data.trends && data.trends.trend) {
           convertTrendData(data.trends.trend);
         }
-
-        console.log('DATA: ', data);
       } catch (err) {
         console.error('Error fetching data:', err);
       } finally {
@@ -374,7 +411,7 @@ const HomePage: React.FC = () => {
                     }}
                   ></div>
                   <div className='font-bold font-[Poppins] text-3xl'>
-                    {versusChartData.datasets[0].data[0]}%
+                    {percentages.incomePercentage}%
                   </div>
                   <div className='text-xs text-gray-500'>Ingresos</div>
                 </div>
@@ -386,7 +423,7 @@ const HomePage: React.FC = () => {
                     }}
                   ></div>
                   <div className='font-bold font-[Poppins] text-3xl'>
-                    {versusChartData.datasets[0].data[1]}%
+                    {percentages.expensePercentage}%
                   </div>
                   <div className='text-xs text-gray-500'>Egresos</div>
                 </div>

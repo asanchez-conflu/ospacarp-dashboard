@@ -20,9 +20,6 @@ const HomePage: React.FC = () => {
   const navigation = useRouter();
 
   const handleSubmit = async (username: string, password: string) => {
-    console.log('Email:', username);
-    console.log('Password:', password);
-
     if (loading) {
       return;
     }

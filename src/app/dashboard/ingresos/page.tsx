@@ -84,7 +84,6 @@ const IngresosPage: React.FC = () => {
       return;
     }
     setFilterType(type);
-    console.log('Filtered by ', type);
   };
 
   // Cuando se cliquea una barra
@@ -92,7 +91,6 @@ const IngresosPage: React.FC = () => {
     if (selectedId) {
       return;
     }
-    console.log(`Selecciona barra Id ${id}`);
     setSelectedId(id);
     fetchData(id);
   };
@@ -102,7 +100,6 @@ const IngresosPage: React.FC = () => {
       return;
     }
 
-    console.log(`Selecciona lista Id ${id}`);
     setSelectedId(id);
 
     // Si es seccion historica/tendencias
@@ -138,13 +135,8 @@ const IngresosPage: React.FC = () => {
         type = 'delegations';
       }
 
-      console.log('TYPE: ', type);
-
       if (type === 'origin') {
-        console.log('origines', dataResponse.origins);
-
         if (!dataResponse.origins) {
-          console.log('no data');
           setGraphData([]);
           return;
         }
@@ -170,10 +162,17 @@ const IngresosPage: React.FC = () => {
             ? 0
             : percentageValue;
 
+          const formattedPercentage = parseFloat(
+            displayPercentage.toFixed(2)
+          ).toLocaleString('es-AR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+
           // Type conversion and creation of DataItem object
           const dataItem: DataItem = {
             label: toTitleCase(origin.description),
-            percentage: displayPercentage,
+            percentage: formattedPercentage,
             id: String(origin.origin),
             total: origin.total,
           };
@@ -181,10 +180,7 @@ const IngresosPage: React.FC = () => {
         });
       } else {
         // process delegations
-        console.log('delegaciones', dataResponse.delegations);
-
         if (!dataResponse.delegations) {
-          console.log('no data');
           setGraphData([]);
           return;
         }
@@ -210,10 +206,17 @@ const IngresosPage: React.FC = () => {
               ? 0
               : percentageValue;
 
+            const formattedPercentage = parseFloat(
+              displayPercentage.toFixed(2)
+            ).toLocaleString('es-AR', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            });
+
             // Type conversion and creation of DataItem object
             const dataItem: DataItem = {
               label: toTitleCase(delegation.description),
-              percentage: displayPercentage,
+              percentage: formattedPercentage,
               id: String(delegation.delegation),
               total: delegation.total,
             };
@@ -225,11 +228,8 @@ const IngresosPage: React.FC = () => {
       setGraphData(processedData);
 
       if (id === null) {
-        console.log('List data saved');
         setListData(processedData);
       }
-
-      console.log('processedData', processedData);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -246,7 +246,6 @@ const IngresosPage: React.FC = () => {
 
   // Va a sección histórica
   const goTrend = () => {
-    console.log(`Buscar trend `, selectedId, filterType);
     if (selectedId) {
       fetchHistory(selectedId);
     }
@@ -281,15 +280,12 @@ const IngresosPage: React.FC = () => {
       setLoading(true);
       const dataResponse = await fetchIncomesHistoricData(filterType, id);
 
-      console.log(`Trend data: `, dataResponse);
-
       if (!dataResponse || !dataResponse.history) {
         console.warn('No data received for this type.');
         setTrendData(null);
         return;
       } else {
         const history = convertTrendDataTyped(dataResponse.history);
-        console.log('history: ', history);
         setTrendData(history);
       }
     } catch (error) {
@@ -328,7 +324,8 @@ const IngresosPage: React.FC = () => {
         <div className='px-7 relative h-[44px]'>
           <h3 className='font-bold'>
             Distribución de Ingresos por
-            {filterType === 'origin' ? ' orígenes ' : ' delegaciones '} de afiliado
+            {filterType === 'origin' ? ' orígenes ' : ' delegaciones '} de
+            afiliado
           </h3>
           <p className='text-sm'>
             Mes de {getMonth()} {selectedLabel && ` | ${selectedLabel}`}

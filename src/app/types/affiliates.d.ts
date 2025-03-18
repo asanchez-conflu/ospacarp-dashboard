@@ -28,7 +28,7 @@ interface ExpensesDelegation {
 
 interface DataItem {
   label: string;
-  percentage: number;
+  percentage: string;
   id: string;
   total: string;
 }

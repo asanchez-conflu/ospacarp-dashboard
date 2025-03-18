@@ -84,7 +84,6 @@ const AfiliadosPage: React.FC = () => {
       return;
     }
     setFilterType(type);
-    console.log('Filtered by ', type);
   };
 
   // Cuando se cliquea una barra
@@ -92,7 +91,6 @@ const AfiliadosPage: React.FC = () => {
     if (selectedId) {
       return;
     }
-    console.log(`Selecciona barra Id ${id}`);
     setSelectedId(id);
     fetchData(id);
   };
@@ -102,7 +100,6 @@ const AfiliadosPage: React.FC = () => {
       return;
     }
 
-    console.log(`Selecciona lista Id ${id}`);
     setSelectedId(id);
 
     // Si es seccion historica/tendencias
@@ -144,13 +141,8 @@ const AfiliadosPage: React.FC = () => {
         type = 'delegations';
       }
 
-      console.log('TYPE: ', type);
-
       if (type === 'origin') {
-        console.log('origines', dataResponse.origins);
-
         if (!dataResponse.origins) {
-          console.log('no data');
           setGraphData([]);
           return;
         }
@@ -166,10 +158,17 @@ const AfiliadosPage: React.FC = () => {
               ? 0
               : (parseFloat(origin.count) / totalCount) * 100;
 
+          const formattedPercentage = parseFloat(
+            percentage.toFixed(2)
+          ).toLocaleString('es-AR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+
           // Type conversion and creation of DataItem object
           const dataItem: DataItem = {
             label: toTitleCase(origin.originDesc),
-            percentage: parseFloat(percentage.toFixed(2)), // Parse to number
+            percentage: formattedPercentage,
             id: String(origin.origin),
             total: origin.count,
           };
@@ -177,10 +176,7 @@ const AfiliadosPage: React.FC = () => {
         });
       } else {
         // process delegations
-        console.log('delegaciones', dataResponse.delegations);
-
         if (!dataResponse.delegations) {
-          console.log('no data');
           setGraphData([]);
           return;
         }
@@ -198,10 +194,17 @@ const AfiliadosPage: React.FC = () => {
                 ? 0
                 : (parseFloat(delegation.count) / totalCount) * 100;
 
+            const formattedPercentage = parseFloat(
+              percentage.toFixed(2)
+            ).toLocaleString('es-AR', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            });
+
             // Type conversion and creation of DataItem object
             const dataItem: DataItem = {
               label: toTitleCase(delegation.delegationDesc),
-              percentage: parseFloat(percentage.toFixed(2)), // Parse to number
+              percentage: formattedPercentage,
               id: String(delegation.delegation),
               total: delegation.count,
             };
@@ -213,11 +216,8 @@ const AfiliadosPage: React.FC = () => {
       setGraphData(processedData);
 
       if (id === null) {
-        console.log('List data saved');
         setListData(processedData);
       }
-
-      console.log('processedData', processedData);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -234,7 +234,6 @@ const AfiliadosPage: React.FC = () => {
 
   // Va a sección histórica
   const goTrend = () => {
-    console.log(`Buscar trend `, selectedId, filterType);
     if (selectedId) {
       fetchTrends(selectedId);
     }
@@ -269,15 +268,12 @@ const AfiliadosPage: React.FC = () => {
       setLoading(true);
       const dataResponse = await fetchTrendsData(filterType, id);
 
-      console.log(`Trend data: `, dataResponse);
-
       if (!dataResponse || !dataResponse.trend) {
         console.warn('No data received for this type.');
         setTrendData(null);
         return;
       } else {
         const trend = convertTrendDataTyped(dataResponse.trend);
-        console.log('Trend: ', trend);
         setTrendData(trend);
       }
     } catch (error) {
