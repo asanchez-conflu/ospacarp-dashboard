@@ -234,7 +234,7 @@ const EgresosPage: React.FC = () => {
 
   // Formatea Trend Data para los gráficos
   const convertTrendDataTyped = (trendData: HistoryExpensesItem[]) => {
-    const labels = trendData.map((item) => item.monthName.charAt(0));
+    const labels = trendData.map((item) => item.monthName.substring(0, 3));
     const data = trendData.map((item) => parseInt(item.expenses, 10)); // Parse count to number
 
     return {

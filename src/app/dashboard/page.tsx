@@ -274,7 +274,7 @@ const HomePage: React.FC = () => {
   };
 
   const convertTrendData = (trendData: TrendItem[]) => {
-    const labels = trendData.map((item) => item.monthName.charAt(0));
+    const labels = trendData.map((item) => item.monthName.substring(0, 3));
     const incomeData = trendData.map((item) => parseInt(item.income, 10)); // Parse to number
     const expenseData = trendData.map((item) => parseInt(item.expenses, 10)); // Parse to number
 
