@@ -84,7 +84,6 @@ const EgresosPage: React.FC = () => {
       return;
     }
     setFilterType(type);
-    console.log('Filtered by ', type);
   };
 
   // Cuando se cliquea una barra
@@ -92,7 +91,6 @@ const EgresosPage: React.FC = () => {
     if (selectedId) {
       return;
     }
-    console.log(`Selecciona barra Id ${id}`);
     setSelectedId(id);
     fetchData(id);
   };
@@ -102,7 +100,6 @@ const EgresosPage: React.FC = () => {
       return;
     }
 
-    console.log(`Selecciona lista Id ${id}`);
     setSelectedId(id);
 
     // Si es seccion historica/tendencias
@@ -138,13 +135,8 @@ const EgresosPage: React.FC = () => {
         type = 'delegations';
       }
 
-      console.log('TYPE: ', type);
-
       if (type === 'origin') {
-        console.log('origines', dataResponse.origins);
-
         if (!dataResponse.origins) {
-          console.log('no data');
           setGraphData([]);
           return;
         }
@@ -178,10 +170,7 @@ const EgresosPage: React.FC = () => {
         });
       } else {
         // process delegations
-        console.log('delegaciones', dataResponse.delegations);
-
         if (!dataResponse.delegations) {
-          console.log('no data');
           setGraphData([]);
           return;
         }
@@ -220,11 +209,8 @@ const EgresosPage: React.FC = () => {
       setGraphData(processedData);
 
       if (id === null) {
-        console.log('List data saved');
         setListData(processedData);
       }
-
-      console.log('processedData', processedData);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -241,7 +227,6 @@ const EgresosPage: React.FC = () => {
 
   // Va a sección histórica
   const goTrend = () => {
-    console.log(`Buscar trend `, selectedId, filterType);
     if (selectedId) {
       fetchHistory(selectedId);
     }
@@ -276,15 +261,12 @@ const EgresosPage: React.FC = () => {
       setLoading(true);
       const dataResponse = await fetchExpensesHistoricData(filterType, id);
 
-      console.log(`Trend data: `, dataResponse);
-
       if (!dataResponse || !dataResponse.history) {
         console.warn('No data received for this type.');
         setTrendData(null);
         return;
       } else {
         const history = convertTrendDataTyped(dataResponse.history);
-        console.log('history: ', history);
         setTrendData(history);
       }
     } catch (error) {
