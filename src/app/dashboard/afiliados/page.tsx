@@ -320,7 +320,7 @@ const AfiliadosPage: React.FC = () => {
             {filterType === 'origin' ? 'orígenes' : 'delegaciones'} de Afiliado
           </h3>
           <p className='text-sm'>
-            Mes de {getMonth()} {selectedLabel && ` | ${selectedLabel}`}
+            Mes de {getMonth(0)} {selectedLabel && ` | ${selectedLabel}`}
           </p>
 
           {/* FILTRO - ocultar fuera de pantalla 1 */}
