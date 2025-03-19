@@ -9,7 +9,7 @@ const CardAfiliados: React.FC<AffiliatesProps> = ({ affiliates }) => {
     <div className='h-[50px] w-1/2 bg-[#0560EA] text-white rounded-lg p-2 flex justify-between items-center'>
       <div>
         <h2 className='font-semibold leading-5'>Afiliados</h2>
-        <p className='text-xs'>Valores acumulados</p>
+        <p className='text-xs'>Propios</p>
       </div>
       <div className='text-2xl font-bold font-[Poppins]'>{affiliates}</div>
     </div>

@@ -1,4 +1,4 @@
-import { formatNumberWithDots } from '@/utils/utils';
+import { formatNumberWithDots, getMonth } from '@/utils/utils';
 import { MdPeople } from 'react-icons/md';
 
 interface AffiliatesCardProps {
@@ -12,10 +12,11 @@ const AffiliatesCard: React.FC<AffiliatesCardProps> = ({ amount }) => {
         <h3 className='text-xl font-semibold'>Afiliados</h3>
         <MdPeople className='text-2xl ml-2' />
       </div>
+      <div>
+        <p className='text-xs'>Mes de {getMonth(0)}</p>
+      </div>
       <div className='flex-grow text-right font-[Poppins] flex flex-col justify-end'>
-        <p className='text-2xl font-bold'>
-          {formatNumberWithDots(amount)}
-        </p>
+        <p className='text-2xl font-bold'>{formatNumberWithDots(amount)}</p>
       </div>
     </div>
   );

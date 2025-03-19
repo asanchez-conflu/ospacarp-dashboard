@@ -118,7 +118,7 @@ const handleApiError = (error: unknown) => {
 // Function to fetch totals
 export const getTotals = async () => {
   try {
-    const period = getPeriod();
+    const period = getPeriod(0); // Afiliados a mes actual
     const token = localStorage.getItem('jwt');
     const response = await axios.get(endpoints.totals(period), {
       headers: { Authorization: `Bearer ${token}` },
@@ -135,7 +135,7 @@ export const fetchAffiliates = async (
   id: string | null = null
 ) => {
   try {
-    const period = getPeriod();
+    const period = getPeriod(0);
     const token = localStorage.getItem('jwt');
     let endpoint: string = '';
 
