@@ -3,7 +3,8 @@ import axios from 'axios';
 
 type Period = string;
 
-const api = 'https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa';
+const apiQA = 'https://api-prepro.ospatrones.sisaludevo1.com.ar/ospacarpqa';
+const api = 'https://api.ospatrones.sisaludevo1.com.ar/ospacarp';
 
 export const endpoints = {
   totals: (period: Period): string =>
