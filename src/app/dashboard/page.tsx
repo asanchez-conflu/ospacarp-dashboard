@@ -439,14 +439,12 @@ const HomePage: React.FC = () => {
               <IncomesCard
                 month={selectedMonth}
                 current={dashboardData.cards.currentIncome}
-                previous={dashboardData.cards.previousIncome}
               />
             </div>
             <div className='w-1/3'>
               <ExpensesCard
                 month={selectedMonth}
                 current={dashboardData.cards.currentExpense}
-                previous={dashboardData.cards.previousExpense}
               />
             </div>
             <div className='w-1/3'>
